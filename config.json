@@ -1,0 +1,169 @@
+{
+    "sensors": 
+    [
+	{
+	    "name": "bosch pst-ft (temperature)",
+	    "x values": [71.9, 89.9, 113.3, 144.5, 186.6, 244, 323.4, 434.9,
+			 594, 824, 1167, 1683, 2480, 3740, 5784, 9195, 15067, 25524, 44864],
+	    "y values": [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40,
+			 30, 20, 10, 0, -10, -20, -30, -40],
+	    "offset": 0
+	},
+	{
+	    "name": "bosch pst-ft (pressure)",
+	    "x values": [0.5, 4.5],
+	    "y values": [0, 1000],
+	    "offset": 0
+	},
+	{
+	    "name": "bosch 261230119 (pressure)",
+	    "x values": [0.096428571, 0.4, 1.614285714, 3.132142857, 4.65, 6.167857143],
+	    "y values": [0, 20, 100, 200, 300, 400],
+	    "offset": 0
+	},
+	{
+	    "name": "bosch ntc-m12 (temperature)",
+	    "x values": [89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896, 9397, 15462, 26114, 45313],
+	    "y values": [130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40],
+	    "offset": 0
+	},
+	{
+	    "name": "bosch ntc-m12-l (temperature)",
+	    "x values": [71, 89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896, 9397, 15462, 26114, 45313],
+	    "y values": [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40],
+	    "offset": 0
+	},
+	{
+	    "name": "delphi 15326386 (temperature)",
+	    "x values": [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469,
+			 559, 671, 809, 980, 1195, 1465, 1806, 2240, 2795, 3511, 4441, 5658, 7263, 9399,
+			 12261, 16120, 21371, 28582, 38583, 52594, 72437, 100865],
+	    "y values": [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
+			 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30,
+			 -35, -40],
+	    "offset": 0
+	},
+	{
+	    "name": "delphi 25036751 (temperature)",
+	    "x values": [46.7, 52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1, 279, 329, 389,
+			 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373, 5572, 7153, 9256, 12073,
+			 15873, 21044, 28146, 37994, 51791, 71332, 99326],
+	    "y values": [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50,
+			 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40],
+	    "offset": 0
+	},
+	{
+	    "name": "XXX",
+	    "x values": [7000, 6000, 5000, 4000, 3000, 2000, 1000],
+	    "y values": [33, 46.7, 48.6, 59.4, 67.3, 76.4, 87],
+	    "offset": 0
+	},
+	{
+	    "name": "YYY",
+	    "x values": [1000, 2000, 3000, 4000, 5000, 6000, 7000],
+	    "y values": [87, 76.4, 67.3, 59.4, 48.6, 46.7, 33],
+	    "offset": 0
+	}
+    ],
+
+    "outputs": 
+    [
+	{
+	    "name": "box-0",
+	    "label": "Water\nTemp",
+	    "box number": 0,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.1f",
+	    "units": "fahrenheit"
+	},
+	{
+	    "name": "box-1",
+	    "label": "Intake\nTemp",
+	    "box number": 1,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.1f",
+	    "units": "fahrenheit"
+	},
+	{
+	    "name": "box-2",
+	    "label": "Oil\nTemp",
+	    "box number": 2,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.f",
+	    "units": "fahrenheit"
+	},
+	{
+	    "name": "box-3",
+	    "label": "Oil\nPressure",
+	    "box number": 3,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.f",
+	    "units": "psi"
+	    
+	},
+	{
+	    "name": "box-4",	    
+	    "label": "MAP",
+	    "box number": 4,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.f",
+	    "units": "none"
+	},
+	{
+	    "name": "box-5",
+	    "label": "RPM",
+	    "box number": 5,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.f",
+	    "units": "none"
+	},
+	{
+	    "name": "box-6",
+	    "label": "VBAT",
+	    "box number": 6,
+	    "minimum value": -1,
+	    "maximum value": -1,
+	    "output format": "%.f",
+	    "units": "none"
+	}
+    ],
+
+    "frames":
+    [
+	{
+	    "name": "b600frame",
+	    "id": "0xb600",
+	    "field count": 4,
+	    "field offsets": [0, 2, 4, 6],
+	    "field sizes": [2, 2, 2, 2],
+	},
+	{
+	    "name": "b601frame",
+	    "id": "0xb601",
+	    "field count": 3,
+	    "field offsets": [0, 6, 7],
+	    "field sizes": [2, 1, 1],
+	}
+    ],
+
+    "top level descriptors":
+    [
+	{
+	    "frame": "b600frame",
+	    "sensor inputs": ["delphi 15326386 (temperature)", "delphi 15326386 (temperature)",
+			      "delphi 15326386 (temperature)", "bosch pst-ft (pressure)"],
+	    "sensor outputs": ["box-0", "box-1", "box-2", "box-3"]
+	},
+	{
+	    "frame": "b601frame",
+	    "sensor inputs": ["XXX", "XXX", "XXX"],
+	    "sensor outputs": ["box-4", "box-5", "box-6"],
+	}
+    ]
+}

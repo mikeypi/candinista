@@ -1,0 +1,48 @@
+.box-style
+{
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-color: #ffa600;
+    border-style: solid;
+    background-color: black;
+}
+
+.box-error-style
+{
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-color: #ffa600;
+    border-style: solid;
+    background-color: #BEBEBE;
+}
+
+.value-background-style
+{
+    color: grey;
+}
+
+.value-style
+{
+    color: #ffa600;
+    font-size: 65px;
+    font-weight: bold;
+    font-style: italic;
+    font-family: DSEG7Classic;
+}
+
+.label-style
+{
+    color: #ffa600;
+    font-size: 28px;
+    font-weight: bold;
+    font-family: Piboto;
+}
+
+.label-error-style
+{
+    color: red;
+}

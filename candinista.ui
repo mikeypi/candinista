@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.16.0 -->
+<interface>
+  <!-- interface-name candinista.ui -->
+  <requires lib="gtk" version="4.6"/>
+  <object class="GtkWindow" id="window">
+    <property name="default-height">400</property>
+    <property name="default-width">840</property>
+    <child>
+      <object class="GtkGrid">
+        <property name="baseline-row">1</property>
+        <property name="hexpand">True</property>
+        <property name="hexpand-set">True</property>
+        <property name="orientation">vertical</property>
+        <property name="vexpand">True</property>
+        <property name="vexpand-set">True</property>
+        <child>
+          <object class="GtkBox" id="box-0">
+<style><class name="box-style"/> </style>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label-0">
+<style><class name="label-style"/> </style>
+                <property name="halign">start</property>
+                <property name="label">label-0</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="value-0">
+<style><class name="value-style"/> </style>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">value-0</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="column-span">1</property>
+              <property name="row">0</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="box-1">
+<style><class name="box-style"/> </style>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label-1">
+<style><class name="label-style"/> </style>
+                <property name="halign">start</property>
+                <property name="label">label-1</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="value-1">
+<style><class name="value-style"/> </style>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">value-1</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="column-span">1</property>
+              <property name="row">0</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="box-2">
+<style><class name="box-style"/> </style>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label-2">
+<style><class name="label-style"/> </style>
+                <property name="halign">start</property>
+                <property name="label">label-2</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="value-2">
+<style><class name="value-style"/> </style>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">value-2</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">2</property>
+              <property name="column-span">1</property>
+              <property name="row">0</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="box-3">
+<style><class name="box-style"/> </style>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label-3">
+<style><class name="label-style"/> </style>
+                <property name="halign">start</property>
+                <property name="label">label-3</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="value-3">
+<style><class name="value-style"/> </style>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">value-3</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="column-span">1</property>
+              <property name="row">1</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="box-4">
+<style><class name="box-style"/> </style>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label-4">
+<style><class name="label-style"/> </style>
+                <property name="halign">start</property>
+                <property name="label">label-4</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="value-4">
+<style><class name="value-style"/> </style>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">value-4</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">1</property>
+              <property name="column-span">1</property>
+              <property name="row">1</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="box-5">
+<style><class name="box-style"/> </style>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label-5">
+<style><class name="label-style"/> </style>
+                <property name="halign">start</property>
+                <property name="label">label-5</property>
+                <property name="margin-start">5</property>
+                <property name="margin-top">5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="value-5">
+<style><class name="value-style"/> </style>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="hexpand-set">True</property>
+                <property name="label">value-5</property>
+                <property name="margin-bottom">5</property>
+                <property name="margin-end">5</property>
+                <property name="valign">end</property>
+                <property name="vexpand">True</property>
+                <property name="vexpand-set">True</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">2</property>
+              <property name="column-span">1</property>
+              <property name="row">1</property>
+              <property name="row-span">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
