@@ -68,11 +68,12 @@ extern int top_level_count;
 
 /* data logging stuff */
 
+extern int data_logging;
 extern void log_data (frame_descriptor*);
 
 /* interpolation stuff */
 extern void interpolation_array_sort (sensor_descriptor*);
-extern int linear_interpolate (float, sensor_descriptor*);
+extern float linear_interpolate (float, sensor_descriptor*);
 
 /* Initialization stuff */
 
@@ -82,7 +83,7 @@ extern char* log_file_directory_name;
 #define MAX_LOG_FILE_TIME 10*60
 extern int max_log_file_time;
 
-#define CAN_SOCKET_NAME "can1"
+#define CAN_SOCKET_NAME "can0"
 extern char* can_socket_name;
 
 #define UI_FILE_NAME "candinista.ui"

@@ -61,9 +61,8 @@ interpolation_array_sort (sensor_descriptor* sensor) {
  * order.
  */
  
-int
+float
 linear_interpolate (float knownx, sensor_descriptor* sensor)
-//int nvalues, float* xinterpolation_values, float* yinterpolation_values)
 {
   int i = 0;
   float mu;
@@ -101,6 +100,15 @@ linear_interpolate (float knownx, sensor_descriptor* sensor)
   y2 = sensor -> y_values[i + 1];
   result = y1 * (1 - mu) + y2 * mu;
 
-  return (int) result;
+#ifdef DEBUG_INTERPOLATE
+  fprintf (stderr, "mu = %f y1 = %f y = %f, return = %f knownx = %f\n",
+	   mu,
+	   sensor->x_values[i],
+	   sensor->x_values[i+1],
+	   result,
+	   knownx);
+#endif
+
+  return (result);
 }
 

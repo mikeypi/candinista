@@ -23,9 +23,11 @@
 #include "candinista.h"
 
 #define nBytesToShort(a, b) ((a << 8) | b)
+
 static short
 BytesToShort (char a, char b) {
-  short x = (a << 8) | b;
+  unsigned short x = (a << 8) ^ b;
+  return (x);
 }
 
 
@@ -93,11 +95,15 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
 
   while (p < top_level_descriptors + top_level_count) {
     if (p -> frame_descriptor -> id == (frame.can_id & 0x7fffffff)) {
-
       for (i = 0; i < p -> frame_descriptor -> field_count; i++) {
 	/* retrieve the individual data values from the can frame. This handles char and short,
 	 * would need to be expanded for 32 or 64 bit data
 	 */
+
+	if (NULL == p -> sensor_descriptors[i]) {
+	  continue;
+	}
+	
 	if (sizeof (short) == p -> frame_descriptor -> field_sizes[i]) {
 	  temp = BytesToShort (frame.data[p -> frame_descriptor -> field_offsets[i]],
 					frame.data[p -> frame_descriptor -> field_offsets[i] + 1]);
@@ -106,21 +112,22 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
 	}
 
 	/* apply interpolation if needed */
-	if (NULL != p -> sensor_descriptors[i]) {
-	  temp = linear_interpolate (temp, p -> sensor_descriptors[i]);
-	  /* MAP sensors typically read 1 ATM at zero boost, this allows those sensors to read 0 at zero boost. */
-	  temp += p -> sensor_descriptors[i] -> offset;
-	}
+	temp = linear_interpolate (temp, p -> sensor_descriptors[i]);
 
+	/* MAP sensors typically read 1 ATM at zero boost, this allows those sensors to read 0 at zero boost. */
+	temp += p -> sensor_descriptors[i] -> offset;
+      
 	p -> frame_descriptor -> data[i] = temp;
-	temp = convert_units (temp, p->output_descriptors[i] -> units);
 
-	if (NULL != p->output_descriptors[i]) {
-	  update_widgets_for_display (p->output_descriptors[i], temp);
+	if (NULL != p -> output_descriptors[i]) {
+	  temp = convert_units (temp, p->output_descriptors[i] -> units);
+	  update_widgets_for_display (p -> output_descriptors[i], temp);
 	}
       }
 
-      log_data (p -> frame_descriptor);
+      if (0 != data_logging) {
+	log_data (p -> frame_descriptor);
+      }
 
       return TRUE;
     }
@@ -165,6 +172,10 @@ activate (GtkApplication* app,
       char scratch[MAX_LABEL_LENGTH];
       GObject* Temp;
 
+      if (NULL == p -> output_descriptors[i]) {
+	continue;
+      }
+
       sprintf (scratch, "label-%d", p -> output_descriptors[i] -> box_number);
       Temp = gtk_builder_get_object (builder, scratch);
       
@@ -179,11 +190,11 @@ activate (GtkApplication* app,
 
       sprintf (scratch, "value-%d", p -> output_descriptors[i] -> box_number);
       Temp = gtk_builder_get_object (builder, scratch);
-      
+
       if (NULL == Temp) {
 	continue;
       }
-      
+
       p -> output_descriptors[i] -> value_widget = GTK_WIDGET (Temp);
 
       sprintf (scratch, "box-%d", p -> output_descriptors[i] -> box_number);
@@ -192,7 +203,7 @@ activate (GtkApplication* app,
       if (NULL == Temp) {
 	continue;
       }
-      
+
       p -> output_descriptors[i] -> box_widget = GTK_WIDGET (Temp);
     }
 
@@ -245,34 +256,48 @@ main (int argc, char** argv) {
 
   read_config_from_json ();
 
-  while (-1 != (option = getopt (argc, argv, "p"))) {
+  while (-1 != (option = getopt (argc, argv, "np"))) {
     switch (option) {
+    case 'n':
+      data_logging = 0;
+      break;
+      
     case 'p':
       print_config ();
       exit (0);
 
     default:
+      fprintf (stderr, "unknown option %c\n", option);
       fprintf (stderr,
 	       "Usage: %s options device_name.\n"
 	       "Options:\n"
+	       "\t -n: disable datalogging\n"
 	       "\t -p: print json database\n",
 	       argv[0]);
       exit (-1);
     }
   }
-    
+
   get_environment_variables ();
-  
+
   if (NULL == (input_channel = can_setup ())) {
     perror("Error in socket bind");
     return -1;
   }
-  
+
   app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   g_io_add_watch (input_channel, G_IO_IN, can_data_ready, NULL);
+
+  /* not sure why this is required, but g_application_run will throw an error if it is called with
+   * additional flags in argv (e.g., -n).
+   */
+  argv[1] = NULL;
+  argc = 1;
   status = g_application_run (G_APPLICATION (app), argc, argv);
+  
   g_object_unref (app);
+
 
   return status;
 }

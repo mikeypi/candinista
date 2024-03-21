@@ -12,7 +12,7 @@
 FILE* fp = NULL;
 
 int log_file_open_time = 0;
-
+int data_logging = 1;
 
 static void
 log_file_open (int open_time) {
