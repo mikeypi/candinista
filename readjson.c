@@ -60,6 +60,19 @@ get_int_from_json (json_object* root, char* field) {
 }
 
 
+static float
+get_float_from_json (json_object* root, char* field) {
+  json_object* x = json_object_object_get (root, field);
+
+  if (NULL == x) {
+    fprintf (stderr, "required field %s not found\n", field);
+    return (0);
+  }
+  
+  return ((float) json_object_get_double (x));
+}
+
+
 static sensor_descriptor*
 sensor_descriptor_by_name (const char* name) {
   int i;
@@ -169,7 +182,7 @@ add_sensors_from_json (json_object* root) {
     interpolation_array_sort (&sensor_descriptors[i]);
 #endif
   
-    sensor_descriptors[i].offset = get_int_from_json (e, "offset");
+    sensor_descriptors[i].offset = get_float_from_json (e, "offset");
 
 #ifdef DEBUG
     printf ("added sensor %s with %d interpolation points\n", name_str, y_value_count);

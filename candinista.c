@@ -256,10 +256,10 @@ main (int argc, char** argv) {
 
   read_config_from_json ();
 
-  while (-1 != (option = getopt (argc, argv, "np"))) {
+  while (-1 != (option = getopt (argc, argv, "dp"))) {
     switch (option) {
-    case 'n':
-      data_logging = 0;
+    case 'd':
+      data_logging = 1;
       break;
       
     case 'p':

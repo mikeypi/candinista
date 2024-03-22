@@ -29,7 +29,7 @@ typedef struct {
   int number_of_interpolation_points;
   float* x_values;
   float* y_values;
-  int offset;  
+  float offset;  
   int tag;
   char* name;
 } sensor_descriptor;
