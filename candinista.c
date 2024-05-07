@@ -1,3 +1,33 @@
+
+/*
+ * Copyright (c) 2024, Joseph Hollinger
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +49,8 @@
 
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
+
+#include <sys/time.h>
 
 #include "candinista.h"
 
@@ -69,6 +101,31 @@ update_widgets_for_display (output_descriptor* p, float f) {
 }
 
 
+int
+timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
+{
+  /* Perform the carry for the later subtraction by updating y. */
+  if (x->tv_usec < y->tv_usec) {
+    int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
+    y->tv_usec -= 1000000 * nsec;
+    y->tv_sec += nsec;
+  }
+  if (x->tv_usec - y->tv_usec > 1000000) {
+    int nsec = (x->tv_usec - y->tv_usec) / 1000000;
+    y->tv_usec += 1000000 * nsec;
+    y->tv_sec -= nsec;
+  }
+
+  /* Compute the time remaining to wait.
+     tv_usec is certainly positive. */
+  result->tv_sec = x->tv_sec - y->tv_sec;
+  result->tv_usec = x->tv_usec - y->tv_usec;
+
+  /* Return 1 if result is negative. */
+  return x->tv_sec < y->tv_sec;
+}
+
+
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
  * and update the corresponding display widgets.
@@ -82,6 +139,8 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
   struct can_frame frame;
   gsize bytes_read;
   top_level_descriptor* p = top_level_descriptors;
+  struct timeval now;
+  struct timeval delta;
   
   if (G_IO_STATUS_NORMAL != g_io_channel_read_chars (input_channel,
 						     (gchar*) &frame, sizeof (struct can_frame),
@@ -120,8 +179,14 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
 	p -> frame_descriptor -> data[i] = temp;
 
 	if (NULL != p -> output_descriptors[i]) {
-	  temp = convert_units (temp, p->output_descriptors[i] -> units);
-	  update_widgets_for_display (p -> output_descriptors[i], temp);
+	  gettimeofday (&now, NULL);
+	  timeval_subtract (&delta, &now, &p -> output_descriptors[i] -> tv);
+
+	  if (delta.tv_sec >= DISPALY_UPDATE_INTERVAL) {
+	    p -> output_descriptors[i] -> tv = now;
+	    temp = convert_units (temp, p -> output_descriptors[i] -> units);
+	    update_widgets_for_display (p -> output_descriptors[i], temp);
+	  }
 	}
       }
 
@@ -175,6 +240,8 @@ activate (GtkApplication* app,
       if (NULL == p -> output_descriptors[i]) {
 	continue;
       }
+
+      gettimeofday (&(p->output_descriptors[i] -> tv), NULL);
 
       sprintf (scratch, "label-%d", p -> output_descriptors[i] -> box_number);
       Temp = gtk_builder_get_object (builder, scratch);
