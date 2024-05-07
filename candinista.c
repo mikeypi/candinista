@@ -80,27 +80,6 @@ convert_units (float temp, unit_type to) {
 }
 
 
-static void
-update_widgets_for_display (output_descriptor* p, float f) {
-  if (NULL != p -> value_widget) {
-    gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "value-background-style");
-    sprintf (p -> value, p -> output_format, f);
-    gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> value);
-
-    if ((( p -> max > 0) && (f > p -> max))
-	|| (( p -> min > 0) && (f < p -> min)) ) {
-      gtk_widget_add_css_class (GTK_WIDGET (p -> value_widget), "label-error-style");
-      gtk_widget_add_css_class (GTK_WIDGET (p -> label_widget), "label-error-style");
-      gtk_widget_add_css_class (GTK_WIDGET (p -> box_widget), "box-error-style");
-    } else {
-      gtk_widget_remove_css_class (GTK_WIDGET (p -> label_widget), "label-error-style");
-      gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "label-error-style");
-      gtk_widget_remove_css_class (GTK_WIDGET (p -> box_widget), "box-error-style");
-    }
-  }
-}
-
-
 int
 timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
 {
@@ -126,6 +105,50 @@ timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
 }
 
 
+static void
+update_widgets_for_display (output_descriptor* p, float f) {
+  struct timeval now;
+  struct timeval delta;
+
+  if (0 != p-> update_interval) {
+    gettimeofday (&now, NULL);
+    timeval_subtract (&delta, &now, &p -> tv);
+    if (delta.tv_sec <= p-> update_interval) {
+      return;
+    } else {
+      p -> tv = now;
+    }
+  }
+
+  if (0 != p-> update_floor) {
+    if ((0 != p -> last_value) && (0 != f)) {
+      if (abs (p -> last_value - f < p-> update_floor)) {
+	return;
+      }
+    }
+  }
+
+  p -> last_value = f;
+
+  if (NULL != p -> value_widget) {
+    gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "value-background-style");
+    sprintf (p -> output_value, p -> output_format, f);
+    gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> output_value);
+
+    if ((( p -> max > 0) && (f > p -> max))
+	|| (( p -> min > 0) && (f < p -> min)) ) {
+      gtk_widget_add_css_class (GTK_WIDGET (p -> value_widget), "label-error-style");
+      gtk_widget_add_css_class (GTK_WIDGET (p -> label_widget), "label-error-style");
+      gtk_widget_add_css_class (GTK_WIDGET (p -> box_widget), "box-error-style");
+    } else {
+      gtk_widget_remove_css_class (GTK_WIDGET (p -> label_widget), "label-error-style");
+      gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "label-error-style");
+      gtk_widget_remove_css_class (GTK_WIDGET (p -> box_widget), "box-error-style");
+    }
+  }
+}
+
+
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
  * and update the corresponding display widgets.
@@ -139,8 +162,6 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
   struct can_frame frame;
   gsize bytes_read;
   top_level_descriptor* p = top_level_descriptors;
-  struct timeval now;
-  struct timeval delta;
   
   if (G_IO_STATUS_NORMAL != g_io_channel_read_chars (input_channel,
 						     (gchar*) &frame, sizeof (struct can_frame),
@@ -179,14 +200,8 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
 	p -> frame_descriptor -> data[i] = temp;
 
 	if (NULL != p -> output_descriptors[i]) {
-	  gettimeofday (&now, NULL);
-	  timeval_subtract (&delta, &now, &p -> output_descriptors[i] -> tv);
-
-	  if (delta.tv_sec >= DISPALY_UPDATE_INTERVAL) {
-	    p -> output_descriptors[i] -> tv = now;
 	    temp = convert_units (temp, p -> output_descriptors[i] -> units);
 	    update_widgets_for_display (p -> output_descriptors[i], temp);
-	  }
 	}
       }
 

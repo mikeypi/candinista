@@ -65,16 +65,17 @@ typedef struct {
 } sensor_descriptor;
 
 /*
- * GUI widgets to display values along with an associated label (temp, rpm etc.). The widgets are actually
- * specified as XML, and the builder_names in this structure are for finding those widgets and storing
- * pointers to them in this structure.
+ * GUI widgets to display values along with an associated label (temp, rpm etc.). The descriptors are
+ * defined in JSON and the widgets are additionally specified as XML, and the builder_names in this
+ * structure are for finding those widgets and storing pointers to them in this structure.
  */
 typedef struct {
   char* label;
   int box_number;
   int min;
   int max;
-  char value[MAX_LABEL_LENGTH];
+  float last_value;
+  char output_value[MAX_LABEL_LENGTH];
   unit_type units;
   char* output_format;
   GtkWidget* label_widget;
@@ -83,6 +84,8 @@ typedef struct {
   int tag;
   char* name;
   struct timeval tv;
+  int update_interval;
+  int update_floor;
 } output_descriptor;
 
 /* structure to assocaite a particular can frame with its sensors and output structures. */
