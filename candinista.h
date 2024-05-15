@@ -43,7 +43,6 @@ typedef struct {
   int field_offsets[MAX_CAN_FIELDS];
   int field_sizes[MAX_CAN_FIELDS];
   float data[MAX_CAN_FIELDS]; /* place for the values from the frame to be stored */
-  int tag;
   char* name;
 } frame_descriptor;
 
@@ -60,7 +59,6 @@ typedef struct {
   float* x_values;
   float* y_values;
   float offset;  
-  int tag;
   char* name;
 } sensor_descriptor;
 
@@ -81,7 +79,6 @@ typedef struct {
   GtkWidget* label_widget;
   GtkWidget* value_widget;
   GtkWidget* box_widget;
-  int tag;
   char* name;
   struct timeval tv;
   int update_interval;

@@ -82,8 +82,7 @@ get_int_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
   if ((NULL == x) && (0 != warn)) {
-    fprintf (stderr, "required field %s not found\n", field);
-    return (0);
+    return (-1);
   }
   
   return (json_object_get_int (x));
@@ -95,8 +94,7 @@ get_float_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
   if ((NULL == x) && (0 != warn)) {
-    fprintf (stderr, "required field %s not found\n", field);
-    return (0);
+    return (-1.0);
   }
   
   return ((float) json_object_get_double (x));
@@ -117,7 +115,7 @@ sensor_descriptor_by_name (const char* name) {
 }
 
 
-static output_descriptor*
+output_descriptor*
 output_descriptor_by_name (const char* name) {
   int i;
   for (i = 0; i < output_count; i++) {

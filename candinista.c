@@ -149,12 +149,29 @@ update_widgets_for_display (output_descriptor* p, float f) {
 }
 
 
+
+static gboolean
+idle_task () {
+#ifdef INTERNAL_SOURCES
+  output_descriptor* p = get_descriptor_by_name ("time");
+
+  if (NULL != p) {
+    time_t timer = time (NULL);
+    sprintf (p -> output_value, p -> output_format, ctime (&timer));
+    gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> output_value);
+  }
+#endif
+
+  return TRUE;
+}
+
+
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
  * and update the corresponding display widgets.
  */
 static gboolean
-can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data)
+can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer data)
 {
   int i;
   static int call_count;
@@ -214,9 +231,47 @@ can_data_ready (GIOChannel* input_channel, GIOCondition condition, gpointer data
 
     p++;
   }
-  
+
   return TRUE;
 }
+
+
+static void
+init_descriptor_from_builder (output_descriptor* p, GtkBuilder* builder) {
+
+  if ((NULL == p) || (NULL = builder)) {
+    return;
+  }
+
+  sprintf (scratch, "label-%d", p -> box_number);
+  Temp = gtk_builder_get_object (builder, scratch);
+      
+  if (NULL == Temp) {
+    return;
+  }
+
+  p -> label_widget = GTK_WIDGET (Temp);
+
+  gtk_label_set_text (GTK_LABEL (Temp), p -> label);
+
+  sprintf (scratch, "value-%d", p -> box_number);
+  Temp = gtk_builder_get_object (builder, scratch);
+
+  if (NULL == Temp) {
+    return;
+  }
+
+  p -> value_widget = GTK_WIDGET (Temp);
+
+  sprintf (scratch, "box-%d", p -> box_number);
+  Temp = gtk_builder_get_object (builder, scratch);
+      
+  if (NULL == Temp) {
+    return;
+  }
+
+  p -> box_widget = GTK_WIDGET (Temp);
+}   
 
 
 /*
@@ -258,41 +313,12 @@ activate (GtkApplication* app,
       }
 
       gettimeofday (&(p->output_descriptors[i] -> tv), NULL);
-
-      sprintf (scratch, "label-%d", p -> output_descriptors[i] -> box_number);
-      Temp = gtk_builder_get_object (builder, scratch);
-      
-      if (NULL == Temp) {
-	continue;
-      }
-
-      p -> output_descriptors[i] -> label_widget = GTK_WIDGET (Temp);
-      
-      gtk_label_set_text (GTK_LABEL (Temp),
-			  p -> output_descriptors[i] -> label);
-
-      sprintf (scratch, "value-%d", p -> output_descriptors[i] -> box_number);
-      Temp = gtk_builder_get_object (builder, scratch);
-
-      if (NULL == Temp) {
-	continue;
-      }
-
-      p -> output_descriptors[i] -> value_widget = GTK_WIDGET (Temp);
-
-      sprintf (scratch, "box-%d", p -> output_descriptors[i] -> box_number);
-      Temp = gtk_builder_get_object (builder, scratch);
-      
-      if (NULL == Temp) {
-	continue;
-      }
-
-      p -> output_descriptors[i] -> box_widget = GTK_WIDGET (Temp);
+      init_descriptor_from_builder (p -> output_descriptors[i], builder);
     }
 
     p++;
   }
-
+  
   /* We do not need the builder any more */
   g_object_unref (builder);
 }
@@ -370,7 +396,8 @@ main (int argc, char** argv) {
 
   app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-  g_io_add_watch (input_channel, G_IO_IN, can_data_ready, NULL);
+  g_io_add_watch (input_channel, G_IO_IN, can_data_ready_task, NULL);
+  g_idle_add_watch (idle_task, NULL);
 
   /* not sure why this is required, but g_application_run will throw an error if it is called with
    * additional flags in argv (e.g., -n).

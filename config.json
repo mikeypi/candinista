@@ -87,8 +87,6 @@
 	    "name": "box-0",
 	    "label": "Water\nTemp",
 	    "box number": 0,
-	    "minimum value": -1,
-	    "maximum value": -1,
 	    "output format": "%.1f",
 	    "units": "fahrenheit"
 	},
@@ -96,8 +94,6 @@
 	    "name": "box-1",
 	    "label": "Intake\nTemp",
 	    "box number": 1,
-	    "minimum value": -1,
-	    "maximum value": -1,
 	    "output format": "%.1f",
 	    "units": "fahrenheit"
 	},
@@ -105,8 +101,6 @@
 	    "name": "box-2",
 	    "label": "Oil\nTemp",
 	    "box number": 2,
-	    "minimum value": -1,
-	    "maximum value": -1,
 	    "output format": "%.1f",
 	    "units": "fahrenheit"
 	},
@@ -114,8 +108,6 @@
 	    "name": "box-3",
 	    "label": "Oil\nPressure",
 	    "box number": 3,
-	    "minimum value": -1,
-	    "maximum value": -1,
 	    "output format": "%.2f",
 	    "units": "bar"
 	},
@@ -123,8 +115,6 @@
 	    "name": "box-4",	    
 	    "label": "MAP",
 	    "box number": 4,
-	    "minimum value": -1,
-	    "maximum value": -1,
 	    "output format": "%.2f",
 	    "units": "bar"
 	},
@@ -132,8 +122,13 @@
 	    "name": "box-5",
 	    "label": "RPM",
 	    "box number": 5,
-	    "minimum value": -1,
-	    "maximum value": -1,
+	    "output format": "%.2f",
+	    "units": "bar"
+	},
+	{
+	    "name": "time",
+	    "label": "RPM",
+	    "box number": 6,
 	    "output format": "%.2f",
 	    "units": "bar"
 	}
