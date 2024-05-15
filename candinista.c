@@ -238,8 +238,10 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
 static void
 init_descriptor_from_builder (output_descriptor* p, GtkBuilder* builder) {
-
-  if ((NULL == p) || (NULL = builder)) {
+  char scratch[MAX_LABEL_LENGTH];
+  GObject* Temp;
+      
+  if ((NULL == p) || (NULL == builder)) {
     return;
   }
 
@@ -291,7 +293,7 @@ activate (GtkApplication* app,
 
   builder =  gtk_builder_new_from_file (UI_FILE_NAME);
   window = gtk_builder_get_object (builder, "window");
-  gtk_window_fullscreen (GTK_WINDOW(window));
+  //  gtk_window_fullscreen (GTK_WINDOW(window));
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   provider = gtk_css_provider_new ();
@@ -305,9 +307,6 @@ activate (GtkApplication* app,
 
   while (p < top_level_descriptors + top_level_count) {
     for (i = 0; i < p -> frame_descriptor -> field_count; i++) {
-      char scratch[MAX_LABEL_LENGTH];
-      GObject* Temp;
-
       if (NULL == p -> output_descriptors[i]) {
 	continue;
       }
@@ -397,7 +396,7 @@ main (int argc, char** argv) {
   app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   g_io_add_watch (input_channel, G_IO_IN, can_data_ready_task, NULL);
-  g_idle_add_watch (idle_task, NULL);
+  g_idle_add (idle_task, NULL);
 
   /* not sure why this is required, but g_application_run will throw an error if it is called with
    * additional flags in argv (e.g., -n).
