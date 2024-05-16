@@ -1,4 +1,4 @@
 # candinista
 
-C program for collecting sensor data from a CAN bus and displaying that using X-windows (GTK4).
+C program for collecting and displaying sensor data. Intended for automotive applications where sensors are accesible over a CAN bus.
 
