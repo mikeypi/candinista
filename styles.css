@@ -1,12 +1,20 @@
 .box-style
 {
-    border-top-width: 2px;
+/*    border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
     border-color: #ffa600;
     border-style: solid;
-    background-color: black;
+    background-color: black;*/
+
+    border-top-width: 10px;
+    border-right-width: 10px;
+    border-bottom-width: 10px;
+    border-left-width: 10px;
+    border-color: black;
+    border-style: solid;
+    background-color: #202020;
 }
 
 .box-error-style
@@ -28,7 +36,7 @@
 .value-style
 {
     color: #ffa600;
-    font-size: 65px;
+    font-size: 110px;
     font-weight: bold;
     font-style: italic;
     font-family: DSEG7Classic;
@@ -46,3 +54,17 @@
 {
     color: red;
 }
+
+.time-style
+{
+    color: #ffa600;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: Piboto;
+}
+
+.window-style
+{
+    background-color: black;
+}
+

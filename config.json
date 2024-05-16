@@ -85,51 +85,51 @@
     [
 	{
 	    "name": "box-0",
-	    "label": "Water\nTemp",
+	    "label": "Water Temp",
 	    "box number": 0,
-	    "output format": "%.1f",
+	    "output format": "%.0f",
 	    "units": "fahrenheit"
 	},
 	{
 	    "name": "box-1",
-	    "label": "Intake\nTemp",
+	    "label": "Intake Temp",
 	    "box number": 1,
-	    "output format": "%.1f",
+	    "output format": "%.0f",
 	    "units": "fahrenheit"
 	},
 	{
 	    "name": "box-2",
-	    "label": "Oil\nTemp",
+	    "label": "Oil Temp",
 	    "box number": 2,
-	    "output format": "%.1f",
+	    "output format": "%.0f",
 	    "units": "fahrenheit"
 	},
 	{
 	    "name": "box-3",
-	    "label": "Oil\nPressure",
+	    "label": "Oil Pressure",
 	    "box number": 3,
-	    "output format": "%.2f",
+	    "output format": "%.0f",
 	    "units": "bar"
 	},
 	{
 	    "name": "box-4",	    
 	    "label": "MAP",
 	    "box number": 4,
-	    "output format": "%.2f",
+	    "output format": "%.1f",
 	    "units": "bar"
 	},
 	{
 	    "name": "box-5",
 	    "label": "RPM",
 	    "box number": 5,
-	    "output format": "%.2f",
+	    "output format": "%.0f",
 	    "units": "bar"
 	},
 	{
 	    "name": "time",
-	    "label": "RPM",
+	    "label": "",
 	    "box number": 6,
-	    "output format": "%.2f",
+	    "output format": "%s",
 	    "units": "bar"
 	}
     ],
