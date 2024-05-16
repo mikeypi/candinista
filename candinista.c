@@ -129,7 +129,6 @@ update_widgets_for_display (output_descriptor* p, float f) {
   }
 
   p -> last_value = f;
-
   if (NULL != p -> value_widget) {
     gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "value-background-style");
     sprintf (p -> output_value, p -> output_format, f);
@@ -149,18 +148,19 @@ update_widgets_for_display (output_descriptor* p, float f) {
 }
 
 
+extern output_descriptor* output_descriptor_by_name (char*);
 
 static gboolean
 idle_task () {
-#ifdef INTERNAL_SOURCES
-  output_descriptor* p = get_descriptor_by_name ("time");
-
+  output_descriptor* p = output_descriptor_by_name ("time");
   if (NULL != p) {
     time_t timer = time (NULL);
     sprintf (p -> output_value, p -> output_format, ctime (&timer));
+
+    /* the string returned by ctime ends with a newline. This fixes that. */
+    p -> output_value[strlen (p -> output_value) - 1] = '\0';
     gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> output_value);
   }
-#endif
 
   return TRUE;
 }
@@ -290,10 +290,11 @@ activate (GtkApplication* app,
   GObject* window;
   GtkCssProvider* provider;
   top_level_descriptor* p = top_level_descriptors;
+  output_descriptor* j;
 
   builder =  gtk_builder_new_from_file (UI_FILE_NAME);
   window = gtk_builder_get_object (builder, "window");
-  //  gtk_window_fullscreen (GTK_WINDOW(window));
+  //    gtk_window_fullscreen (GTK_WINDOW(window));
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   provider = gtk_css_provider_new ();
@@ -316,6 +317,10 @@ activate (GtkApplication* app,
     }
 
     p++;
+  }
+
+  if (NULL != (j = output_descriptor_by_name ("time"))) {
+    init_descriptor_from_builder (output_descriptor_by_name ("time"), builder);
   }
   
   /* We do not need the builder any more */
