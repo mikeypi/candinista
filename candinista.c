@@ -291,9 +291,13 @@ activate (GtkApplication* app,
   GObject* window;
   GtkCssProvider* provider;
   top_level_descriptor* p = top_level_descriptors;
-  output_descriptor* j;
 
-  builder =  gtk_builder_new_from_file (UI_FILE_NAME);
+  builder = gtk_builder_new_from_file (ui_file_name);
+  if (NULL == builder) {
+    fprintf (stderr, "could not open UI configuration file %s\n", ui_file_name);
+    exit (-1);
+  }
+
   window = gtk_builder_get_object (builder, "window");
   //      gtk_window_fullscreen (GTK_WINDOW(window));
   gtk_window_set_application (GTK_WINDOW (window), app);
@@ -320,9 +324,7 @@ activate (GtkApplication* app,
     p++;
   }
 
-  if (NULL != (j = output_descriptor_by_name ("time"))) {
-    init_descriptor_from_builder (output_descriptor_by_name ("time"), builder);
-  }
+  init_descriptor_from_builder (output_descriptor_by_name ("time"), builder);
   
   /* We do not need the builder any more */
   g_object_unref (builder);
@@ -368,6 +370,8 @@ main (int argc, char** argv) {
   int total;
   int option;
 
+  get_environment_variables ();
+
   read_config_from_json ();
 
   while (-1 != (option = getopt (argc, argv, "dp"))) {
@@ -392,8 +396,6 @@ main (int argc, char** argv) {
     }
   }
 
-  get_environment_variables ();
-
   if (NULL == (input_channel = can_setup ())) {
     perror("Error in socket bind");
     return -1;
@@ -412,7 +414,6 @@ main (int argc, char** argv) {
   status = g_application_run (G_APPLICATION (app), argc, argv);
   
   g_object_unref (app);
-
 
   return status;
 }

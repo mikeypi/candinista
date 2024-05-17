@@ -345,7 +345,12 @@ add_top_levels_from_json (json_object* root) {
 void
 read_config_from_json (void)
 {
-  json_object* root = json_object_from_file ("config.json");
+  json_object* root = json_object_from_file (config_file_name);
+  if (NULL == root) {
+    fprintf (stderr, "could not open config file %s\n", config_file_name);
+    exit (-1);
+  }
+  
   add_sensors_from_json (root);
   add_outputs_from_json (root);
   add_frames_from_json (root);

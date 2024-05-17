@@ -56,6 +56,11 @@ log_file_open (int open_time) {
   
   sprintf (filepath, "%s/%s%d.csv", log_file_directory_name, "Candata", open_time);
   fp = fopen (filepath, "w");
+
+  if (NULL == fp) {
+    fprintf (stderr, "could not open log file %s\n", filepath);
+    return;
+  }
 }
 
 

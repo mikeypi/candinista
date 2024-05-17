@@ -123,6 +123,9 @@ extern char* ui_file_name;
 #define CSS_FILE_NAME "styles.css"
 extern char* css_file_name;
 
+#define CONFIG_FILE_NAME "config.json"
+extern char* config_file_name;
+
 extern void get_environment_variables ();
 
 extern void read_config_from_json (void);

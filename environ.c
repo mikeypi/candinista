@@ -44,34 +44,44 @@ int max_log_file_time = MAX_LOG_FILE_TIME;
 char* can_socket_name = CAN_SOCKET_NAME;
 char* ui_file_name = UI_FILE_NAME;
 char* css_file_name = CSS_FILE_NAME;
-
+char* config_file_name = CONFIG_FILE_NAME;
 
 void
 get_environment_variables () {
-  char* temp;
+  char* t1;
 
-  temp = getenv ("CANDINISTA.LOG_FILE_DIRECTORY_NAME");
-  if (NULL != temp) {
-    log_file_directory_name = temp;
+  t1 = getenv ("CANDINISTA_LOG_FILE_DIRECTORY_NAME");
+  if (NULL != t1) {
+    log_file_directory_name = t1;
   }
 
-  temp = getenv ("CANDINISTA.MAX_LOG_FILE_TIME");
-  if (NULL != temp) {
-    sscanf (temp, "%d", max_log_file_time);
+  t1 = getenv ("CANDINISTA_nMAX_LOG_FILE_TIME");
+  if (NULL != t1) {
+    sscanf (t1, "%d", max_log_file_time);
   }
 
-  temp = getenv ("CANDINISTA.CAN_SOCKET_NAME");
-  if (NULL != temp) {
-    can_socket_name = temp;
+  t1 = getenv ("CANDINISTA_CAN_SOCKET_NAME");
+  if (NULL != t1) {
+    can_socket_name = t1;
   }
 
-  temp = getenv ("CANDINISTA.UI_FILE_NAME");
-  if (NULL != temp) {
-    ui_file_name = temp;
+  t1 = getenv ("CANDINISTA_UI_FILE_NAME");
+  if (NULL != t1) {
+    ui_file_name = t1;
   }
 
-  temp = getenv ("CANDINISTA.CSS_FILE_NAME");
-  if (NULL != temp) {
-    css_file_name = temp;
+  t1 = getenv ("CANDINISTA_CSS_FILE_NAME");
+  if (NULL != t1) {
+    css_file_name = t1;
+  }
+
+  t1 = getenv ("CANDINISTA_CONFIG_FILE_NAME");
+  if (NULL != t1) {
+    config_file_name = t1;
+  }
+
+  t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
+  if (NULL != t1) {
+    chdir (t1);
   }
 }
