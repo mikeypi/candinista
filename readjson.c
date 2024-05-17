@@ -246,8 +246,8 @@ add_outputs_from_json (json_object* root) {
     strcpy (output_descriptors[i].output_format, format_str);
 
     output_descriptors[i].box_number = get_int_from_json (e, "box number", 1);
-    output_descriptors[i].min = get_int_from_json (e, "minimum value", 0);
-    output_descriptors[i].max = get_int_from_json (e, "maximum value", 0);
+    output_descriptors[i].min = get_float_from_json (e, "minimum value", 0);
+    output_descriptors[i].max = get_float_from_json (e, "maximum value", 0);
 
     output_descriptors[i].update_interval = get_int_from_json (e, "update interval", 0);
     output_descriptors[i].update_floor = get_float_from_json (e, "update floor", 0);

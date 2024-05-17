@@ -102,6 +102,8 @@
 	    "label": "Oil Temp",
 	    "box number": 2,
 	    "output format": "%.0f",
+	    "maximum value": 72.6,
+	    "minimum value": 0,
 	    "units": "fahrenheit"
 	},
 	{

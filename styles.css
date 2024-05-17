@@ -1,13 +1,5 @@
 .box-style
 {
-/*    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-color: #ffa600;
-    border-style: solid;
-    background-color: black;*/
-
     border-top-width: 10px;
     border-right-width: 10px;
     border-bottom-width: 10px;
@@ -19,13 +11,13 @@
 
 .box-error-style
 {
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-color: #ffa600;
+    border-top-width: 10px;
+    border-right-width: 10px;
+    border-bottom-width: 10px;
+    border-left-width: 10px;
+    border-color: black;
     border-style: solid;
-    background-color: #BEBEBE;
+    background-color: #202020;
 }
 
 .value-background-style

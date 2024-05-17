@@ -70,8 +70,8 @@ typedef struct {
 typedef struct {
   char* label;
   int box_number;
-  int min;
-  int max;
+  float min;
+  float max;
   float last_value;
   char output_value[MAX_LABEL_LENGTH];
   unit_type units;

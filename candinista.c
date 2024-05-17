@@ -128,6 +128,8 @@ update_widgets_for_display (output_descriptor* p, float f) {
     }
   }
 
+  if (p->max>0) fprintf (stderr, "max = %f, f = %f\n", p->max, f);
+
   p -> last_value = f;
   if (NULL != p -> value_widget) {
     gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "value-background-style");
