@@ -45,6 +45,7 @@ char* can_socket_name = CAN_SOCKET_NAME;
 char* ui_file_name = UI_FILE_NAME;
 char* css_file_name = CSS_FILE_NAME;
 char* config_file_name = CONFIG_FILE_NAME;
+int remote_display = 0;
 
 void
 get_environment_variables () {
@@ -83,5 +84,12 @@ get_environment_variables () {
   t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
   if (NULL != t1) {
     chdir (t1);
+  }
+
+  t1 = getenv ("DISPLAY");
+  if (NULL != t1) {
+    if (0 != strcmp (t1, ":0")) {
+      remote_display = 1;
+    }
   }
 }

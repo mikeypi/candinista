@@ -126,6 +126,8 @@ extern char* css_file_name;
 #define CONFIG_FILE_NAME "config.json"
 extern char* config_file_name;
 
+extern int remote_display;
+
 extern void get_environment_variables ();
 
 extern void read_config_from_json (void);

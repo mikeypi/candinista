@@ -299,7 +299,11 @@ activate (GtkApplication* app,
   }
 
   window = gtk_builder_get_object (builder, "window");
-  //      gtk_window_fullscreen (GTK_WINDOW(window));
+
+  if (0 == remote_display) {
+    gtk_window_fullscreen (GTK_WINDOW(window));
+  }
+  
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   provider = gtk_css_provider_new ();
