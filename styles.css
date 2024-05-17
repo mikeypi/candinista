@@ -1,22 +1,22 @@
 .box-style
 {
-    border-top-width: 10px;
+/*    border-top-width: 10px;
     border-right-width: 10px;
     border-bottom-width: 10px;
     border-left-width: 10px;
     border-color: black;
-    border-style: solid;
+    border-style: solid;*/
     background-color: #202020;
 }
 
 .box-error-style
 {
-    border-top-width: 10px;
+/*    border-top-width: 10px;
     border-right-width: 10px;
     border-bottom-width: 10px;
     border-left-width: 10px;
     border-color: black;
-    border-style: solid;
+    border-style: solid;*/
     background-color: #202020;
 }
 
@@ -56,6 +56,11 @@
 }
 
 .window-style
+{
+    background-color: black;
+}
+
+.grid-style
 {
     background-color: black;
 }

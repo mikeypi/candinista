@@ -5,8 +5,8 @@
   <requires lib="gtk" version="4.6"/>
   <object class="GtkWindow" id="window">
     <property name="decorated">False</property>
-    <property name="default-height">600</property>
-    <property name="default-width">1024</property>
+    <property name="default-height">-1</property>
+    <property name="default-width">-1</property>
     <property name="halign">start</property>
     <property name="height-request">600</property>
     <property name="resizable">False</property>
@@ -22,6 +22,8 @@
         <child>
           <object class="GtkGrid">
             <property name="column-homogeneous">True</property>
+            <property name="column-spacing">15</property>
+            <property name="row-spacing">15</property>
             <child>
               <object class="GtkBox" id="box-0">
                 <property name="hexpand">True</property>
@@ -31,26 +33,30 @@
                 <property name="vexpand">True</property>
                 <property name="vexpand-set">True</property>
                 <child>
-                  <object class="GtkLabel" id="value-0">
-                    <property name="halign">center</property>
-                    <property name="label">value-0</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <property name="vexpand-set">True</property>
-                    <style>
-                      <class name="value-style"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkLabel" id="label-0">
-                    <property name="halign">center</property>
+                    <property name="halign">start</property>
                     <property name="label">label-0</property>
-                    <property name="valign">center</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
                     <property name="vexpand">True</property>
                     <property name="vexpand-set">True</property>
                     <style>
                       <class name="label-style"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="value-0">
+                    <property name="halign">end</property>
+                    <property name="label">value-0</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="valign">end</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                    <style>
+                      <class name="value-style"/>
                     </style>
                   </object>
                 </child>
@@ -74,26 +80,30 @@
                 <property name="vexpand">True</property>
                 <property name="vexpand-set">True</property>
                 <child>
-                  <object class="GtkLabel" id="value-1">
-                    <property name="halign">center</property>
-                    <property name="label">value-1</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <property name="vexpand-set">True</property>
-                    <style>
-                      <class name="value-style"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkLabel" id="label-1">
-                    <property name="halign">center</property>
-                    <property name="label">label-1</property>
-                    <property name="valign">center</property>
+                    <property name="halign">start</property>
+                    <property name="label">label-0</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
                     <property name="vexpand">True</property>
                     <property name="vexpand-set">True</property>
                     <style>
                       <class name="label-style"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="value-1">
+                    <property name="halign">end</property>
+                    <property name="label">value-0</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="valign">end</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                    <style>
+                      <class name="value-style"/>
                     </style>
                   </object>
                 </child>
@@ -115,26 +125,30 @@
                 <property name="vexpand">True</property>
                 <property name="vexpand-set">True</property>
                 <child>
-                  <object class="GtkLabel" id="value-2">
-                    <property name="halign">center</property>
-                    <property name="label">value-2</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <property name="vexpand-set">True</property>
-                    <style>
-                      <class name="value-style"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkLabel" id="label-2">
-                    <property name="halign">center</property>
-                    <property name="label">label-2</property>
-                    <property name="valign">center</property>
+                    <property name="halign">start</property>
+                    <property name="label">label-0</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
                     <property name="vexpand">True</property>
                     <property name="vexpand-set">True</property>
                     <style>
                       <class name="label-style"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="value-2">
+                    <property name="halign">end</property>
+                    <property name="label">value-0</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="valign">end</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                    <style>
+                      <class name="value-style"/>
                     </style>
                   </object>
                 </child>
@@ -156,26 +170,30 @@
                 <property name="vexpand">True</property>
                 <property name="vexpand-set">True</property>
                 <child>
-                  <object class="GtkLabel" id="value-3">
-                    <property name="halign">center</property>
-                    <property name="label">value-3</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <property name="vexpand-set">True</property>
-                    <style>
-                      <class name="value-style"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkLabel" id="label-3">
-                    <property name="halign">center</property>
-                    <property name="label">label-3</property>
-                    <property name="valign">center</property>
+                    <property name="halign">start</property>
+                    <property name="label">label-0</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
                     <property name="vexpand">True</property>
                     <property name="vexpand-set">True</property>
                     <style>
                       <class name="label-style"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="value-3">
+                    <property name="halign">end</property>
+                    <property name="label">value-0</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="valign">end</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                    <style>
+                      <class name="value-style"/>
                     </style>
                   </object>
                 </child>
@@ -197,26 +215,30 @@
                 <property name="vexpand">True</property>
                 <property name="vexpand-set">True</property>
                 <child>
-                  <object class="GtkLabel" id="value-4">
-                    <property name="halign">center</property>
-                    <property name="label">value-4</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <property name="vexpand-set">True</property>
-                    <style>
-                      <class name="value-style"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkLabel" id="label-4">
-                    <property name="halign">center</property>
-                    <property name="label">label-4</property>
-                    <property name="valign">center</property>
+                    <property name="halign">start</property>
+                    <property name="label">label-0</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
                     <property name="vexpand">True</property>
                     <property name="vexpand-set">True</property>
                     <style>
                       <class name="label-style"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="value-4">
+                    <property name="halign">end</property>
+                    <property name="label">value-0</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="valign">end</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                    <style>
+                      <class name="value-style"/>
                     </style>
                   </object>
                 </child>
@@ -238,26 +260,30 @@
                 <property name="vexpand">True</property>
                 <property name="vexpand-set">True</property>
                 <child>
-                  <object class="GtkLabel" id="value-5">
-                    <property name="halign">center</property>
-                    <property name="label">value-5</property>
-                    <property name="valign">center</property>
-                    <property name="vexpand">True</property>
-                    <property name="vexpand-set">True</property>
-                    <style>
-                      <class name="value-style"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
                   <object class="GtkLabel" id="label-5">
-                    <property name="halign">center</property>
-                    <property name="label">label-5</property>
-                    <property name="valign">center</property>
+                    <property name="halign">start</property>
+                    <property name="label">label-0</property>
+                    <property name="margin-start">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="valign">start</property>
                     <property name="vexpand">True</property>
                     <property name="vexpand-set">True</property>
                     <style>
                       <class name="label-style"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="value-5">
+                    <property name="halign">end</property>
+                    <property name="label">value-0</property>
+                    <property name="margin-bottom">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="valign">end</property>
+                    <property name="vexpand">True</property>
+                    <property name="vexpand-set">True</property>
+                    <style>
+                      <class name="value-style"/>
                     </style>
                   </object>
                 </child>
@@ -308,10 +334,13 @@
                 </layout>
               </object>
             </child>
+            <style>
+              <class name="grid-style"/>
+            </style>
           </object>
         </child>
         <style>
-          <class name="box-style"/>
+          <class name="grid-style"/>
         </style>
       </object>
     </child>
