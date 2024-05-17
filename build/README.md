@@ -1,0 +1,4 @@
+to build:
+
+% cmake ..
+% make
