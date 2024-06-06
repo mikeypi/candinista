@@ -34,6 +34,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <sys/param.h> 
 
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
@@ -47,14 +48,14 @@ int data_logging = 0;
 
 static void
 log_file_open (int open_time) {
-  char  filepath[256];
+  char  filepath[MAXPATHLEN];
 
   if (NULL != fp) {
     fclose (fp);
     fp = NULL;
   }
   
-  sprintf (filepath, "%s/%s%d.csv", log_file_directory_name, "Candata", open_time);
+  sprintf (filepath, "%s/%s.%d.%d.csv", log_file_directory_name, "Candata", getpid (), open_time);
   fp = fopen (filepath, "w");
 
   if (NULL == fp) {

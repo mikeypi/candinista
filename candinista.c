@@ -405,7 +405,8 @@ main (int argc, char** argv) {
     return -1;
   }
 
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
+  app = gtk_application_new ("org.gtk.example", G_APPLICATION_NON_UNIQUE);
+  
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   g_io_add_watch (input_channel, G_IO_IN, can_data_ready_task, NULL);
   g_idle_add (idle_task, NULL);
