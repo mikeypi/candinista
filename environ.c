@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <linux/can.h>
 
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
@@ -40,7 +41,6 @@
 #include "candinista.h"
 
 char* log_file_directory_name = LOG_FILE_DIRECTORY_NAME;
-int max_log_file_time = MAX_LOG_FILE_TIME;
 char* can_socket_name = CAN_SOCKET_NAME;
 char* ui_file_name = UI_FILE_NAME;
 char* css_file_name = CSS_FILE_NAME;
@@ -54,11 +54,6 @@ get_environment_variables () {
   t1 = getenv ("CANDINISTA_LOG_FILE_DIRECTORY_NAME");
   if (NULL != t1) {
     log_file_directory_name = t1;
-  }
-
-  t1 = getenv ("CANDINISTA_nMAX_LOG_FILE_TIME");
-  if (NULL != t1) {
-    sscanf (t1, "%d", max_log_file_time);
   }
 
   t1 = getenv ("CANDINISTA_CAN_SOCKET_NAME");

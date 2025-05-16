@@ -179,7 +179,8 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   float temp;
   struct can_frame frame;
   gsize bytes_read;
-  top_level_descriptor* p = top_level_descriptors;
+
+  sensor_descriptor* s = sensor_descriptors;
   
   if (G_IO_STATUS_NORMAL != g_io_channel_read_chars (input_channel,
 						     (gchar*) &frame, sizeof (struct can_frame),
@@ -191,46 +192,37 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     return TRUE;
   }
 
-  while (p < top_level_descriptors + top_level_count) {
-    if (p -> frame_descriptor -> id == (frame.can_id & 0x7fffffff)) {
-      for (i = 0; i < p -> frame_descriptor -> field_count; i++) {
-	/* retrieve the individual data values from the can frame. This handles char and short,
-	 * would need to be expanded for 32 or 64 bit data
-	 */
-
-	if (NULL == p -> sensor_descriptors[i]) {
-	  continue;
-	}
-	
-	if (sizeof (short) == p -> frame_descriptor -> field_sizes[i]) {
-	  temp = BytesToShort (frame.data[p -> frame_descriptor -> field_offsets[i]],
-					frame.data[p -> frame_descriptor -> field_offsets[i] + 1]);
-	} else {
-	  temp = frame.data[p -> frame_descriptor -> field_offsets[i]];
-	}
-
-	/* apply interpolation if needed */
-	temp = linear_interpolate (temp, p -> sensor_descriptors[i]);
-
-	/* MAP sensors typically read 1 ATM at zero boost, this allows those sensors to read 0 at zero boost. */
-	temp += p -> sensor_descriptors[i] -> offset;
-      
-	p -> frame_descriptor -> data[i] = temp;
-
-	if (NULL != p -> output_descriptors[i]) {
-	    temp = convert_units (temp, p -> output_descriptors[i] -> units);
-	    update_widgets_for_display (p -> output_descriptors[i], temp);
-	}
-      }
-
-      if (0 != data_logging) {
-	log_data (p -> frame_descriptor);
-      }
-
-      return TRUE;
+  while (s < sensor_descriptors + sensor_count) {
+    if (s -> can_id != (frame.can_id & 0x7fffffff)) {
+      s++;
+      continue;
     }
 
-    p++;
+    /* retrieve the individual data values from the can frame. This handles char and short,
+     * would need to be expanded for 32 or 64 bit data
+     */
+    if (sizeof (short) == s -> can_data_width) {
+      temp = BytesToShort (frame.data[s -> can_data_offset],frame.data[s -> can_data_offset + 1]);
+    } else {
+      temp = frame.data[s -> can_data_offset];
+    }
+  
+    /* apply interpolation if needed */
+    temp = linear_interpolate (temp, s);
+
+    /* MAP sensors typically read 1 ATM at zero boost, this allows those sensors to read 0 at zero boost. */
+    temp += s -> offset;
+      
+    if (NULL != s -> output_descriptor) {
+      temp = convert_units (temp, s -> output_descriptor -> units);
+      update_widgets_for_display (s -> output_descriptor, temp);
+    }
+
+    if (0 != data_logging) {
+      log_data (&frame);
+    }
+
+    s++;
   }
 
   return TRUE;
@@ -290,8 +282,8 @@ activate (GtkApplication* app,
   GtkBuilder* builder;
   GObject* window;
   GtkCssProvider* provider;
-  top_level_descriptor* p = top_level_descriptors;
-
+  sensor_descriptor* s = sensor_descriptors;
+  
   builder = gtk_builder_new_from_file (ui_file_name);
   if (NULL == builder) {
     fprintf (stderr, "could not open UI configuration file %s\n", ui_file_name);
@@ -315,17 +307,15 @@ activate (GtkApplication* app,
 
   gtk_widget_set_visible (GTK_WIDGET (window), TRUE);
 
-  while (p < top_level_descriptors + top_level_count) {
-    for (i = 0; i < p -> frame_descriptor -> field_count; i++) {
-      if (NULL == p -> output_descriptors[i]) {
+  while (s < sensor_descriptors + sensor_count) {
+      if (NULL == s -> output_descriptor) {
 	continue;
       }
 
-      gettimeofday (&(p->output_descriptors[i] -> tv), NULL);
-      init_descriptor_from_builder (p -> output_descriptors[i], builder);
-    }
-
-    p++;
+      gettimeofday (&(s -> output_descriptor -> tv), NULL);
+      init_descriptor_from_builder (s -> output_descriptor, builder);
+ 
+      s++;
   }
 
   init_descriptor_from_builder (output_descriptor_by_name ("time"), builder);
@@ -377,7 +367,7 @@ main (int argc, char** argv) {
   get_environment_variables ();
 
   read_config_from_json ();
-
+  
   while (-1 != (option = getopt (argc, argv, "dp"))) {
     switch (option) {
     case 'd':
@@ -385,8 +375,8 @@ main (int argc, char** argv) {
       break;
       
     case 'p':
-      print_config ();
-      exit (0);
+      print_config (stderr);
+      break;
 
     default:
       fprintf (stderr, "unknown option %c\n", option);

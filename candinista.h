@@ -33,35 +33,6 @@
 
 typedef enum {FAHRENHEIT, CELSIUS, BAR, PSI, NONE} unit_type;
 
-/* each can frame can include up to 8 bytes of data. That can be 8 individual 8-bit values,
- * or 4 16-bit values or any other combination of 8 to 64-bit data. For a specific can frame,
- * this structure describes the size and location of a particular value.
- */
-typedef struct {
-  int id; /* The can frame id */
-  int field_count; /* number of values (up to 8) in a specific can frame */
-  int field_offsets[MAX_CAN_FIELDS];
-  int field_sizes[MAX_CAN_FIELDS];
-  float data[MAX_CAN_FIELDS]; /* place for the values from the frame to be stored */
-  char* name;
-} frame_descriptor;
-
-/* values retrived from a can frame generally have to be converted into corresponding sensor values.
- * For example, temperature vales in a can frame are often measured in ohms and have to be converted
- * to degrees. Sensor manufacturers generally provide a series of interpolation points (x and corresponding
- * y values). This structure holds those values for a specific can frame value. Also includes an enum to
- * specify if units need to be changed from C to F, etc. "offset" is a value that is added to any
- * reading post interpolation but pre-conversion. It's specifically to support MAP sensors
- * which generally read 1 ATM at zero boost. 
- */
-typedef struct {
-  int number_of_interpolation_points;
-  float* x_values;
-  float* y_values;
-  float offset;  
-  char* name;
-} sensor_descriptor;
-
 /*
  * GUI widgets to display values along with an associated label (temp, rpm etc.). The descriptors are
  * defined in JSON and the widgets are additionally specified as XML, and the builder_names in this
@@ -85,22 +56,38 @@ typedef struct {
   int update_floor;
 } output_descriptor;
 
-/* structure to assocaite a particular can frame with its sensors and output structures. */
-typedef struct {
-  frame_descriptor* frame_descriptor;
-  output_descriptor* output_descriptors[MAX_CAN_FIELDS];
-  sensor_descriptor* sensor_descriptors[MAX_CAN_FIELDS];
-  int output_descriptor_count;
-  int sensor_descriptor_count;
-} top_level_descriptor;
 
-extern top_level_descriptor* top_level_descriptors;
-extern int top_level_count;
+/* values retrived from a can frame generally have to be converted into corresponding sensor values.
+ * For example, temperature vales in a can frame are often measured in ohms and have to be converted
+ * to degrees. Sensor manufacturers generally provide a series of interpolation points (x and corresponding
+ * y values). This structure holds those values for a specific can frame value. Also includes an enum to
+ * specify if units need to be changed from C to F, etc. "offset" is a value that is added to any
+ * reading post interpolation but pre-conversion. It's specifically to support MAP sensors
+ * which generally read 1 ATM at zero boost. 
+ */
+typedef struct {
+  char* name;
+  int number_of_interpolation_points;
+  float* x_values;
+  float* y_values;
+  float offset;  
+
+  int can_id;
+  int can_data_offset;
+  int can_data_width;
+  output_descriptor* output_descriptor;
+} sensor_descriptor;
+
+
+extern sensor_descriptor* sensor_descriptors;
+extern output_descriptor* output_descriptors;
+extern int sensor_count;
+extern int output_count;
 
 /* data logging stuff */
 
 extern int data_logging;
-extern void log_data (frame_descriptor*);
+extern void log_data (struct can_frame*);
 
 /* interpolation stuff */
 extern void interpolation_array_sort (sensor_descriptor*);
@@ -110,9 +97,6 @@ extern float linear_interpolate (float, sensor_descriptor*);
 
 #define LOG_FILE_DIRECTORY_NAME "datalogs"
 extern char* log_file_directory_name;
-
-#define MAX_LOG_FILE_TIME 10*60
-extern int max_log_file_time;
 
 #define CAN_SOCKET_NAME "can0"
 extern char* can_socket_name;
@@ -131,7 +115,7 @@ extern int remote_display;
 extern void get_environment_variables ();
 
 extern void read_config_from_json (void);
-extern void print_config (void);
+extern void print_config (FILE*);
 
 #define DISPALY_UPDATE_INTERVAL 2
 

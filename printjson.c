@@ -34,12 +34,11 @@
 #include <string.h>
 #include <json.h>
 #include <assert.h>
+#include <linux/can.h>
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
 
 #include "candinista.h"
-
-extern int frame_count;
 
 static const char*
 str_from_unit_enum (unit_type e) {
@@ -67,6 +66,8 @@ ntabs (int count) {
     }
 }
 
+#define TAB_LEVEL(X) tabs = ntabs (X);
+
 static char printable_string_buffer[80];
 
 static const char*
@@ -84,179 +85,87 @@ printable_string (char* c) {
   return (printable_string_buffer);
 }
 
-#define TAB_LEVEL(X) tabs = ntabs (X);
-  
+
 static void
-print_frame (frame_descriptor* p, int indent) {
+print_output (output_descriptor* p, int indent, FILE* fp) {
   const char* tabs;
-
   TAB_LEVEL(indent);
-  fprintf (stderr, "\n%s{\n", tabs);
-  TAB_LEVEL(indent + 1); 
-  fprintf (stderr, "%s\"name\": \"%s\",\n", tabs, p -> name);
-  fprintf (stderr, "%s\"id\": \"0x%X\",\n", tabs, p -> id);
-
-  fprintf (stderr, "%s\"field offsets\": [", tabs);
-  int j = 0;
-  while (j < p -> field_count) {
-    fprintf (stderr, "%d", p -> field_offsets[j]);
-    if (j != p -> field_count - 1) {
-      fprintf (stderr, ", ");
-    }
-
-    j++;
-  }
-
-  fprintf (stderr, "],\n");
-
-  fprintf (stderr, "%s\"field sizes\": [", tabs);
-  j = 0;
-  while (j < p -> field_count) {
-    fprintf (stderr, "%d", p -> field_sizes[j]);
-    if (j != p -> field_count - 1) {
-      fprintf (stderr, ", ");
-    }
-
-    j++;
-  }
-
-  fprintf (stderr, "]\n");
-  
+  fprintf (fp, "\nOutput = %s{\n", tabs);
+  TAB_LEVEL(indent + 1);
+  fprintf (fp, "%s\"name\": \"%s\",\n", tabs, printable_string (p -> label));
+  fprintf (fp, "%s\"min\": %f,\n", tabs, p -> min);
+  fprintf (fp, "%s\"max\": %f,\n", tabs, p -> max);
+  fprintf (fp, "%s\"box number\": %d,\n", tabs, p -> box_number);
+  fprintf (fp, "%s\"units\": \"%s\",\n", tabs, str_from_unit_enum (p -> units));
+  fprintf (fp, "%s\"output_format\": \"%s\"\n", tabs, p -> output_format);
   TAB_LEVEL(indent);
-  fprintf (stderr, "%s}", tabs);
+  fprintf (fp, "%s}\n\n", tabs);
 }
 
 
 static void
-print_sensor (sensor_descriptor* p, int indent) {
+print_sensor (sensor_descriptor* p, int indent, FILE* fp) {
   const char* tabs;
   TAB_LEVEL(indent);
-  fprintf (stderr, "\n%s{\n", tabs);
+  fprintf (fp, "\nSensor = %s{\n", tabs);
   TAB_LEVEL(indent + 1);
-  fprintf (stderr, "%s\"name\": \"%s\",\n", tabs, p -> name);
-  fprintf (stderr, "%s\"offset\": \"%d\",\n", tabs, p -> offset);
-  fprintf (stderr, "%s\"number of interpolation points\": \"%d\",\n", tabs, p -> number_of_interpolation_points);
+  fprintf (fp, "%s\"name\": \"%s\",\n", tabs, p -> name);
+  fprintf (fp, "%s\"can data offset\": \"%x\",\n", tabs, p -> can_data_offset);
+  fprintf (fp, "%s\"can data width\": \"%x\",\n", tabs, p -> can_data_width);
+  fprintf (fp, "%s\"can id\": \"%x\",\n", tabs, p -> can_id);
+    
+  fprintf (fp, "%s\"offset\": \"%f\",\n", tabs, p -> offset);
+  fprintf (fp, "%s\"number of interpolation points\": \"%d\",\n", tabs, p -> number_of_interpolation_points);
   
-  fprintf (stderr, "%s\"x values\": [", tabs);
+  fprintf (fp, "%s\"x values\": [", tabs);
 
   int j = 0;
   while (j < p -> number_of_interpolation_points) {
 
-    fprintf (stderr, "%.1f", p -> x_values[j]);
+    fprintf (fp, "%.1f", p -> x_values[j]);
 
     if (j != p -> number_of_interpolation_points - 1) {
-      fprintf (stderr, ", ");
+      fprintf (fp, ", ");
     }
       
     if ((0 != j) && (0 == (j % 8))) {
-      fprintf (stderr, "\n%s", tabs);
+      fprintf (fp, "\n%s", tabs);
     }
 
     j++;
   }
 
-  fprintf (stderr, "],\n");
+  fprintf (fp, "],\n");
 
-  fprintf (stderr, "%s\"y values\": [", tabs);
+  fprintf (fp, "%s\"y values\": [", tabs);
 
   j = 0;
   while (j < p -> number_of_interpolation_points) {
-    fprintf (stderr, "%.1f", p -> y_values[j]);
+    fprintf (fp, "%.1f", p -> y_values[j]);
 
     if (j != p -> number_of_interpolation_points - 1) {
-      fprintf (stderr, ", ");
+      fprintf (fp, ", ");
     }
       
     if ((0 != j) && (0 == (j % 8))) {
-      fprintf (stderr, "\n%s", tabs);
+      fprintf (fp, "\n%s", tabs);
     }
 
     j++;
   }
 
-  fprintf (stderr, "]\n");
+  fprintf (fp, "]\n");
 
   TAB_LEVEL(indent);
-  fprintf (stderr, "%s}", tabs);
+  fprintf (fp, "%s}", tabs);
 }
 
 
-static void
-print_output (output_descriptor* p, int indent) {
-  const char* tabs;
-  TAB_LEVEL(indent);
-  fprintf (stderr, "\n%s{\n", tabs);
-  TAB_LEVEL(indent + 1);
-  fprintf (stderr, "%s\"name\": \"%s\",\n", tabs, printable_string (p -> label));
-  fprintf (stderr, "%s\"min\": %d,\n", tabs, p -> min);
-  fprintf (stderr, "%s\"max\": %d,\n", tabs, p -> max);
-  fprintf (stderr, "%s\"box number\": %d,\n", tabs, p -> box_number);
-  fprintf (stderr, "%s\"units\": \"%s\",\n", tabs, str_from_unit_enum (p -> units));
-  fprintf (stderr, "%s\"output_format\": \"%s\"\n", tabs, p -> output_format);
-  TAB_LEVEL(indent);
-  fprintf (stderr, "%s}", tabs);
-}
-
-
-void
-print_config () {
-  const char* tabs;
-  fprintf (stderr, "{\n");
-  TAB_LEVEL(1);
-  fprintf (stderr, "\n%s\"top level descriptors\":\n", tabs);
-  fprintf (stderr, "\n%s[\n", tabs);
-
-  TAB_LEVEL(2);
-
-  for (int i = 0; i < frame_count; i++) {
-    fprintf (stderr, "%s{\n", tabs);
-
-    TAB_LEVEL(3);
-    fprintf (stderr, "%s\"frame\":", tabs);
-    print_frame (top_level_descriptors[i].frame_descriptor, 3);
-    fprintf (stderr, ",\n");
-
-    fprintf (stderr, "%s\"sensor inputs\":", tabs);
-    fprintf (stderr, "[", tabs);
-
-    int j = 0;
-    while (j < top_level_descriptors[i].sensor_descriptor_count) {
-      print_sensor (top_level_descriptors[i].sensor_descriptors[j], 4);
-      if (j != top_level_descriptors[i].sensor_descriptor_count - 1) {
-	fprintf (stderr, ",");
-      }
-      j++;
-    }
-
-    fprintf (stderr, "\n%s],\n", tabs);
-    
-    fprintf (stderr, "%s\"sensor ouputs\":", tabs);
-    fprintf (stderr, "[", tabs);
-
-    j = 0;
-    while (j < top_level_descriptors[i].output_descriptor_count) {
-      print_output (top_level_descriptors[i].output_descriptors[j], 4);
-      if (j != top_level_descriptors[i].output_descriptor_count - 1) {
-	fprintf (stderr, ",");
-      }
-      j++;
-    }
-
-    fprintf (stderr, "\n%s]\n", tabs);
-    TAB_LEVEL(2);
-
-    fprintf (stderr, "\n%s}", tabs);
-    if (i != frame_count - 1) {
-      fprintf (stderr, ",");
-    }
-
-    fprintf (stderr, "\n");
-    
+void	      
+print_config (FILE* fp) {
+  for (int i = 0; i < sensor_count; i++) {
+    print_sensor (&sensor_descriptors[i], 0, fp);
+    print_output (sensor_descriptors[i].output_descriptor, 0, fp);
   }
-  
-  tabs = ntabs (1);
-  fprintf (stderr, "\n%s]\n", tabs);
-  fprintf (stderr, "}\n");
 }
-
 
