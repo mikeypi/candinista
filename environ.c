@@ -45,6 +45,7 @@ char* can_socket_name = CAN_SOCKET_NAME;
 char* ui_file_name = UI_FILE_NAME;
 char* css_file_name = CSS_FILE_NAME;
 char* config_file_name = CONFIG_FILE_NAME;
+char* candinista_working_directory = NULL;
 int remote_display = 0;
 
 void
@@ -71,14 +72,16 @@ get_environment_variables () {
     css_file_name = t1;
   }
 
+  t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
+  if (NULL != t1) {
+    if (0 != chdir (t1)) {
+      fprintf (stderr, "Unable to change working directory to: %s\n", t1);
+    }
+  }
+
   t1 = getenv ("CANDINISTA_CONFIG_FILE_NAME");
   if (NULL != t1) {
     config_file_name = t1;
-  }
-
-  t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
-  if (NULL != t1) {
-    chdir (t1);
   }
 
   t1 = getenv ("DISPLAY");

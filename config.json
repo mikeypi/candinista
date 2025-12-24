@@ -24,10 +24,10 @@
 	},
 
 	{
-	    "name": "bosch pst-ft (pressure)",
-    	    "x values": [500, 4500],
-	    "y values": [0, 10],
-	    "offset": 1,
+	    "name": "dummy sensor for rpm",
+    	    "x values": [0, 20000],
+	    "y values": [0, 20000],
+	    "offset": 0,
 	    "CAN Id": "0xb000",
 	    "CAN Data Offset": 4,
 	    "CAN Data Width": 2,
@@ -144,10 +144,10 @@
 	},
 	{
 	    "name": "box-2",
-	    "label": "Oil Temp",
+	    "label": "Oil \u00B0C",
 	    "box number": 2,
 	    "output format": "%.0f",
-	    "maximum value": 72.9,
+	    "maximum value": 79,
 	    "minimum value": 0,
 	    "units": "fahrenheit"
 	},
@@ -170,7 +170,7 @@
 	    "label": "RPM",
 	    "box number": 5,
 	    "output format": "%.0f",
-	    "units": "bar"
+	    "units": "none"
 	},
 	{
 	    "name": "time",

@@ -294,7 +294,7 @@ read_config_from_json (void)
 {
   json_object* root = json_object_from_file (config_file_name);
   if (NULL == root) {
-    fprintf (stderr, "could not open config file %s %s @ %d\n", config_file_name, __FILE__, __LINE__);
+    fprintf (stderr, "could not open config file %s\n", config_file_name);
     exit (-1);
   }
   
@@ -302,5 +302,3 @@ read_config_from_json (void)
   add_sensors_from_json (root);
     
 }
-
-

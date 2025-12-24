@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -131,7 +130,6 @@ update_widgets_for_display (output_descriptor* p, float f) {
   p -> last_value = f;
   
   if (NULL != p -> value_widget) {
-    gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "value-background-style");
     sprintf (p -> output_value, p -> output_format, f);
     gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> output_value);
 
@@ -188,9 +186,9 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     return FALSE;
   }
 
-  if (0 != (call_count++ % 10)) {
-    return TRUE;
-  }
+  //  if (0 != (call_count++ % 10)) {
+  //    return TRUE;
+  //  }
 
   while (s < sensor_descriptors + sensor_count) {
     if (s -> can_id != (frame.can_id & 0x7fffffff)) {
@@ -240,32 +238,25 @@ init_descriptor_from_builder (output_descriptor* p, GtkBuilder* builder) {
 
   sprintf (scratch, "label-%d", p -> box_number);
   Temp = gtk_builder_get_object (builder, scratch);
-      
-  if (NULL == Temp) {
-    return;
+
+  if (NULL != Temp) {
+    p -> label_widget = GTK_WIDGET (Temp);
+    gtk_label_set_text (GTK_LABEL (Temp), p -> label);
   }
-
-  p -> label_widget = GTK_WIDGET (Temp);
-
-  gtk_label_set_text (GTK_LABEL (Temp), p -> label);
 
   sprintf (scratch, "value-%d", p -> box_number);
   Temp = gtk_builder_get_object (builder, scratch);
 
-  if (NULL == Temp) {
-    return;
+  if (NULL != Temp) {
+    p -> value_widget = GTK_WIDGET (Temp);
   }
-
-  p -> value_widget = GTK_WIDGET (Temp);
 
   sprintf (scratch, "box-%d", p -> box_number);
   Temp = gtk_builder_get_object (builder, scratch);
       
-  if (NULL == Temp) {
-    return;
+  if (NULL != Temp) {
+    p -> box_widget = GTK_WIDGET (Temp);
   }
-
-  p -> box_widget = GTK_WIDGET (Temp);
 }   
 
 
@@ -295,7 +286,7 @@ activate (GtkApplication* app,
   if (0 == remote_display) {
     gtk_window_fullscreen (GTK_WINDOW(window));
   }
-  
+
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   provider = gtk_css_provider_new ();
