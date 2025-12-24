@@ -60,3 +60,27 @@ add_custom_command(
 add_custom_target(generate_ui ALL
     DEPENDS ${UI_OUT}
 )
+
+add_executable(microsleep "")
+#  and its sources
+target_sources(
+microsleep
+PRIVATE
+${CMAKE_CURRENT_SOURCE_DIR}/data-tools/microsleep.c
+)
+
+add_executable(decode "")
+#  and its sources
+target_sources(
+decode
+PRIVATE
+${CMAKE_CURRENT_SOURCE_DIR}/data-tools/decode.c
+)
+
+add_executable(gensensordata "")
+#  and its sources
+target_sources(
+gensensordata
+PRIVATE
+${CMAKE_CURRENT_SOURCE_DIR}/data-tools/gensensordata.c
+)
