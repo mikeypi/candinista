@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Command to run for each decoded line
+COMMAND="cansend vcan0"
+
+# Temporary file (unique per run)
+TEMP_FILE=/tmp/$$.xxx
+
+# Process each command-line argument
+for INPUT_FILE in "$@"; do
+
+    # Check if the file exists
+    if [[ ! -f "$INPUT_FILE" ]]; then
+        echo "Error: File '$INPUT_FILE' not found."
+        continue
+    fi
+
+    echo "Processing: $INPUT_FILE"
+
+    # Decode the file into a temp file
+    ./decode "$INPUT_FILE" > "$TEMP_FILE"
+
+    # Loop through decoded lines
+    while IFS= read -r line; do
+        $COMMAND "$line"
+        ./microsleep 5000
+    done < "$TEMP_FILE"
+
+done
+
+# Cleanup
+rm -f "$TEMP_FILE"
+
