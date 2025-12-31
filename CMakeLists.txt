@@ -25,6 +25,7 @@ environ.c
 interpolate.c
 printjson.c
 readjson.c
+cairo_gauge.c
 )
 
 target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES})

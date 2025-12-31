@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -92,12 +91,19 @@ print_output (output_descriptor* p, int indent, FILE* fp) {
   TAB_LEVEL(indent);
   fprintf (fp, "\nOutput = %s{\n", tabs);
   TAB_LEVEL(indent + 1);
-  fprintf (fp, "%s\"name\": \"%s\",\n", tabs, printable_string (p -> label));
+  //  fprintf (fp, "%s\"name\": \"%s\",\n", tabs, printable_string (p -> name));
   fprintf (fp, "%s\"min\": %f,\n", tabs, p -> min);
   fprintf (fp, "%s\"max\": %f,\n", tabs, p -> max);
-  fprintf (fp, "%s\"box number\": %d,\n", tabs, p -> box_number);
+  fprintf (fp, "%s\"low level warn\": %f,\n", tabs, p -> low_warn);
+  fprintf (fp, "%s\"high level warn\": %f,\n", tabs, p -> high_warn);
+  fprintf (fp, "%s\"label\": \"%s\",\n", tabs, printable_string (p -> label));
+  
   fprintf (fp, "%s\"units\": \"%s\",\n", tabs, str_from_unit_enum (p -> units));
-  fprintf (fp, "%s\"output_format\": \"%s\"\n", tabs, p -> output_format);
+  fprintf (fp, "%s\"offset\": %f,\n", tabs, p -> offset);
+
+  //  fprintf (fp, "%s\"box number\": %d,\n", tabs, p -> box_number);
+  fprintf (fp, "%s\"row\": %d,\n", tabs, p -> row);
+  fprintf (fp, "%s\"column\": %d,\n", tabs, p -> column);
   TAB_LEVEL(indent);
   fprintf (fp, "%s}\n\n", tabs);
 }
@@ -114,7 +120,6 @@ print_sensor (sensor_descriptor* p, int indent, FILE* fp) {
   fprintf (fp, "%s\"can data width\": \"%x\",\n", tabs, p -> can_data_width);
   fprintf (fp, "%s\"can id\": \"%x\",\n", tabs, p -> can_id);
     
-  fprintf (fp, "%s\"offset\": \"%f\",\n", tabs, p -> offset);
   fprintf (fp, "%s\"number of interpolation points\": \"%d\",\n", tabs, p -> number_of_interpolation_points);
   
   fprintf (fp, "%s\"x values\": [", tabs);

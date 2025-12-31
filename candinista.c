@@ -52,6 +52,7 @@
 #include <sys/time.h>
 
 #include "candinista.h"
+#include "cairo_gauge.h"
 
 #define nBytesToShort(a, b) ((a << 8) | b)
 
@@ -65,7 +66,7 @@ BytesToShort (char a, char b) {
 static float
 convert_units (float temp, unit_type to) {
   switch (to) {
-    case FAHRENHEIT:
+  case FAHRENHEIT:
     return ((temp * 9.0 / 5.0) + 32.0);
 
   case PSI:
@@ -103,9 +104,9 @@ timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
   return x->tv_sec < y->tv_sec;
 }
 
-
 static void
-update_widgets_for_display (output_descriptor* p, float f) {
+update_widgets_for_display (output_descriptor* p, double f) {
+
   struct timeval now;
   struct timeval delta;
 
@@ -119,46 +120,32 @@ update_widgets_for_display (output_descriptor* p, float f) {
     }
   }
 
-  if (0 != p-> update_floor) {
-    if ((0 != p -> last_value) && (0 != f)) {
-      if (abs (p -> last_value - f < p-> update_floor)) {
-	return;
-      }
-    }
+  cairo_gauge* cg = (cairo_gauge*) p -> output;
+  /* MAP sensors typically read 1 ATM at zero boost, this allows those sensors to read 0 at zero boost. */
+
+  if (NULL == cg) {
+    fprintf (stderr, "unexpected NULL pointer at %d in %s\n", __LINE__, __FILE__);
+    return;
   }
 
-  p -> last_value = f;
-  
-  if (NULL != p -> value_widget) {
-    sprintf (p -> output_value, p -> output_format, f);
-    gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> output_value);
-
-    if ((( p -> max > 0) && (f > p -> max))
-	|| (( p -> min > 0) && (f < p -> min)) ) {
-      gtk_widget_add_css_class (GTK_WIDGET (p -> value_widget), "label-error-style");
-      gtk_widget_add_css_class (GTK_WIDGET (p -> label_widget), "label-error-style");
-      gtk_widget_add_css_class (GTK_WIDGET (p -> box_widget), "box-error-style");
-    } else {
-      gtk_widget_remove_css_class (GTK_WIDGET (p -> label_widget), "label-error-style");
-      gtk_widget_remove_css_class (GTK_WIDGET (p -> value_widget), "label-error-style");
-      gtk_widget_remove_css_class (GTK_WIDGET (p -> box_widget), "box-error-style");
-    }
-  }
+  cg -> value = f + p -> offset;
 }
 
 
-extern output_descriptor* output_descriptor_by_name (char*);
+//extern output_descriptor* output_descriptor_by_name (char*);
 
 static gboolean
 idle_task () {
-  output_descriptor* p = output_descriptor_by_name ("time");
+  //  output_descriptor* p = output_descriptor_by_name ("time");
+  output_descriptor* p = NULL;
   if (NULL != p) {
     time_t timer = time (NULL);
-    sprintf (p -> output_value, p -> output_format, ctime (&timer));
+    char temp[80];
+    sprintf (temp, "%s", ctime (&timer));
 
     /* the string returned by ctime ends with a newline. This fixes that. */
-    p -> output_value[strlen (p -> output_value) - 1] = '\0';
-    gtk_label_set_text (GTK_LABEL (p -> value_widget), p -> output_value);
+    temp[strlen (temp) - 1] = '\0';
+    //    gtk_label_set_text (GTK_LABEL (p -> value_widget), temp);
   }
 
   return TRUE;
@@ -174,21 +161,16 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 {
   int i;
   static int call_count;
-  float temp;
+  double temp;
   struct can_frame frame;
   gsize bytes_read;
 
   sensor_descriptor* s = sensor_descriptors;
-  
   if (G_IO_STATUS_NORMAL != g_io_channel_read_chars (input_channel,
 						     (gchar*) &frame, sizeof (struct can_frame),
 						     &bytes_read, NULL)) {
     return FALSE;
   }
-
-  //  if (0 != (call_count++ % 10)) {
-  //    return TRUE;
-  //  }
 
   while (s < sensor_descriptors + sensor_count) {
     if (s -> can_id != (frame.can_id & 0x7fffffff)) {
@@ -208,9 +190,6 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     /* apply interpolation if needed */
     temp = linear_interpolate (temp, s);
 
-    /* MAP sensors typically read 1 ATM at zero boost, this allows those sensors to read 0 at zero boost. */
-    temp += s -> offset;
-      
     if (NULL != s -> output_descriptor) {
       temp = convert_units (temp, s -> output_descriptor -> units);
       update_widgets_for_display (s -> output_descriptor, temp);
@@ -227,39 +206,6 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 }
 
 
-static void
-init_descriptor_from_builder (output_descriptor* p, GtkBuilder* builder) {
-  char scratch[MAX_LABEL_LENGTH];
-  GObject* Temp;
-      
-  if ((NULL == p) || (NULL == builder)) {
-    return;
-  }
-
-  sprintf (scratch, "label-%d", p -> box_number);
-  Temp = gtk_builder_get_object (builder, scratch);
-
-  if (NULL != Temp) {
-    p -> label_widget = GTK_WIDGET (Temp);
-    gtk_label_set_text (GTK_LABEL (Temp), p -> label);
-  }
-
-  sprintf (scratch, "value-%d", p -> box_number);
-  Temp = gtk_builder_get_object (builder, scratch);
-
-  if (NULL != Temp) {
-    p -> value_widget = GTK_WIDGET (Temp);
-  }
-
-  sprintf (scratch, "box-%d", p -> box_number);
-  Temp = gtk_builder_get_object (builder, scratch);
-      
-  if (NULL != Temp) {
-    p -> box_widget = GTK_WIDGET (Temp);
-  }
-}   
-
-
 /*
  * Build the GTK GUI and associate the output widgets with the appropriate data struture so that their values
  * can be updated dynamically.
@@ -268,17 +214,17 @@ init_descriptor_from_builder (output_descriptor* p, GtkBuilder* builder) {
 static void
 activate (GtkApplication* app,
           gpointer        user_data) {
-  int i;
 
   GtkBuilder* builder;
   GObject* window;
   GtkCssProvider* provider;
-  sensor_descriptor* s = sensor_descriptors;
+  output_descriptor* od = output_descriptors;
   
-  builder = gtk_builder_new_from_file (ui_file_name);
-  if (NULL == builder) {
-    fprintf (stderr, "could not open UI configuration file %s\n", ui_file_name);
-    exit (-1);
+  ui_file_name = "/home/joe/candinista/candinista.ui";
+  if (NULL == (builder = gtk_builder_new_from_file (ui_file_name))) {
+      char temp[PATH_MAX];
+      fprintf (stderr, "could not open UI configuration file %s in %s\n", ui_file_name, getcwd (temp, sizeof(temp)));
+      exit (-1);
   }
 
   window = gtk_builder_get_object (builder, "window");
@@ -293,26 +239,62 @@ activate (GtkApplication* app,
   gtk_css_provider_load_from_file (provider, g_file_new_for_path (CSS_FILE_NAME));
 
   gtk_style_context_add_provider_for_display (gdk_display_get_default (),
-					      GTK_STYLE_PROVIDER (provider),
-					      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  					      GTK_STYLE_PROVIDER (provider),
+  					      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
   gtk_widget_set_visible (GTK_WIDGET (window), TRUE);
 
-  while (s < sensor_descriptors + sensor_count) {
-      if (NULL == s -> output_descriptor) {
-	continue;
-      }
-
-      gettimeofday (&(s -> output_descriptor -> tv), NULL);
-      init_descriptor_from_builder (s -> output_descriptor, builder);
- 
-      s++;
+  GtkGrid* grid = (GtkGrid*) gtk_builder_get_object (builder, "grid-0");
+  if (NULL == grid) {
+    fprintf (stderr, "unable to load grid\n");
+    return;
   }
 
-  init_descriptor_from_builder (output_descriptor_by_name ("time"), builder);
+  sensor_descriptor* sd = sensor_descriptors;
   
-  /* We do not need the builder any more */
+  while (sd < sensor_descriptors + sensor_count) {
+    char temp[80];
+
+    output_descriptor* od = sd -> output_descriptor;
+
+    sprintf (temp, "da-%d-%d", od -> row, od -> column);
+
+    GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_builder_get_object (builder, temp);
+
+    if (NULL == drawing_area) {
+      fprintf (stderr, "unable to load drawing_area %s at %d, %d\n", temp, od -> row, od -> column);
+      return;
+    }
+
+    fprintf (stderr, "drawing_area %s loaded at %d, %d\n", temp, od -> row, od -> column);
+        
+    cairo_gauge* cg = new_cairo_gauge ();
+    
+    cg -> min = od -> min;
+    cg -> max = od -> max;
+    cg -> low_warn = od -> low_warn;
+    cg -> high_warn = od -> high_warn;
+    cg -> label = od -> label;
+    cg -> legend = od -> legend;
+
+    struct {
+      GtkDrawingArea* drawing_area;
+      cairo_gauge* cg;
+    }* ctx = g_new0 (typeof (*ctx), 1);
+
+    ctx -> drawing_area = drawing_area;
+    ctx -> cg = cg;
+
+    gtk_drawing_area_set_draw_func (drawing_area, draw_cairo_gauge, cg, NULL);
+    g_timeout_add (50, update_cairo_gauge_value, ctx);
+
+    od -> output = (void*) cg;
+ 
+    sd++;
+  }
+
   g_object_unref (builder);
+  gtk_window_present (GTK_WINDOW (window));
 }
 
 
@@ -367,6 +349,7 @@ main (int argc, char** argv) {
       
     case 'p':
       print_config (stderr);
+      exit (0);
       break;
 
     default:

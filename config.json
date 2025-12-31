@@ -2,50 +2,15 @@
     "sensors": 
     [
 	{
-	    "name": "bosch pst-ft (pressure)",
-    	    "x values": [500, 4500],
-	    "y values": [0, 10],
-	    "offset": 1,
-	    "CAN Id": "0xb000",
-	    "CAN Data Offset": 0,
-	    "CAN Data Width": 2,
-	    "Output Descriptor": "box-3"
-	},
-	
-	{
-	    "name": "bosch pst-ft (pressure)",
-    	    "x values": [500, 4500],
-	    "y values": [0, 10],
-	    "offset": 1,
-	    "CAN Id": "0xb000",
-	    "CAN Data Offset": 2,
-	    "CAN Data Width": 2,
-	    "Output Descriptor": "box-4"
-	},
-
-	{
-	    "name": "dummy sensor for rpm",
-    	    "x values": [0, 20000],
-	    "y values": [0, 20000],
-	    "offset": 0,
-	    "CAN Id": "0xb000",
-	    "CAN Data Offset": 4,
-	    "CAN Data Width": 2,
-	    "Output Descriptor": "box-5"
-	},
-
-	{
 	    "name": "bosch pst-ft-2 (temperature)",
 	    "x values": [45303, 26108, 15458, 9395, 5895, 3791, 2499, 2056, 1706, 1174, 833.8,
 			 595.4, 435.6, 322.5, 243.1, 186.6, 144.2, 112.7, 89.28],
 	    "y values": [-40, -30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130],
-	    "offset": -3.4,
-	    "CAN Id": "0xb003",
-	    "CAN Data Offset": 0,
-	    "CAN Data Width": 2,
-	    "Output Descriptor": "box-0"
+	    "can id": "0xb003",
+	    "can data offset": 0,
+	    "can data width": 2,
+	    "output id": 0,
 	},
-
 	{
 	    "name": "delphi 25036751 (temperature)",
 	    "x values": [46.7, 52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1, 279, 329, 389,
@@ -53,23 +18,48 @@
 			 15873, 21044, 28146, 37994, 51791, 71332, 99326],
 	    "y values": [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50,
 			 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40],
-	    "offset": -1.5,
 
-	    "CAN Id": "0xb003",
-	    "CAN Data Offset": 2,
-	    "CAN Data Width": 2,
-	    "Output Descriptor": "box-1"
+	    "can id": "0xb003",
+	    "can data offset": 2,
+	    "can data width": 2,
+	    "output id": 1,
+	},
+	{
+	    "name": "aem 30-2011 (temperature)",
+	    "x values": [100000, 29000, 9800, 3700, 1500, 500, 180],
+	    "y values": [-40, -20, 0, 20, 40, 70, 100],
+	    "can id": "0xb003",
+	    "can data offset": 4,
+	    "can data width": 2,
+	    "output id": 2,
+	},
+	{
+	    "name": "bosch pst-ft (pressure)",
+    	    "x values": [500, 4500],
+	    "y values": [0, 10],
+	    "can id": "0xb000",
+	    "can data offset": 0,
+	    "can data width": 2,
+	    "output id": 3,
 	},
 	
 	{
-	    "name": "AEM 30-2011 (temperature)",
-	    "x values": [100000, 29000, 9800, 3700, 1500, 500, 180],
-	    "y values": [-40, -20, 0, 20, 40, 70, 100],
-	    "offset": -3.0,
-	    "CAN Id": "0xb003",
-	    "CAN Data Offset": 4,
-	    "CAN Data Width": 2,
-	    "Output Descriptor": "box-2"
+	    "name": "bosch pst-ft (pressure)",
+    	    "x values": [500, 4500],
+	    "y values": [0, 10],
+	    "can id": "0xb000",
+	    "can data offset": 2,
+	    "can data width": 2,
+	    "output id": 4,
+	},
+	{
+	    "name": "dummy sensor for rpm",
+    	    "x values": [0, 20000],
+	    "y values": [0, 20000],
+	    "can id": "0xb000",
+	    "can data offset": 4,
+	    "can data width": 2,
+	    "output id": 5,
 	},
 	{
 	    "name": "delphi 15326386 (temperature)",
@@ -79,10 +69,6 @@
 	    "y values": [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
 			 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30,
 			 -35, -40],
-	    "offset": 0,
-	    "CAN Id": "UNASSIGNED",
-	    "CAN Data Offset": 6,
-	    "CAN Data Width": 2
 	},
 	{
 	    "name": "bosch pst-ft (temperature)",
@@ -90,93 +76,99 @@
 			 594, 824, 1167, 1683, 2480, 3740, 5784, 9195, 15067, 25524, 44864],
 	    "y values": [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40,
 			 30, 20, 10, 0, -10, -20, -30, -40],
-	    "offset": 0,
-	    "CAN Id": "UNASSIGNED",
-	    "CAN Data Offset": 0,
-	    "CAN Data Width": 0
 	},
 	{
 	    "name": "bosch 261230119 (pressure)",
 	    "x values": [0.096428571, 0.4, 1.614285714, 3.132142857, 4.65, 6.167857143],
 	    "y values": [0, 20, 100, 200, 300, 400],
-	    "offset": 0,
-	    "CAN Id": "UNASSIGNED",
-	    "CAN Data Offset": 0,
-	    "CAN Data Width": 0
 	},
 	{
 	    "name": "bosch ntc-m12 (temperature)",
 	    "x values": [89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896,
 			 9397, 15462, 26114, 45313],
 	    "y values": [130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40],
-	    "offset": 0,
-	    "CAN Id": "UNASSIGNED",
-	    "CAN Data Offset": 0,
-	    "CAN Data Width": 0
 	},
 	{
 	    "name": "bosch ntc-m12-l (temperature)",
 	    "x values": [71, 89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896,
 			 9397, 15462, 26114, 45313],
 	    "y values": [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40],
-	    "offset": 0,
-	    "CAN Id": "UNASSIGNED",
-	    "CAN Data Offset": 0,
-	    "CAN Data Width": 0
 	}
     ],
 
     "outputs": 
     [
 	{
-	    "name": "box-0",
-	    "label": "Water Temp",
-	    "box number": 0,
-	    "output format": "%.0f",
-	    "units": "fahrenheit"
-	},
-	{
-	    "name": "box-1",
-	    "label": "Intake Temp",
-	    "box number": 1,
-	    "output format": "%.0f",
-	    "units": "fahrenheit"
-	},
-	{
-	    "name": "box-2",
-	    "label": "Oil \u00B0C",
-	    "box number": 2,
-	    "output format": "%.0f",
-	    "maximum value": 79,
+	    "id": 0,
+	    "label": "WATER",
+	    "legend": "\u00b0C",
+	    "row": 0,
+	    "column": 0,
+	    "maximum value": 120,
 	    "minimum value": 0,
-	    "units": "fahrenheit"
+	    "high warn level": 105,
+	    "units": "celsius"
 	},
 	{
-	    "name": "box-3",
-	    "label": "Oil Pressure",
-	    "box number": 3,
-	    "output format": "%.0f",
+	    "id": 1,
+	    "label": "INTAKE",
+	    "legend": "\u00b0C",
+	    "row": 0,
+	    "column": 1,
+	    "maximum value": 50,
+	    "minimum value": 0,
+	    "high warn level": 40,
+	    "units": "celsius"
+	},
+	{
+	    "id": 2,
+	    "label": "OIL",
+	    "legend": "\u00b0C",
+	    "row": 0,
+	    "column": 2,
+	    "maximum value": 120,
+	    "minimum value": 0,
+	    "high warn level": 100,
+	    "units": "celsius"
+	},
+	{
+	    "id": 3,	    
+	    "label": "OIL",
+	    "legend": "bar",
+	    "row": 1,
+	    "column": 0,
+	    "maximum value": 100,
+	    "minimum value": 0,
+	    "high warn level": 100,
 	    "units": "bar"
 	},
 	{
-	    "name": "box-4",	    
+	    "id": 4,
 	    "label": "MAP",
-	    "box number": 4,
-	    "output format": "%.1f",
+	    "legend": "bar",
+	    "row": 1,
+	    "column": 2,
+	    "maximum value": 3.0,
+	    "minimum value": 0.5,
+	    "high warn level": 2.0,
 	    "units": "bar"
 	},
 	{
-	    "name": "box-5",
+	    "id": 5,
 	    "label": "RPM",
-	    "box number": 5,
-	    "output format": "%.0f",
+	    "row": 1,
+	    "column": 1,
+	    "maximum value": 10000,
+	    "minimum value": 0.0,
+	    "high warn level": 2000,
+	    "low warn level": 1000,
 	    "units": "none"
 	},
 	{
-	    "name": "time",
+	    "id": 6,
 	    "label": "",
-	    "box number": 6,
-	    "output format": "%s",
+	    "row": 0,
+	    "column": 0,
 	    "units": "bar"
 	}
     ]

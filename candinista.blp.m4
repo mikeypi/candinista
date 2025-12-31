@@ -36,6 +36,21 @@ define(`gridbox', `
       }
 ')
 
+
+define(`grid_drawing_area', `
+      Gtk.DrawingArea $1 {
+      width-request: $2;
+      height-request: $3;
+      layout {
+        row: $4;
+        row-span: 1;
+        column: $5;
+        column-span: 1;
+        }
+      }
+')
+
+
 Window window {
   default-height: -1;
   default-width: -1;
@@ -44,39 +59,15 @@ Window window {
   width-request: 1024;
   resizable: false;
   
-  Grid {
+  Grid grid-0 {
     column-homogeneous: true;
-    column-spacing: 15;
-    row-spacing: 15;
-
-    gridbox(box-0, label-0, value-0, 1, 0)
-    gridbox(box-1, label-1, value-1, 1, 1)
-    gridbox(box-2, label-2, value-2, 1, 2)
-    gridbox(box-3, label-3, value-3, 2, 0)
-    gridbox(box-4, label-4, value-4, 2, 1)
-    gridbox(box-5, label-5, value-5, 2, 2)
-
-    Box box-6 {
-      valign: baseline;
-      layout {
-      column: 0;
-      column-span: 3;
-      row: 0;
-      row-span: 1;
-      }
-      Label value-6 {
-    label: "time";
-	valign: center;
-	halign: end;
-	hexpand: true;
-	hexpand-set: true;
-	margin-end: 10;
-        ellipsize: middle;
-        styles["time-style"]
-      }
-      styles["box-style"]
-    }
-
+    vexpand: true;
+    grid_drawing_area(da-0-0, 190, 270, 0, 0)
+    grid_drawing_area(da-0-1, 190, 270, 0, 1)
+    grid_drawing_area(da-0-2, 190, 270, 0, 2)
+    grid_drawing_area(da-1-0, 190, 270, 1, 0)
+    grid_drawing_area(da-1-1, 190, 270, 1, 1)
+    grid_drawing_area(da-1-2, 190, 270, 1, 2)
     styles["grid-style"]
     }
 

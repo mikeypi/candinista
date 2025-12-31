@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -33,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <linux/can.h>
 
 #include <gtk/gtk.h>
@@ -75,7 +75,8 @@ get_environment_variables () {
   t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
   if (NULL != t1) {
     if (0 != chdir (t1)) {
-      fprintf (stderr, "Unable to change working directory to: %s\n", t1);
+      char temp[PATH_MAX];
+      fprintf (stderr, "Unable to change working directory from: %s to: %s\n", getcwd (temp, sizeof(temp)), t1);
     }
   }
 

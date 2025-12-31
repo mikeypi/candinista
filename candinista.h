@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -39,21 +38,27 @@ typedef enum {FAHRENHEIT, CELSIUS, BAR, PSI, NONE} unit_type;
  * structure are for finding those widgets and storing pointers to them in this structure.
  */
 typedef struct {
-  char* label;
-  int box_number;
-  float min;
-  float max;
-  float last_value;
-  char output_value[MAX_LABEL_LENGTH];
-  unit_type units;
-  char* output_format;
-  GtkWidget* label_widget;
-  GtkWidget* value_widget;
-  GtkWidget* box_widget;
   char* name;
+  int id;
+
+  double value;
+  
+  double min;
+  double max;
+  double low_warn;
+  double high_warn;
+  char* label;
+  char* legend;
+
+  unit_type units;  
+  double offset;
+
+  int row;
+  int column;
+
+  void* output;
   struct timeval tv;
   int update_interval;
-  int update_floor;
 } output_descriptor;
 
 
@@ -70,7 +75,6 @@ typedef struct {
   int number_of_interpolation_points;
   float* x_values;
   float* y_values;
-  float offset;  
 
   int can_id;
   int can_data_offset;

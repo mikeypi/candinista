@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -33,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <sys/time.h>
 #include <sys/param.h>
 #include <linux/can.h>
@@ -48,7 +48,7 @@ int data_logging = 0;
 static FILE*
 log_file_open (FILE* fp) {
   static int file_number = 0;
-  char  filepath[MAXPATHLEN];
+  char  filepath[PATH_MAX];
 
   if (NULL != fp) {
     fclose (fp);
@@ -56,7 +56,6 @@ log_file_open (FILE* fp) {
   }
   
   sprintf (filepath, "%s/%s.%d.%d.csv", log_file_directory_name, "Candata", getpid (), file_number++);
-
   return (fopen (filepath, "w"));
 }
 
@@ -109,7 +108,8 @@ log_data (struct can_frame* p1) {
    */
   if (NULL == fp) {
     if (NULL == (fp = log_file_open (fp))) {
-      fprintf (stderr, "could not open log file in %s at %d\n", __FILE__, __LINE__);
+      fprintf (stderr, "open for log file in %s failed in %s at %d\n",
+	       __FILE__, __LINE__,log_file_directory_name);
       return;
     }
 
@@ -130,7 +130,8 @@ log_data (struct can_frame* p1) {
    */
   if (0 == (call_count++ % 10000)) {
     if (NULL == (fp = log_file_open (fp))) {
-      fprintf (stderr, "could not open log file in %s at %d\n", __FILE__, __LINE__);
+      fprintf (stderr, "open for log file in %s failed in %s at %d\n",
+	       __FILE__, __LINE__,log_file_directory_name);
       return;
     }
 

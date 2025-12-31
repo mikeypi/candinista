@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <json.h>
 #include <assert.h>
+#include <sys/param.h>
 #include <linux/can.h>
 #include <gtk/gtk.h>
 #include <glib/gstdio.h>
@@ -50,25 +51,41 @@ static json_object*
 get_object_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
-  if ((NULL == x) && (0 != warn)) {
-    fprintf (stderr, "required field %s not found\n", field);
-    return (0);
+  if (NULL == x) {
+    if (0 != warn) {
+      fprintf (stderr, "required field %s not found\n", field);
+    }
+    return (NULL);
   }
  
   return (x);
 }
 
 
-static const char*
+static char*
 get_string_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
-  if ((NULL == x) && (0 != warn)) {
-    fprintf (stderr, "required field %s not found\n", field);
-    return (0);
+  if (NULL == x) {
+    if (0 != warn) {
+      fprintf (stderr, "required field %s not found\n", field);
+    }
+    return (NULL);
+  }
+
+  const char* t = json_object_get_string (x);
+
+  if (NULL == t) {
+    return (NULL);
   }
   
-  return (json_object_get_string (x));
+  char* temp = (char*) calloc (1 + strlen (t), sizeof (char));
+
+  if (NULL == temp) {
+    return (NULL);
+  }
+  
+  return (strcpy (temp, t));
 }
 
 
@@ -76,9 +93,10 @@ static int
 get_int_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
-  if ((NULL == x) && (0 != warn)) {
-    return (-1);
-  }
+  if (NULL == x)
+    if (0 != warn) {
+      return (-1);
+    }
   
   return (json_object_get_int (x));
 }
@@ -88,14 +106,16 @@ static float
 get_float_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
-  if ((NULL == x) && (0 != warn)) {
-    return (-1.0);
-  }
+  if (NULL == x)
+    if (0 != warn) {
+      return (-1.0);
+    }
   
   return ((float) json_object_get_double (x));
 }
 
 
+#ifdef JJHJK
 static sensor_descriptor*
 sensor_descriptor_by_name (const char* name) {
   int i;
@@ -108,6 +128,7 @@ sensor_descriptor_by_name (const char* name) {
   fprintf (stderr, "required sensor descriptor with name %s not found\n", name);
   return (NULL);
 }
+#endif
 
 
 output_descriptor*
@@ -120,6 +141,20 @@ output_descriptor_by_name (const char* name) {
   }
 
   fprintf (stderr, "required output descriptor with name %s not found\n", name);
+  return (NULL);
+}
+
+
+output_descriptor*
+output_descriptor_by_id (const int x) {
+  int i;
+  for (i = 0; i < output_count; i++) {
+    if (x == output_descriptors[i].id) {
+      return (&output_descriptors[i]);
+    }
+  }
+
+  fprintf (stderr, "required output descriptor with id %d not found\n", x);
   return (NULL);
 }
 
@@ -168,24 +203,17 @@ add_outputs_from_json (json_object* root) {
     
     output_count++;
 
-    temp = get_string_from_json (e, "name", 1);
-    output_descriptors[i].name = (char*) calloc (1 + strlen (temp), sizeof (char));
-    strcpy (output_descriptors[i].name, temp);
+    output_descriptors[i].id = get_int_from_json (e, "id", 1);
+    output_descriptors[i].label = get_string_from_json (e, "label", 1);
+    output_descriptors[i].legend = get_string_from_json (e, "legend", 0);
 
-    temp = get_string_from_json (e, "label", 1);
-    output_descriptors[i].label = (char*) calloc (1 + strlen (temp), sizeof (char));
-    strcpy (output_descriptors[i].label, temp);
-
-    temp = get_string_from_json (e, "output format", 1);
-    output_descriptors[i].output_format = (char*) calloc (1 + strlen (temp), sizeof (char));
-    strcpy (output_descriptors[i].output_format, temp);
-
-    output_descriptors[i].box_number = get_int_from_json (e, "box number", 1);
-    output_descriptors[i].min = get_float_from_json (e, "minimum value", 0);
-    output_descriptors[i].max = get_float_from_json (e, "maximum value", 0);
-
-    output_descriptors[i].update_interval = get_int_from_json (e, "update interval", 0);
-    output_descriptors[i].update_floor = get_float_from_json (e, "update floor", 0);
+    output_descriptors[i].row = get_int_from_json (e, "row", 1);
+    output_descriptors[i].column = get_int_from_json (e, "column", 1);
+    output_descriptors[i].min = get_float_from_json (e, "minimum value", 1);
+    output_descriptors[i].max = get_float_from_json (e, "maximum value", 1);
+    output_descriptors[i].low_warn = get_float_from_json (e, "low warn level", 0);
+    output_descriptors[i].high_warn = get_float_from_json (e, "high warn level", 0);
+    output_descriptors[i].offset = get_float_from_json (e, "offset", 0);
 
     temp = get_string_from_json (e, "units", 1);
     output_descriptors[i].units = enum_from_unit_str (temp);
@@ -214,39 +242,34 @@ add_sensors_from_json (json_object* root) {
     const char* temp;
     json_object* e = json_object_array_get_idx (sensors, i);
 
-    temp = get_string_from_json (e, "CAN Id", 1);
-    if ((NULL == temp) || (0 == strcmp (temp, "UNASSIGNED"))) {
+    sensor_descriptors[i].name = get_string_from_json (e, "name", 1);
+
+    /*
+     * JSON requires all numbers be in hex. That's a little unnatural for CAN IDs, so those are strings in the
+     * config file (e.g., 0x0003). This code converts them from strings to numbers.
+     */
+    temp = get_string_from_json (e, "can id", 1);
+    if (NULL == temp) {
+      fprintf (stderr, "required field can id for sensor descriptor %s not found,skipping\n",
+	       sensor_descriptors[i].name);
       continue;
     }
 
-    sensor_descriptors[i].can_id = strtol (temp, NULL, 16);
     sensor_count++;
 
-    temp = get_string_from_json (e, "CAN Data Offset", 1);
-    if (NULL == temp) {
-      continue;
+    sensor_descriptors[i].can_id = strtol (temp, NULL, 16);
+    sensor_descriptors[i].can_data_offset = get_int_from_json (e, "can data offset", 1);
+    sensor_descriptors[i].can_data_width = get_int_from_json (e, "can data width", 1);
+
+    int j = get_int_from_json (e, "output id", 1);
+
+    if (j < 0) {
+      sensor_descriptors[i].output_descriptor = NULL;
     }
-    
-    sensor_descriptors[i].can_data_offset = strtol (temp, NULL, 10);
-
-    temp = get_string_from_json (e, "CAN Data Width", 1);
-    if (NULL == temp) {
-      continue;
+    else {
+      sensor_descriptors[i].output_descriptor = output_descriptor_by_id (j);
     }
-    
-    sensor_descriptors[i].can_data_width = strtol (temp, NULL, 10);
-
-    temp = get_string_from_json (e, "Output Descriptor", 1);
-    if (NULL == temp) {
-      continue;
-    }
-    
-    sensor_descriptors[i].output_descriptor = output_descriptor_by_name (temp);
-
-    temp = get_string_from_json (e, "name", 1);
-    sensor_descriptors[i].name = (char*) calloc (1 + strlen (temp), sizeof (char));
-    strcpy (sensor_descriptors[i].name, temp);
-
+      
     json_object* x_values = get_object_from_json (e, "x values", 1);
     int x_value_count = json_object_array_length (x_values);
     
@@ -268,23 +291,18 @@ add_sensors_from_json (json_object* root) {
 #ifndef TEST
     interpolation_array_sort (&sensor_descriptors[i]);
 #endif
-  
-    sensor_descriptors[i].offset = get_float_from_json (e, "offset", 1);
 
 #ifdef DEBUG
-    printf ("added sensor %s with CAN Id %x at offset %d and width %d with %d interpolation points\n",
+    printf ("added sensor %s with can id %x at offset %d and width %d with %d interpolation points\n",
 	    sensor_descriptors[i].name,
 	    sensor_descriptors[i].can_id,
 	    sensor_descriptors[i].can_data_offset,
 	    sensor_descriptors[i].can_data_width,
 	    y_value_count);
 #endif
-
   }
 
-#ifdef DEBUG
   printf ("added %d sensors\n", sensor_count);
-#endif
   return (sensor_count);
 }
 
@@ -292,6 +310,9 @@ add_sensors_from_json (json_object* root) {
 void
 read_config_from_json (void)
 {
+#ifdef DEBUG
+  config_file_name = "/home/joe/candinista/config.json";
+#endif 
   json_object* root = json_object_from_file (config_file_name);
   if (NULL == root) {
     fprintf (stderr, "could not open config file %s\n", config_file_name);
