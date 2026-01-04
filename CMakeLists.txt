@@ -26,9 +26,12 @@ interpolate.c
 printjson.c
 readjson.c
 cairo_gauge.c
+cairo_info_panel.c
+cairo_misc.c
+cairo_bargraph.c
 )
 
-target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} m)
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR})
 set(BIN ${CMAKE_CURRENT_BINARY_DIR})

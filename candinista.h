@@ -32,13 +32,14 @@
 
 typedef enum {FAHRENHEIT, CELSIUS, BAR, PSI, NONE} unit_type;
 
+typedef enum {CAIRO_GAUGE_PANEL, CAIRO_INFO_PANEL, CAIRO_BARGRAPH_PANEL} output_type;
+
 /*
  * GUI widgets to display values along with an associated label (temp, rpm etc.). The descriptors are
  * defined in JSON and the widgets are additionally specified as XML, and the builder_names in this
  * structure are for finding those widgets and storing pointers to them in this structure.
  */
 typedef struct {
-  char* name;
   int id;
 
   double value;
@@ -59,6 +60,7 @@ typedef struct {
   void* output;
   struct timeval tv;
   int update_interval;
+  output_type type;
 } output_descriptor;
 
 

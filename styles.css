@@ -62,11 +62,22 @@
 
 .grid-style
 {
-    border-color: #ffa600 ;
+    border-color: #ffa600;
     border-top-width: 10px;
     border-right-width: 10px;
     border-bottom-width: 10px;
     border-left-width: 10px;
-    background-color: black;
+    background-color:#ffa600 ;
+}
+
+
+.drawing-area-style
+{
+    border-color: #ffa600;
+    border-top-width: 10px;
+    border-right-width: 10px;
+    border-bottom-width: 10px;
+    border-left-width: 10px;
+    background-color:black;
 }
 

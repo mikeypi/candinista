@@ -39,35 +39,36 @@ define(`gridbox', `
 
 define(`grid_drawing_area', `
       Gtk.DrawingArea $1 {
-      width-request: $2;
-      height-request: $3;
+      hexpand: true;
+      vexpand: true;
       layout {
-        row: $4;
+        row: $2;
         row-span: 1;
-        column: $5;
+        column: $3;
         column-span: 1;
         }
+      styles["drawing-area-style"]
+
       }
 ')
 
 
 Window window {
-  default-height: -1;
-  default-width: -1;
-  halign: start;
-  height-request: 600;
-  width-request: 1024;
-  resizable: false;
+  default-height: 600;
+  default-width: 1024;
+  hexpand: true;
+  vexpand: true;
   
   Grid grid-0 {
-    column-homogeneous: true;
+    hexpand: true;
     vexpand: true;
-    grid_drawing_area(da-0-0, 190, 270, 0, 0)
-    grid_drawing_area(da-0-1, 190, 270, 0, 1)
-    grid_drawing_area(da-0-2, 190, 270, 0, 2)
-    grid_drawing_area(da-1-0, 190, 270, 1, 0)
-    grid_drawing_area(da-1-1, 190, 270, 1, 1)
-    grid_drawing_area(da-1-2, 190, 270, 1, 2)
+    column-homogeneous: true;
+    grid_drawing_area(da-0-0, 0, 0)
+    grid_drawing_area(da-0-1, 0, 1)
+    grid_drawing_area(da-0-2, 0, 2)
+    grid_drawing_area(da-1-0, 1, 0)
+    grid_drawing_area(da-1-1, 1, 1)
+    grid_drawing_area(da-1-2, 1, 2)
     styles["grid-style"]
     }
 

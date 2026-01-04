@@ -1,3 +1,4 @@
+#define DEBUG
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -115,36 +116,6 @@ get_float_from_json (json_object* root, char* field, int warn) {
 }
 
 
-#ifdef JJHJK
-static sensor_descriptor*
-sensor_descriptor_by_name (const char* name) {
-  int i;
-  for (i = 0; i < sensor_count; i++) {
-    if (0 == strcmp (sensor_descriptors[i].name, name)) {
-      return (&sensor_descriptors[i]);
-    }
-  }
-
-  fprintf (stderr, "required sensor descriptor with name %s not found\n", name);
-  return (NULL);
-}
-#endif
-
-
-output_descriptor*
-output_descriptor_by_name (const char* name) {
-  int i;
-  for (i = 0; i < output_count; i++) {
-    if (0 == strcmp (output_descriptors[i].name, name)) {
-      return (&output_descriptors[i]);
-    }
-  }
-
-  fprintf (stderr, "required output descriptor with name %s not found\n", name);
-  return (NULL);
-}
-
-
 output_descriptor*
 output_descriptor_by_id (const int x) {
   int i;
@@ -190,6 +161,33 @@ enum_from_unit_str (const char* temp) {
 }
 
   
+static output_type
+enum_from_type_str (const char* temp) {
+  char buffer[80];
+  int i;
+  for (i = 0; i < strlen (temp); i++) {
+    buffer[i] = tolower (temp[i]);
+  }
+
+  buffer[i] = '\0';
+
+  if (0 == strcmp (buffer, "cairo info panel")) {
+    return (CAIRO_INFO_PANEL);
+  }
+
+  if (0 == strcmp (buffer, "cairo gauge panel")) {
+    return (CAIRO_GAUGE_PANEL);
+  }
+  
+  if (0 == strcmp (buffer, "cairo bargraph panel")) {
+    return (CAIRO_BARGRAPH_PANEL);
+  }
+  
+  fprintf (stderr, "unknown output type\n");
+  return (NONE);
+}
+
+  
 static int
 add_outputs_from_json (json_object* root) {
   json_object* outputs = get_object_from_json (root, "outputs", 1);
@@ -209,17 +207,25 @@ add_outputs_from_json (json_object* root) {
 
     output_descriptors[i].row = get_int_from_json (e, "row", 1);
     output_descriptors[i].column = get_int_from_json (e, "column", 1);
-    output_descriptors[i].min = get_float_from_json (e, "minimum value", 1);
-    output_descriptors[i].max = get_float_from_json (e, "maximum value", 1);
+    output_descriptors[i].min = get_float_from_json (e, "minimum value", 0);
+    output_descriptors[i].max = get_float_from_json (e, "maximum value", 0);
     output_descriptors[i].low_warn = get_float_from_json (e, "low warn level", 0);
     output_descriptors[i].high_warn = get_float_from_json (e, "high warn level", 0);
     output_descriptors[i].offset = get_float_from_json (e, "offset", 0);
 
     temp = get_string_from_json (e, "units", 1);
-    output_descriptors[i].units = enum_from_unit_str (temp);
+    if (NULL != temp) {
+      output_descriptors[i].units = enum_from_unit_str (temp);
+    }
+
+    output_descriptors[i].type = CAIRO_GAUGE_PANEL;
+    temp = get_string_from_json (e, "type", 0);
+    if (NULL != temp) {
+      output_descriptors[i].type = enum_from_type_str (temp);
+    }
 
 #ifdef DEBUG
-    printf ("added output %s\n", output_descriptors[i].name);
+    printf ("added output for %d, %d\n", output_descriptors[i].row, output_descriptors[i].column);
 #endif
 }
 
