@@ -48,8 +48,8 @@ void draw_cairo_gauge_panel (GtkDrawingArea *area,
   }
 
   /*
-    Initialization section.
-  */
+   * Initialization section.
+   */
   
   if (NULL == gd -> arc_segments) {
     /* NULL means this cairo gauge has yet to be initialized and does not mean that an error has occured. */
@@ -67,15 +67,17 @@ void draw_cairo_gauge_panel (GtkDrawingArea *area,
 
 /*
  * Draw background, arc and segments
-  */
-  cairo_set_source_rgba (cr, BACKGROUND);
+ */
+  set_rgba_for_background (cr);
   rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
   cairo_fill (cr);
 
-  cairo_set_line_width (cr, 1.0);
-  set_foreground (cr, gd -> value, gd -> high_warn, gd -> low_warn);
-  rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
-  cairo_stroke (cr);  
+  if (0 != gd -> border) {
+    cairo_set_line_width (cr, 1.0);
+    set_rgba_for_foreground (cr, get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn));
+    rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
+    cairo_stroke (cr);
+  }
 
   /* gauge arc */
   cairo_set_line_width (cr, 3.0);
@@ -86,32 +88,65 @@ void draw_cairo_gauge_panel (GtkDrawingArea *area,
   cairo_stroke (cr);
   
   /* illuminated segments */
-  cairo_set_line_width (cr, 10.0);
+  cairo_set_line_width (cr, 7.0);
 
-  double t = (gd -> value - gd -> min) / (gd -> max - gd -> min);
-  t = CLAMP (t, 0.0, 1.0);
+  double t = CLAMP ((gd -> value - gd -> min) / (gd -> max - gd -> min), 0.0, 1.0);
   double angle = gd -> start_angle + t * (gd -> end_angle
 					  - gd -> start_angle);
 
   for (int i = 0; i < gd -> segment_count; i++) {
     if (angle < gd -> arc_segments[i].arc_end_angle) {
-      set_burnin (cr, gd -> value, gd -> high_warn, gd -> low_warn);
+      set_rgba_for_burn_in (cr, get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn));
     }
     else {
-      set_foreground (cr, gd -> value, gd -> high_warn, gd -> low_warn);
+      set_rgba_for_foreground (cr, get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn));
     }
 
     cairo_arc (cr, width / 2.0, height / 2.0,
-	       gd -> radius,
+	       gd -> radius + 2,
 	       gd -> arc_segments[i].arc_start_angle,
 	       gd -> arc_segments[i].arc_end_angle);
 
     cairo_stroke (cr);
   }
 
-  /*
-    Draw labels and current value
-  */
+  #define ID 11
+  #define OD 18
+
+  if ((!isnan (gd -> low_warn)) && (!isnan (gd -> high_warn)) && (!isnan (gd -> min)) && (!isnan (gd -> max))) {
+
+    t = CLAMP ((gd -> low_warn - gd -> min) / (gd -> max - gd -> min), 0.0, 1.0);
+    double range_start = gd -> start_angle + t * (gd -> end_angle - gd -> start_angle);
+
+    t = CLAMP ((gd -> high_warn - gd -> min) / (gd -> max - gd -> min), 0.0, 1.0);
+    double range_end = gd -> start_angle + t * (gd -> end_angle - gd -> start_angle);
+
+    double x1 = width / 2 + (gd -> radius + ID) * cos (range_end);
+    double y1 = height / 2 + (gd -> radius + ID) * sin (range_end);
+    
+    set_rgba_for_foreground (cr, get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn));
+
+    cairo_new_sub_path(cr);
+
+    cairo_arc (cr, width / 2.0, height / 2.0,
+	       gd -> radius + ID,
+	       range_start,
+	       range_end);
+
+    cairo_line_to (cr, x1, y1);
+
+    cairo_arc_negative (cr, width / 2.0, height / 2.0,
+			gd -> radius + OD,
+			range_end,
+			range_start);  
+  
+    cairo_close_path (cr);
+    cairo_fill (cr);
+  }
+
+/*
+ * Draw labels and current value
+ */
   cairo_surface_t *surface =
     cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
 
@@ -124,34 +159,39 @@ void draw_cairo_gauge_panel (GtkDrawingArea *area,
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
-  set_foreground (cr, gd -> value, gd -> high_warn, gd -> low_warn);
+  set_rgba_for_foreground (cr, get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn));
 
   if (NULL != gd -> legend) {
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
     sprintf (buffer, "%s", gd -> legend);
-    show_gauge_text_aa (cr, 244 + XOFFSET, 85 + YOFFSET, buffer);
+    show_text_left_justified (cr, 238 + XOFFSET, 85 + YOFFSET, buffer);
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
   }
 
   // Print Maximum Value
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
   sprintf (buffer, "%.0f", gd -> max);
-  show_gauge_text_aa (cr, 255 + XOFFSET, 248 + YOFFSET, buffer);
+  show_text_left_justified (cr, 255 + XOFFSET, 248 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Minimum Value
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
   sprintf (buffer, "%.0f", gd -> min);
-  show_gauge_text_aa (cr, 60 + XOFFSET, 165 + YOFFSET, buffer);
+  show_text_left_justified (cr, 60 + XOFFSET, 165 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Label
   if (NULL != gd -> label) {
     sprintf (buffer, "%s", gd -> label);
-    show_gauge_text (cr, 70 + XOFFSET, 210 + YOFFSET, buffer);
+    show_text_unjustified (cr, 70 + XOFFSET, 210 + YOFFSET, buffer);
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
   }
     
+  cairo_set_line_width (cr, 1.0);
+  set_rgba_for_foreground (cr, get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn));
+  //  rounded_rectangle(cr, 97 + XOFFSET, 98 + YOFFSET, 140, 70, 5.0);
+  //  cairo_stroke (cr);
+
   // Print value field and burn-in 
   cairo_select_font_face (
 			  cr,
@@ -163,15 +203,25 @@ void draw_cairo_gauge_panel (GtkDrawingArea *area,
   sprintf (buffer, "%.0f", gd -> value);
 
   if (3 < strlen (buffer)) {
-    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 10);
-    show_gauge_text_with_burnin (cr,
-				 gd -> value, gd -> high_warn, gd -> low_warn,
-				 99 + XOFFSET, 160 + YOFFSET, 4, buffer);
+    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
+    show_text_right_justified (cr,
+			       99 + XOFFSET,
+			       160 + YOFFSET, 
+			       buffer,
+			       4,
+			       get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn),
+			       true,
+			       true);
   } else {
-    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
-    show_gauge_text_with_burnin (cr,
-				 gd -> value, gd -> high_warn, gd -> low_warn,
-				 99 + XOFFSET, 160 + YOFFSET, 3, buffer);
+    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 10);
+    show_text_right_justified (cr,
+			       99 + XOFFSET,
+			       160 + YOFFSET, 
+			       buffer,
+			       3,
+			       get_warning_level (gd -> value, gd -> high_warn, gd -> low_warn),
+			       true,
+			       true);
   }
   
   cairo_surface_destroy (surface);

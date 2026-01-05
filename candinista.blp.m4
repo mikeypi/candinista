@@ -48,7 +48,6 @@ define(`grid_drawing_area', `
         column-span: 1;
         }
       styles["drawing-area-style"]
-
       }
 ')
 

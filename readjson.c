@@ -91,28 +91,34 @@ get_string_from_json (json_object* root, char* field, int warn) {
 
 
 static int
-get_int_from_json (json_object* root, char* field, int warn) {
+get_int_from_json (json_object* root, char* field, int* i) {
   json_object* x = json_object_object_get (root, field);
-
-  if (NULL == x)
-    if (0 != warn) {
-      return (-1);
-    }
+  int temp;
   
-  return (json_object_get_int (x));
+  if (NULL == x) {
+      return (-1);
+  }
+
+  temp = json_object_get_int (x);  
+
+  if (0 == errno) {
+    *i = temp;
+    return (0);
+  }
+  
+  return (-1);
 }
 
 
-static float
-get_float_from_json (json_object* root, char* field, int warn) {
+static double
+get_double_from_json (json_object* root, char* field, int warn) {
   json_object* x = json_object_object_get (root, field);
 
-  if (NULL == x)
-    if (0 != warn) {
-      return (-1.0);
-    }
+  if (NULL == x) {
+      return (NAN);
+  }
   
-  return ((float) json_object_get_double (x));
+  return (json_object_get_double (x));
 }
 
 
@@ -190,6 +196,7 @@ enum_from_type_str (const char* temp) {
   
 static int
 add_outputs_from_json (json_object* root) {
+  int i;
   json_object* outputs = get_object_from_json (root, "outputs", 1);
   int noutputs = json_object_array_length (outputs);
   output_count = 0;
@@ -201,23 +208,37 @@ add_outputs_from_json (json_object* root) {
     
     output_count++;
 
-    output_descriptors[i].id = get_int_from_json (e, "id", 1);
+    if (0 > get_int_from_json (e, "id", &(output_descriptors[i].id))) {
+      continue;
+    }
+
     output_descriptors[i].label = get_string_from_json (e, "label", 1);
     output_descriptors[i].legend = get_string_from_json (e, "legend", 0);
 
-    output_descriptors[i].row = get_int_from_json (e, "row", 1);
-    output_descriptors[i].column = get_int_from_json (e, "column", 1);
-    output_descriptors[i].min = get_float_from_json (e, "minimum value", 0);
-    output_descriptors[i].max = get_float_from_json (e, "maximum value", 0);
-    output_descriptors[i].low_warn = get_float_from_json (e, "low warn level", 0);
-    output_descriptors[i].high_warn = get_float_from_json (e, "high warn level", 0);
-    output_descriptors[i].offset = get_float_from_json (e, "offset", 0);
+    if (0 > get_int_from_json (e, "row", &(output_descriptors[i].row))) {
+      continue;
+    }
+
+    if (0 > get_int_from_json (e, "column", &(output_descriptors[i].column))) {
+      continue;
+    }
+    
+    output_descriptors[i].min = get_double_from_json (e, "minimum value", 0);
+    output_descriptors[i].max = get_double_from_json (e, "maximum value", 0);
+    output_descriptors[i].low_warn = get_double_from_json (e, "low warn level", 0);
+    output_descriptors[i].high_warn = get_double_from_json (e, "high warn level", 0);
+
+    if (isnan (output_descriptors[i].offset = get_double_from_json (e, "offset", 0))) {
+      output_descriptors[i].offset = 0;
+    }
 
     temp = get_string_from_json (e, "units", 1);
     if (NULL != temp) {
       output_descriptors[i].units = enum_from_unit_str (temp);
     }
 
+    get_int_from_json (e, "border", &(output_descriptors[i].border));
+    
     output_descriptors[i].type = CAIRO_GAUGE_PANEL;
     temp = get_string_from_json (e, "type", 0);
     if (NULL != temp) {
@@ -264,12 +285,15 @@ add_sensors_from_json (json_object* root) {
     sensor_count++;
 
     sensor_descriptors[i].can_id = strtol (temp, NULL, 16);
-    sensor_descriptors[i].can_data_offset = get_int_from_json (e, "can data offset", 1);
-    sensor_descriptors[i].can_data_width = get_int_from_json (e, "can data width", 1);
+    if (0 > get_int_from_json (e, "can data offset", &(sensor_descriptors[i].can_data_offset))) {
+      continue;
+    }
+    if (0 > get_int_from_json (e, "can data width", &(sensor_descriptors[i].can_data_width))) {
+      continue;
+    }
 
-    int j = get_int_from_json (e, "output id", 1);
-
-    if (j < 0) {
+    int j;
+    if (0 > get_int_from_json (e, "output id", &j)) {
       sensor_descriptors[i].output_descriptor = NULL;
     }
     else {

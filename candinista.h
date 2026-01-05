@@ -50,7 +50,8 @@ typedef struct {
   double high_warn;
   char* label;
   char* legend;
-
+  int border;
+  
   unit_type units;  
   double offset;
 

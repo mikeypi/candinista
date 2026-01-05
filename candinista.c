@@ -252,6 +252,8 @@ activate (GtkApplication* app,
     case CAIRO_INFO_PANEL:
       cairo_info_panel* cip = new_cairo_info_panel ();
 
+      cip -> border = od -> border;
+
       struct {
 	GtkDrawingArea* drawing_area;
 	void* cg;
@@ -261,7 +263,7 @@ activate (GtkApplication* app,
       ctx -> cg = cip;
 
       gtk_drawing_area_set_draw_func (drawing_area, draw_cairo_info_panel, cip, NULL);
-      g_timeout_add (500, update_cairo_gauge_panel_value, ctx);
+      g_timeout_add (750, update_cairo_gauge_panel_value, ctx);
 
       od -> output = (void*) cip;
       break;
@@ -275,6 +277,7 @@ activate (GtkApplication* app,
       cbp -> high_warn = od -> high_warn;
       cbp -> label = od -> label;
       cbp -> legend = od -> legend;
+      cbp -> border = od -> border;
 
       ctx = g_new0 (typeof (*ctx), 1);
 
@@ -297,13 +300,14 @@ activate (GtkApplication* app,
       cgp -> high_warn = od -> high_warn;
       cgp -> label = od -> label;
       cgp -> legend = od -> legend;
+      cgp -> border = od -> border;
       
       ctx = g_new0 (typeof (*ctx), 1);
       ctx -> drawing_area = drawing_area;
       ctx -> cg = cgp;
 
       gtk_drawing_area_set_draw_func (drawing_area, draw_cairo_gauge_panel, cgp, NULL);
-      g_timeout_add (200, update_cairo_gauge_panel_value, ctx);
+      g_timeout_add (500, update_cairo_gauge_panel_value, ctx);
 
       od -> output = (void*) cgp;
       break;
