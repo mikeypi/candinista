@@ -38,47 +38,6 @@ typedef struct {
 } LinearPanel;
 
 
-gboolean
-gtk_update_linear_gauge_panel_value (gpointer user_data) {
-  struct
-  {
-    GtkDrawingArea *area;
-    Panel *p;
-  } *ctx = user_data;
-  
-  gtk_widget_queue_draw (GTK_WIDGET (ctx -> area));
-
-  return G_SOURCE_CONTINUE;
-}
-
-
-void
-gtk_draw_linear_gauge_panel_cb (GtkDrawingArea* area,
-                  cairo_t*        cr,
-                  int             width,
-                  int             height,
-                  gpointer        user_data)
-{
-  Panel* p = user_data;
-
-  g_return_if_fail(p != NULL);
-  g_return_if_fail(p->draw != NULL);
-
-  p -> draw (area, cr, width, height, p);
-}
-
-
-#if 0
-*static void linear_draw (const Panel* g, void* cr) {
-  (void) cr; /* unused for example */
-  /*
-  double range = g -> max - g -> min;
-  double norm = (g -> value - g -> min) / range;
-
-  printf ("Linear panel: %.1f%%\n", norm * 100.0);*/
-}
-#endif
-
 void draw_linear_gauge_panel (GtkDrawingArea* area,
 				cairo_t* cr,
 				int width,

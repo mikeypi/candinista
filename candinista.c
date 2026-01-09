@@ -57,13 +57,11 @@
 #include "yaml-printer.h"
 #include "sensor.h"
 #include "panel.h"
+#include "gtk-glue.h"
 
 Configuration cfg;
 
 extern void log_data (void*);
-extern gboolean gtk_update_radial_gauge_panel_value (gpointer user_data);
-extern void gtk_draw_radial_gauge_panel_cb (GtkDrawingArea*, cairo_t*, int, int, gpointer);
-
 
 #define nBytesToShort(a, b) ((a << 8) | b)
 
@@ -247,9 +245,9 @@ activate (GtkApplication* app,
 
     ctx -> drawing_area = drawing_area;
     ctx -> cg = *p;
-
-    gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_radial_gauge_panel_cb, *p, NULL);
-    g_timeout_add (250, gtk_update_radial_gauge_panel_value, ctx);
+    /* It's a little strange that the following line seems to work even for linear_gauge */
+    gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, *p, NULL);
+    g_timeout_add (250, gtk_update_gauge_panel_value, ctx);
 
     p++;
   }

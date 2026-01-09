@@ -25,3 +25,4 @@ void panel_set_units (Panel *g, unit_type ut) { g -> units = ut; }
 void panel_set_panel_id (Panel *g, unsigned int id) { g -> panel_id = id; }
 void panel_draw (const Panel* g, void* cr) { g -> vtable -> draw (g, cr); }
 void panel_destroy (Panel* g) {  free (g); }
+

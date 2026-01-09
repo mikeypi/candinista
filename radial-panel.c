@@ -34,36 +34,6 @@ typedef struct {
 } RadialPanel;
 
 
-gboolean
-gtk_update_radial_gauge_panel_value (gpointer user_data) {
-  struct
-  {
-    GtkDrawingArea *area;
-    Panel *p;
-  } *ctx = user_data;
-  
-  gtk_widget_queue_draw (GTK_WIDGET (ctx -> area));
-
-  return G_SOURCE_CONTINUE;
-}
-
-
-void
-gtk_draw_radial_gauge_panel_cb (GtkDrawingArea* area,
-                  cairo_t*        cr,
-                  int             width,
-                  int             height,
-                  gpointer        user_data)
-{
-  Panel* p = user_data;
-
-  g_return_if_fail(p != NULL);
-  g_return_if_fail(p->draw != NULL);
-
-  p -> draw (area, cr, width, height, p);
-}
-
-
 void draw_radial_gauge_panel (GtkDrawingArea* area,
 			      cairo_t* cr,
 			      int width,
@@ -77,22 +47,6 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
   
   if (NULL == rp) {
     return;
-  }
-
-  /*
-   * Initialization section.
-   */
-  
-  if (NULL == rp -> arc_segments) {
-    /* NULL means this cairo gauge has yet to be initialized and does not mean that an error has occured. */
-    rp -> arc_segments = (arc_segment*) malloc (rp -> segment_count * sizeof (arc_segment));
-
-    for (int i = 0; i < rp -> segment_count; i++) {
-      double size_subarc_angle = (rp -> end_angle - rp -> start_angle) / rp -> segment_count;
-      rp -> arc_segments[i].arc_start_angle = rp -> start_angle + i * size_subarc_angle;
-      rp -> arc_segments[i].arc_end_angle = rp -> arc_segments[i].arc_start_angle
-	+ size_subarc_angle - rp -> segment_gap_size;
-    }
   }
 
   cairo_set_antialias(cr, CAIRO_ANTIALIAS_BEST);
@@ -110,7 +64,6 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
     rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
     cairo_stroke (cr);
   }
-
 
   /* gauge arc */
   cairo_set_line_width (cr, 3.0);
@@ -278,6 +231,19 @@ Panel* create_radial_gauge_panel (unsigned int row, unsigned int column) {
   lg -> end_angle = DEFAULT_END_ANGLE;
   lg -> segment_count = DEFAULT_SEGMENT_COUNT;
   lg -> segment_gap_size = DEFAULT_SEGMENT_GAP_SIZE;
+
+  if (NULL == lg -> arc_segments) {
+    /* NULL means this cairo gauge has yet to be initialized and does not mean that an error has occured. */
+    lg -> arc_segments = (arc_segment*) malloc (lg -> segment_count * sizeof (arc_segment));
+
+    for (int i = 0; i < lg -> segment_count; i++) {
+      double size_subarc_angle = (lg -> end_angle - lg -> start_angle) / lg -> segment_count;
+      lg -> arc_segments[i].arc_start_angle = lg -> start_angle + i * size_subarc_angle;
+      lg -> arc_segments[i].arc_end_angle = lg -> arc_segments[i].arc_start_angle
+	+ size_subarc_angle - lg -> segment_gap_size;
+    }
+  }
+
   return (Panel*) lg;
 }
 

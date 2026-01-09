@@ -30,7 +30,8 @@ radial-panel.c
 yaml-loader.c
 yaml-printer.c
 sensor.c
-cairo_misc.c
+cairo-misc.c
+gtk-glue.c
 )
 
 target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} ${YAML_LIBRARIES} m)

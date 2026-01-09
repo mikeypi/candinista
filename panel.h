@@ -50,5 +50,5 @@ unsigned int panel_get_panel_id (Panel* g);
 
 /* rendering */
 void   panel_draw (const Panel* g, void* cairo_ctx);
-    
 #endif
+
