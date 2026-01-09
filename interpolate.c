@@ -29,16 +29,16 @@
  */
 
 #include <linux/can.h>
-#include <gtk/gtk.h>
-#include <glib/gstdio.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "candinista.h"
 
 static int
 comp1 (const void * elem1, const void * elem2) 
 {
-    float f = *((float*) elem1);
-    float s = *((float*) elem2);
+    double f = *((double*) elem1);
+    double s = *((double*) elem2);
     if (f > s) return  1;
     if (f < s) return -1;
     return 0;
@@ -48,8 +48,8 @@ comp1 (const void * elem1, const void * elem2)
 static int
 comp2 (const void * elem1, const void * elem2) 
 {
-    float f = *((float*) elem1);
-    float s = *((float*) elem2);
+    double f = *((double*) elem1);
+    double s = *((double*) elem2);
     if (f < s) return  1;
     if (f > s) return -1;
     return 0;
@@ -61,23 +61,23 @@ comp2 (const void * elem1, const void * elem2)
  * ascending or descending orders.
  */
 void
-interpolation_array_sort (sensor_descriptor* sensor) {
+interpolation_array_sort (double* x_values, double* y_values, int number_of_interpolation_points) {
   int i;
 
-  if (1 > sensor -> number_of_interpolation_points) {
+  if (1 > number_of_interpolation_points) {
     return;
   }
 
-  if (sensor -> x_values[0] < sensor -> x_values [1]) {
+  if (x_values[0] < x_values [1]) {
     return;
   }
   
-  qsort (sensor -> x_values, sensor -> number_of_interpolation_points, sizeof(float), comp1);
+  qsort (x_values, number_of_interpolation_points, sizeof(double), comp1);
 
-  if (sensor -> y_values[0] < sensor -> y_values [1]) {
-      qsort (sensor -> y_values, sensor -> number_of_interpolation_points, sizeof(float), comp2);
+  if (y_values[0] < y_values [1]) {
+      qsort (y_values, number_of_interpolation_points, sizeof(double), comp2);
   } else {
-    qsort (sensor -> y_values, sensor -> number_of_interpolation_points, sizeof(float), comp1);
+    qsort (y_values, number_of_interpolation_points, sizeof(double), comp1);
   }
 }
 
@@ -92,43 +92,43 @@ interpolation_array_sort (sensor_descriptor* sensor) {
  * order.
  */
  
-float
-linear_interpolate (float knownx, sensor_descriptor* sensor)
+double
+linear_interpolate (double knownx, double* x_values, double* y_values, int number_of_interpolation_points)
 {
   int i = 0;
-  float mu;
-  float y1;
-  float y2;
-  float result;
+  double mu;
+  double y1;
+  double y2;
+  double result;
 
-  if (knownx <= sensor -> x_values[0]) {
-    return (sensor -> y_values[0]);
+  if (knownx <= x_values[0]) {
+    return (y_values[0]);
   }
   
-  if (knownx >= sensor -> x_values[sensor -> number_of_interpolation_points - 1]) {
-    return (sensor -> y_values[sensor -> number_of_interpolation_points - 1]);
+  if (knownx >= x_values[number_of_interpolation_points - 1]) {
+    return (y_values[number_of_interpolation_points - 1]);
   }
 
-  while (i < sensor -> number_of_interpolation_points) { 
-    if (knownx == sensor -> x_values[i]) {
-      return (sensor -> y_values[i]);
+  while (i < number_of_interpolation_points) { 
+    if (knownx == x_values[i]) {
+      return (y_values[i]);
     }
 
-    if (knownx < sensor -> x_values[i]) {
+    if (knownx < x_values[i]) {
       ++i;
       continue;
     }
 
-    if (knownx < sensor -> x_values[i + 1]) {
+    if (knownx < x_values[i + 1]) {
       break;
     }
 
     ++i;
   }
 
-  mu = (knownx - sensor -> x_values[i]) / (sensor -> x_values[i + 1] - sensor -> x_values[i]);
-  y1 = sensor -> y_values[i];
-  y2 = sensor -> y_values[i + 1];
+  mu = (knownx - x_values[i]) / (x_values[i + 1] - x_values[i]);
+  y1 = y_values[i];
+  y2 = y_values[i + 1];
   result = y1 * (1 - mu) + y2 * mu;
 
 #ifdef DEBUG_INTERPOLATE
@@ -143,3 +143,34 @@ linear_interpolate (float knownx, sensor_descriptor* sensor)
   return (result);
 }
 
+
+#ifdef DEBUG
+//double x_values[] = {5000, 10000, 15000, 20000, 25000, 27500, 80000};
+//double y_values[] = {2500, 5000, 7500, 10000, 12500, 13750, 40000};
+
+double x_values[] = {0, 27500};
+double y_values[] = {0, 0.7*27500};
+
+int
+main (int argc, char** argv) {
+  int i;
+  int n_values = sizeof (x_values)/sizeof (double);
+  interpolation_array_sort (x_values, y_values, n_values);
+  for (i = 0; i < n_values; i++) {
+    double d = linear_interpolate (x_values[i], x_values, y_values, n_values);
+    fprintf (stderr, "interpolated %f, expected %f, got %f\n", x_values[i], y_values[i], d);
+  }
+
+  fprintf (stderr, "\n");
+  
+  for (i = 0; i < n_values - 1; i++) {
+    double d = linear_interpolate ((x_values[i] + x_values[i+1])/2.0,
+				   x_values, y_values, n_values);
+
+    fprintf (stderr, "interpolated %f, expected %f, got %f\n",
+	     (x_values[i] + x_values[i+1])/2.0,
+	     (y_values[i] + y_values[i+1])/2.0,
+	     d);
+  }
+}
+#endif

@@ -1,81 +1,3 @@
-typedef struct
-{
-  char* label;
-  char* legend;
-  int border;
-} cairo_info_panel;
-
-
-typedef struct
-{
-  double arc_start_angle;
-  double arc_end_angle;
-  int illuminated;
-} arc_segment;
-
-
-typedef struct
-{
-  double radius;
-  double start_angle;
-  double end_angle;
-
-  int segment_count;
-  arc_segment* arc_segments;
-  double segment_gap_size;
-  
-  double value;
-  double min;
-  double max;
-  double low_warn;
-  double high_warn;
-
-  char* label;
-  char* legend;
-  int border;
-} cairo_gauge_panel;
-
-
-typedef struct
-{
-  double min;
-  double max;
-  double start_x;
-  double start_y;
-  double height;
-  double width;
-  int illuminated;
-} bargraph_segment;
-
-
-/*
- * How about:
- * cairo_dg_panel:      cairo dial graph panel
- * cairo_info_panel:    cairo information panel
- * cairo_bg_panel:      cairo bar graph panel
- */
-
-typedef struct
-{
-  double bargraph_origin_x;
-  double bargraph_origin_y;
-  double bargraph_width;
-  double bargraph_height;
-  int bargraph_segment_count;
-
-  bargraph_segment* bargraph_segments;
-  
-  double value;
-  double min;
-  double max;
-  double low_warn;
-  double high_warn;
-
-  char* label;
-  char* legend;
-  int border;
-} cairo_bargraph_panel;
-
 typedef enum warning_level {NO_WARN = 6, LOW_WARN = 7, HIGH_WARN = 8} warning_level;
 
 #define RED_RGB 255/255.0, 8/255.0, 8/255.0
@@ -105,14 +27,21 @@ typedef enum warning_level {NO_WARN = 6, LOW_WARN = 7, HIGH_WARN = 8} warning_le
 #define DEFAULT_LABEL_FONT_SIZE 30
 #define DEFAULT_VALUE_FONT_SIZE 65
 
-extern cairo_info_panel* new_cairo_info_panel ();
+#define DEFAULT_BARGRAPH_ORIGIN_X 20
+#define DEFAULT_BARGRAPH_ORIGIN_Y 15
+#define DEFAULT_BARGRAPH_WIDTH 300
+#define DEFAULT_BARGRAPH_HEIGHT 160
+#define DEFAULT_BARGRPAH_SEGMENT_COUNT 16
+
+
+//extern cairo_info_panel* new_cairo_info_panel ();
 extern void draw_cairo_info_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 
-extern cairo_gauge_panel* new_cairo_gauge_panel ();
+//extern cairo_gauge_panel* new_cairo_gauge_panel ();
 extern gboolean update_cairo_gauge_panel_value (gpointer);
 extern void draw_cairo_gauge_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 
-extern cairo_bargraph_panel* new_cairo_bargraph_panel ();
+//extern cairo_bargraph_panel* new_cairo_bargraph_panel ();
 extern gboolean update_cairo_bargraph_panel_value (gpointer);
 extern void draw_cairo_bargraph_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 

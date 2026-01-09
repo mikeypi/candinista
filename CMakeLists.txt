@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.25)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED IMPORTED_TARGET "gtk4")
 pkg_check_modules(JSON REQUIRED IMPORTED_TARGET "json-c")
+pkg_check_modules(YAML REQUIRED IMPORTED_TARGET "yaml-0.1")
 find_program(M4_EXECUTABLE m4 REQUIRED)
 find_program(BP_EXECUTABLE blueprint-compiler REQUIRED)
 
@@ -23,15 +24,16 @@ candinista.c
 datalogging.c
 environ.c
 interpolate.c
-printjson.c
-readjson.c
-cairo_gauge.c
-cairo_info_panel.c
+linear-panel.c
+panel.c
+radial-panel.c
+yaml-loader.c
+yaml-printer.c
+sensor.c
 cairo_misc.c
-cairo_bargraph.c
 )
 
-target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} m)
+target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} ${YAML_LIBRARIES} m)
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR})
 set(BIN ${CMAKE_CURRENT_BINARY_DIR})

@@ -53,30 +53,36 @@
 
 #include "candinista.h"
 #include "cairo_panel.h"
+#include "yaml-loader.h"
+#include "yaml-printer.h"
+#include "sensor.h"
+#include "panel.h"
+
+Configuration cfg;
+
+extern void log_data (void*);
+extern gboolean gtk_update_radial_gauge_panel_value (gpointer user_data);
+extern void gtk_draw_radial_gauge_panel_cb (GtkDrawingArea*, cairo_t*, int, int, gpointer);
+
 
 #define nBytesToShort(a, b) ((a << 8) | b)
 
 static short
-BytesToShort (char a, char b) {
+BytesToShort (unsigned char a, unsigned char b) {
   unsigned short x = (a << 8) ^ b;
   return (x);
 }
 
-static float
-convert_units (float temp, unit_type to) {
+
+static double
+convert_units (double temp, unit_type to) {
   switch (to) {
-  case FAHRENHEIT:
-    return ((temp * 9.0 / 5.0) + 32.0);
-
-  case PSI:
-    return (temp * 14.503773773);
-
-  case CELSIUS:
-  case BAR:
-  default:
-    return (temp);
+  case FAHRENHEIT: return ((temp * 9.0 / 5.0) + 32.0);
+  case PSI: return (temp * 14.503773773);
+  default: return (temp);
   }
 }
+
 
 int
 timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
@@ -102,37 +108,25 @@ timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
   return x->tv_sec < y->tv_sec;
 }
 
-static void
-update_widgets_for_display (output_descriptor* od, double f) {
+static Panel* panel_from_id (int panel_id) {
+  Panel** p = cfg.panels;
+  while (p < cfg.panels + cfg.panel_count) {
+    if (panel_id == panel_get_panel_id (*p)) {
+      return (*p);
+    }
 
-  switch (od -> type) {
-  case CAIRO_INFO_PANEL:
-    return;
-    
-    case CAIRO_BARGRAPH_PANEL:
-      cairo_gauge_panel* cbg = (cairo_gauge_panel*) od -> output;
-
-      if (NULL == cbg) {
-	return;
-      }
-
-      cbg -> value = f + od -> offset;
-      return;
-
-  case CAIRO_GAUGE_PANEL:
-    default:
-      cairo_gauge_panel* cgp = (cairo_gauge_panel*) od -> output;
-
-      if (NULL == cgp) {
-	return;
-      }
-
-      cgp -> value = f + od -> offset;
-      return;
+    p++;
   }
+
+  return NULL;
 }
 
-//extern output_descriptor* output_descriptor_by_name (char*);
+static void
+update_widgets_for_display (Sensor* s, double f) {
+  int output_id = sensor_output_id (s);
+  Panel* p = panel_from_id (output_id);
+  panel_set_value (p, f);
+}
 
 static gboolean
 idle_task () {
@@ -146,47 +140,53 @@ idle_task () {
 static gboolean
 can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer data)
 {
-  int i;
+  int i = 0;
   static int call_count;
   double temp;
   struct can_frame frame;
   gsize bytes_read;
 
-  sensor_descriptor* s = sensor_descriptors;
   if (G_IO_STATUS_NORMAL != g_io_channel_read_chars (input_channel,
 						     (gchar*) &frame, sizeof (struct can_frame),
 						     &bytes_read, NULL)) {
     return FALSE;
   }
 
-  while (s < sensor_descriptors + sensor_count) {
-    if (s -> can_id != (frame.can_id & 0x7fffffff)) {
-      s++;
+  while (i < cfg.sensor_count) {
+    Sensor* s = cfg.sensors[i];
+    if (sensor_can_id (s) != (frame.can_id & 0x7fffffff)) {
+      i++;
       continue;
     }
 
-    /* retrieve the individual data values from the can frame. This handles char and short,
+    /*
+     * retrieve the individual data values from the can frame. This handles char and short,
      * would need to be expanded for 32 or 64 bit data
      */
-    if (sizeof (short) == s -> can_data_width) {
-      temp = BytesToShort (frame.data[s -> can_data_offset],frame.data[s -> can_data_offset + 1]);
+    int offset = sensor_can_data_offset (s);
+    if (sizeof (short) == sensor_can_data_width (s)) {
+      temp = BytesToShort (frame.data[offset], frame.data[offset + 1]);
     } else {
-      temp = frame.data[s -> can_data_offset];
+      temp = frame.data[offset];
     }
-  
-    /* apply interpolation if needed */
-    temp = linear_interpolate (temp, s);
 
-    if (NULL != s -> output_descriptor) {
-      temp = convert_units (temp, s -> output_descriptor -> units);
-      update_widgets_for_display (s -> output_descriptor, temp);
+    if (0 > temp) {
+      fprintf (stderr, "bad sensor data\n");
     }
+    
+    /* apply interpolation */
+    temp = linear_interpolate (temp,
+			       sensor_x_values (s),
+			       sensor_y_values (s),
+			       sensor_number_of_interpolation_points (s));
+
+    update_widgets_for_display (s, temp);
 
     if (0 != data_logging) {
       log_data (&frame);
     }
 
-    s++;
+    i++;
   }
 
   return TRUE;
@@ -204,7 +204,8 @@ activate (GtkApplication* app,
   GtkBuilder* builder;
   GObject* window;
   GtkCssProvider* provider;
-  output_descriptor* od = output_descriptors;
+  Panel** p;
+  char temp[80];
   
   ui_file_name = "/home/joe/candinista/candinista.ui";
   if (NULL == (builder = gtk_builder_new_from_file (ui_file_name))) {
@@ -234,87 +235,25 @@ activate (GtkApplication* app,
     return;
   }
 
-  while (od < output_descriptors + output_count) {
-    char temp[80];
-
-    sprintf (temp, "da-%d-%d", od -> row, od -> column);
-
+  p = cfg.panels;
+  while (p < cfg.panels + cfg.panel_count) {
+    sprintf (temp, "da-%d-%d", panel_get_row (*p),  panel_get_column (*p));
     GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_builder_get_object (builder, temp);
 
-    if (NULL == drawing_area) {
-      fprintf (stderr, "unable to load drawing_area %s at %d, %d\n", temp, od -> row, od -> column);
-      return;
-    }
+    struct {
+      GtkDrawingArea* drawing_area;
+      Panel* cg;
+    }* ctx = g_new0 (typeof (*ctx), 1);
 
-    fprintf (stderr, "drawing_area %s loaded at %d, %d\n", temp, od -> row, od -> column);
+    ctx -> drawing_area = drawing_area;
+    ctx -> cg = *p;
 
-    switch (od -> type) {
-    case CAIRO_INFO_PANEL:
-      cairo_info_panel* cip = new_cairo_info_panel ();
+    gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_radial_gauge_panel_cb, *p, NULL);
+    g_timeout_add (250, gtk_update_radial_gauge_panel_value, ctx);
 
-      cip -> border = od -> border;
-
-      struct {
-	GtkDrawingArea* drawing_area;
-	void* cg;
-      }* ctx = g_new0 (typeof (*ctx), 1);
-
-      ctx -> drawing_area = drawing_area;
-      ctx -> cg = cip;
-
-      gtk_drawing_area_set_draw_func (drawing_area, draw_cairo_info_panel, cip, NULL);
-      g_timeout_add (750, update_cairo_gauge_panel_value, ctx);
-
-      od -> output = (void*) cip;
-      break;
-
-    case CAIRO_BARGRAPH_PANEL:
-      cairo_bargraph_panel* cbp = new_cairo_bargraph_panel ();
-
-      cbp -> max = od -> max;
-      cbp -> min = od -> min;
-      cbp -> low_warn = od -> low_warn;
-      cbp -> high_warn = od -> high_warn;
-      cbp -> label = od -> label;
-      cbp -> legend = od -> legend;
-      cbp -> border = od -> border;
-
-      ctx = g_new0 (typeof (*ctx), 1);
-
-      ctx -> drawing_area = drawing_area;
-      ctx -> cg = cbp;
-
-      gtk_drawing_area_set_draw_func (drawing_area, draw_cairo_bargraph_panel, cbp, NULL);
-      g_timeout_add (500, update_cairo_bargraph_panel_value, ctx);
-
-      od -> output = (void*) cbp;
-      break;
-
-    case CAIRO_GAUGE_PANEL:
-    default:
-      cairo_gauge_panel* cgp = new_cairo_gauge_panel ();
-    
-      cgp -> min = od -> min;
-      cgp -> max = od -> max;
-      cgp -> low_warn = od -> low_warn;
-      cgp -> high_warn = od -> high_warn;
-      cgp -> label = od -> label;
-      cgp -> legend = od -> legend;
-      cgp -> border = od -> border;
-      
-      ctx = g_new0 (typeof (*ctx), 1);
-      ctx -> drawing_area = drawing_area;
-      ctx -> cg = cgp;
-
-      gtk_drawing_area_set_draw_func (drawing_area, draw_cairo_gauge_panel, cgp, NULL);
-      g_timeout_add (500, update_cairo_gauge_panel_value, ctx);
-
-      od -> output = (void*) cgp;
-      break;
-    }
-    od++;
+    p++;
   }
-
+  
   g_object_unref (builder);
   gtk_window_present (GTK_WINDOW (window));
 }
@@ -333,8 +272,8 @@ can_setup () {
     return NULL;
   }
 
-  strcpy(ifr.ifr_name, can_socket_name);
-  ioctl(s, SIOCGIFINDEX, &ifr);
+  strcpy (ifr.ifr_name, can_socket_name);
+  ioctl (s, SIOCGIFINDEX, &ifr);
 	
   addr.can_family  = AF_CAN;
   addr.can_ifindex = ifr.ifr_ifindex;
@@ -353,14 +292,13 @@ main (int argc, char** argv) {
   GtkApplication *app;
   GIOChannel* input_channel;
   int status;
-  int i;
   int total;
   int option;
 
   get_environment_variables ();
 
-  read_config_from_json ();
-  
+  cfg = configuration_load_yaml ("/home/joe/candinista/config.yaml");
+
   while (-1 != (option = getopt (argc, argv, "dp"))) {
     switch (option) {
     case 'd':
@@ -368,7 +306,7 @@ main (int argc, char** argv) {
       break;
       
     case 'p':
-      print_config (stderr);
+      configuration_print (&cfg);
       exit (0);
       break;
 
@@ -380,12 +318,13 @@ main (int argc, char** argv) {
 	       "\t -n: disable datalogging\n"
 	       "\t -p: print json database\n",
 	       argv[0]);
+
       exit (-1);
     }
   }
 
   if (NULL == (input_channel = can_setup ())) {
-    perror("Error in socket bind");
+    perror ("Error in socket bind");
     return -1;
   }
 
@@ -403,6 +342,7 @@ main (int argc, char** argv) {
   status = g_application_run (G_APPLICATION (app), argc, argv);
   
   g_object_unref (app);
-
+  configuration_free (&cfg);
+  
   return status;
 }

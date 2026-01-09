@@ -35,9 +35,6 @@
 #include <limits.h>
 #include <linux/can.h>
 
-#include <gtk/gtk.h>
-#include <glib/gstdio.h>
-
 #include "candinista.h"
 
 char* log_file_directory_name = LOG_FILE_DIRECTORY_NAME;

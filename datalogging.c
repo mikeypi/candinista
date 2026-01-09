@@ -37,9 +37,6 @@
 #include <sys/param.h>
 #include <linux/can.h>
 
-#include <gtk/gtk.h>
-#include <glib/gstdio.h>
-
 #include "candinista.h"
 
 int data_logging = 0;
@@ -113,7 +110,7 @@ log_data (struct can_frame* p1) {
       return;
     }
 
-    print_config (fp);
+    //    print_config (fp);
     gettimeofday (&file_start_time, NULL);
     fprintf (fp, "File Start at: %d:%d\n\n", file_start_time.tv_sec, file_start_time.tv_usec);
     current_time = file_start_time;
