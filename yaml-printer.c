@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stddef.h>
+#include <gtk/gtk.h>
 
 #include "candinista.h"
 #include "yaml-loader.h"

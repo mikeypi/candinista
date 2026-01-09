@@ -58,10 +58,9 @@
 #include "sensor.h"
 #include "panel.h"
 #include "gtk-glue.h"
+#include "datalogging.h"
 
 Configuration cfg;
-
-extern void log_data (void*);
 
 #define nBytesToShort(a, b) ((a << 8) | b)
 
@@ -69,41 +68,6 @@ static short
 BytesToShort (unsigned char a, unsigned char b) {
   unsigned short x = (a << 8) ^ b;
   return (x);
-}
-
-
-static double
-convert_units (double temp, unit_type to) {
-  switch (to) {
-  case FAHRENHEIT: return ((temp * 9.0 / 5.0) + 32.0);
-  case PSI: return (temp * 14.503773773);
-  default: return (temp);
-  }
-}
-
-
-int
-timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
-{
-  /* Perform the carry for the later subtraction by updating y. */
-  if (x->tv_usec < y->tv_usec) {
-    int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
-    y->tv_usec -= 1000000 * nsec;
-    y->tv_sec += nsec;
-  }
-  if (x->tv_usec - y->tv_usec > 1000000) {
-    int nsec = (x->tv_usec - y->tv_usec) / 1000000;
-    y->tv_usec += 1000000 * nsec;
-    y->tv_sec -= nsec;
-  }
-
-  /* Compute the time remaining to wait.
-     tv_usec is certainly positive. */
-  result->tv_sec = x->tv_sec - y->tv_sec;
-  result->tv_usec = x->tv_usec - y->tv_usec;
-
-  /* Return 1 if result is negative. */
-  return x->tv_sec < y->tv_sec;
 }
 
 static Panel* panel_from_id (int panel_id) {
@@ -201,7 +165,6 @@ activate (GtkApplication* app,
 
   GtkBuilder* builder;
   GObject* window;
-  GtkCssProvider* provider;
   Panel** p;
   char temp[80];
   
@@ -220,13 +183,6 @@ activate (GtkApplication* app,
 
   gtk_window_set_application (GTK_WINDOW (window), app);
 
-  provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_file (provider, g_file_new_for_path (CSS_FILE_NAME));
-  
-  gtk_style_context_add_provider_for_display (gdk_display_get_default (),
-      					      GTK_STYLE_PROVIDER (provider),
-      					      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  
   GtkGrid* grid = (GtkGrid*) gtk_builder_get_object (builder, "grid-0");
   if (NULL == grid) {
     fprintf (stderr, "unable to load grid\n");

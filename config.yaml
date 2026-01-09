@@ -93,7 +93,7 @@ panels:
     low_warn: -100
     high_warn: 150
     border: 1
-    units: "celsius"
+    units: "FAHRENHEIT"
     panel_id: 1
 
   - type: radial

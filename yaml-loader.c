@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <yaml.h>
+#include <gtk/gtk.h>
 
 #include "candinista.h"
 #include "yaml-loader.h"
@@ -197,10 +198,9 @@ Configuration configuration_load_yaml (const char *path) {
 
       if (in_panels && gt.type[0]) {
 	Panel *g = !strcmp (gt.type, "radial")
-	  ? create_radial_gauge_panel (gt.row, gt.column)
-	  : create_linear_gauge_panel (gt.row, gt.column);
+	  ? create_radial_gauge_panel (gt.row, gt.column, gt.max, gt.min)
+	  : create_linear_gauge_panel (gt.row, gt.column, gt.max, gt.min);
 	panel_set_warn (g, gt.low_warn, gt.high_warn);
-	panel_set_minmax (g, gt.min, gt.max);
 	panel_set_offset (g, gt.offset);
 	panel_set_label (g, gt.label);
 	panel_set_legend (g, gt.legend);

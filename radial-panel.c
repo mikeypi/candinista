@@ -49,18 +49,19 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
     return;
   }
 
+  double value = convert_units (p -> value, p -> units) + p -> offset;
+    
   cairo_set_antialias(cr, CAIRO_ANTIALIAS_BEST);
-
+  
 /*
  * Draw background, arc and segments
  */
   set_rgba_for_background (cr);
-  rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
-  cairo_fill (cr);
+  cairo_paint (cr);
 
   if (0 != p -> border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba_for_foreground (cr, get_warning_level (p -> value, p -> high_warn, p -> low_warn));
+    set_rgba_for_foreground (cr, get_warning_level (value, p -> high_warn, p -> low_warn));
     rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
     cairo_stroke (cr);
   }
@@ -76,16 +77,16 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
   /* illuminated segments */
   cairo_set_line_width (cr, 7.0);
 
-  double t = CLAMP ((p -> value - p -> min) / (p -> max - p -> min), 0.0, 1.0);
+  double t = CLAMP ((value - p -> min) / (p -> max - p -> min), 0.0, 1.0);
   double angle = rp -> start_angle + t * (rp -> end_angle
 					  - rp -> start_angle);
 
   for (int i = 0; i < rp -> segment_count; i++) {
     if (angle < rp -> arc_segments[i].arc_end_angle) {
-      set_rgba_for_burn_in (cr, get_warning_level (p -> value, p -> high_warn, p -> low_warn));
+      set_rgba_for_burn_in (cr, get_warning_level (value, p -> high_warn, p -> low_warn));
     }
     else {
-      set_rgba_for_foreground (cr, get_warning_level (p -> value, p -> high_warn, p -> low_warn));
+      set_rgba_for_foreground (cr, get_warning_level (value, p -> high_warn, p -> low_warn));
     }
 
     cairo_arc (cr, width / 2.0, height / 2.0,
@@ -110,7 +111,7 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
     double x1 = width / 2 + (rp -> radius + ID) * cos (range_end);
     double y1 = height / 2 + (rp -> radius + ID) * sin (range_end);
     
-    set_rgba_for_foreground (cr, get_warning_level (p -> value, p -> high_warn, p -> low_warn));
+    set_rgba_for_foreground (cr, get_warning_level (value, p -> high_warn, p -> low_warn));
 
     cairo_new_sub_path(cr);
 
@@ -145,7 +146,7 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
-  set_rgba_for_foreground (cr, get_warning_level (p -> value, p -> high_warn, p -> low_warn));
+  set_rgba_for_foreground (cr, get_warning_level (value, p -> high_warn, p -> low_warn));
 
   if (NULL != p -> legend) {
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
@@ -175,7 +176,7 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
   }
     
   cairo_set_line_width (cr, 1.0);
-  set_rgba_for_foreground (cr, get_warning_level (p -> value, p -> high_warn, p -> low_warn));
+  set_rgba_for_foreground (cr, get_warning_level (value, p -> high_warn, p -> low_warn));
 
   // Print value field and burn-in 
   cairo_select_font_face (
@@ -185,7 +186,7 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
 			  CAIRO_FONT_WEIGHT_NORMAL
 			  );
 
-  sprintf (buffer, "%.0f", p -> value);
+  sprintf (buffer, "%.0f", value);
   
   if (3 < strlen (buffer)) {
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
@@ -194,7 +195,7 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
 			       160 + YOFFSET, 
 			       buffer,
 			       4,
-			       get_warning_level (p -> value, p -> high_warn, p -> low_warn),
+			       get_warning_level (value, p -> high_warn, p -> low_warn),
 			       true,
 			       true);
   } else {
@@ -204,7 +205,7 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
 			       160 + YOFFSET, 
 			       buffer,
 			       3,
-			       get_warning_level (p -> value, p -> high_warn, p -> low_warn),
+			       get_warning_level (value, p -> high_warn, p -> low_warn),
 			       true,
 			       true);
   }
@@ -214,16 +215,18 @@ void draw_radial_gauge_panel (GtkDrawingArea* area,
 
 
 static const struct PanelVTable radial_vtable = {
-  .draw = draw_radial_gauge_panel
+  .draw = (void (*)(const struct Panel *, void *))draw_radial_gauge_panel
 };
 
 
-Panel* create_radial_gauge_panel (unsigned int row, unsigned int column) {
+Panel* create_radial_gauge_panel (unsigned int row, unsigned int column, double max, double min) {
   RadialPanel *lg = calloc (1, sizeof *lg);
   lg -> base.draw = draw_radial_gauge_panel;
   lg -> base.vtable = &radial_vtable;
   lg -> base.row = row;
   lg -> base.column = column;
+  lg -> base.max = max;
+  lg -> base.min = min;
 
   // Default initializations follow.
   lg -> radius = DEFAULT_RADIUS;

@@ -23,6 +23,16 @@ void panel_set_legend (Panel *g, char* legend) { strcpy (g -> legend, legend); }
 void panel_set_border (Panel *g, unsigned char on) { g -> border = on; }
 void panel_set_units (Panel *g, unit_type ut) { g -> units = ut; }
 void panel_set_panel_id (Panel *g, unsigned int id) { g -> panel_id = id; }
-void panel_draw (const Panel* g, void* cr) { g -> vtable -> draw (g, cr); }
+void panel_draw (Panel* g, void* cr) { g -> vtable -> draw (g, cr); }
 void panel_destroy (Panel* g) {  free (g); }
+
+double
+convert_units (double temp, unit_type to) {
+  switch (to) {
+  case FAHRENHEIT: return ((temp * 9.0 / 5.0) + 32.0);
+  case PSI: return (temp * 14.503773773);
+  default: return (temp);
+  }
+}
+
 

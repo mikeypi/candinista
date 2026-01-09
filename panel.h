@@ -9,7 +9,7 @@ struct PanelVTable {
 
 struct Panel {
   const struct PanelVTable *vtable;
-  void (*draw)(void* area, void* cr, int height, int width, void* p);
+  void (*draw)(void* area, cairo_t* cr, int height, int width, void* p);
   double value;
   double min;
   double max;
@@ -26,8 +26,8 @@ struct Panel {
 };
 
 /* lifecycle */
-Panel* create_linear_gauge_panel (unsigned int row, unsigned int column);
-Panel* create_radial_gauge_panel (unsigned int row, unsigned int column);
+Panel* create_linear_gauge_panel (unsigned int row, unsigned int column, double max, double min);
+Panel* create_radial_gauge_panel (unsigned int row, unsigned int column, double max, double min);
 void   panel_destroy (Panel* g);
 
 /* state */
@@ -49,6 +49,7 @@ unsigned int panel_get_column (Panel *g);
 unsigned int panel_get_panel_id (Panel* g);
 
 /* rendering */
-void   panel_draw (const Panel* g, void* cairo_ctx);
+void   panel_draw (Panel* g, void* cairo_ctx);
 #endif
 
+double convert_units (double temp, unit_type to);
