@@ -1,0 +1,54 @@
+#ifndef PANEL_H
+#define PANEL_H
+
+typedef struct Panel Panel;
+
+struct PanelVTable {
+  void (*draw)(const struct Panel*, void* cr);
+};
+
+struct Panel {
+  const struct PanelVTable *vtable;
+  void (*draw)(void* area, void* cr, int height, int width, void* p);
+  double value;
+  double min;
+  double max;
+  double low_warn;
+  double high_warn;
+  double offset;
+  unsigned int row;
+  unsigned int column;
+  char label[64];
+  char legend[64];
+  unsigned char border;
+  unit_type units;
+  unsigned int panel_id;
+};
+
+/* lifecycle */
+Panel* create_linear_gauge_panel (unsigned int row, unsigned int column);
+Panel* create_radial_gauge_panel (unsigned int row, unsigned int column);
+void   panel_destroy (Panel* g);
+
+/* state */
+void   panel_set_value (Panel *g, double value);
+void   panel_set_offset (Panel *g, double value);
+void   panel_set_warn (Panel *g, double low, double high);
+void   panel_set_minmax (Panel *g, double low, double high);
+void   panel_set_coordinates (Panel *g, unsigned int row, unsigned int column);
+void   panel_set_label (Panel *g, char* label);
+void   panel_set_legend (Panel *g, char* legend);
+void   panel_set_border (Panel *g, unsigned char on);
+void   panel_set_units(Panel *, unit_type);
+void   panel_set_panel_id(Panel *, unsigned int id);
+
+double panel_get_min (Panel *g);
+double panel_get_max (Panel *g);
+unsigned int panel_get_row (Panel *g);
+unsigned int panel_get_column (Panel *g);
+unsigned int panel_get_panel_id (Panel* g);
+
+/* rendering */
+void   panel_draw (const Panel* g, void* cairo_ctx);
+    
+#endif
