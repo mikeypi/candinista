@@ -7,7 +7,7 @@
 #include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
-#include "cairo_panel.h"
+#include "cairo-misc.h"
 
 #define XOFFSET 0
 #define YOFFSET 10

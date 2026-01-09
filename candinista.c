@@ -52,7 +52,7 @@
 #include <sys/time.h>
 
 #include "candinista.h"
-#include "cairo_panel.h"
+#include "cairo-misc.h"
 #include "yaml-loader.h"
 #include "yaml-printer.h"
 #include "sensor.h"

@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <math.h>
 #include <stdio.h>
-#include "cairo_panel.h"
+#include "cairo-misc.h"
 
 warning_level
 get_warning_level (double value, double high_warn, double low_warn) {

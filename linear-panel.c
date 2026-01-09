@@ -10,7 +10,7 @@
 #include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
-#include "cairo_panel.h"
+#include "cairo-misc.h"
 
 
 typedef struct
