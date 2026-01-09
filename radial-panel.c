@@ -221,7 +221,8 @@ static const struct PanelVTable radial_vtable = {
 
 Panel* create_radial_gauge_panel (unsigned int row, unsigned int column, double max, double min) {
   RadialPanel *lg = calloc (1, sizeof *lg);
-  lg -> base.draw = draw_radial_gauge_panel;
+  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_radial_gauge_panel;
+
   lg -> base.vtable = &radial_vtable;
   lg -> base.row = row;
   lg -> base.column = column;

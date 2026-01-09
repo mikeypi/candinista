@@ -169,7 +169,7 @@ Panel* create_linear_gauge_panel (unsigned int row,
   double total_x =  lg -> bargraph_origin_x;
   double y;
   
-  lg -> base.draw = draw_linear_gauge_panel;
+  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;
   lg -> base.row = row;
   lg -> base.column = column;
