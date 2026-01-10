@@ -32,6 +32,7 @@ yaml-printer.c
 sensor.c
 cairo-misc.c
 gtk-glue.c
+info-panel.c
 )
 
 target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} ${YAML_LIBRARIES} m)

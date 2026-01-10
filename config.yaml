@@ -85,7 +85,7 @@ panels:
   - type: radial
     sensor: "delphi 25036751 (temperature)"
     label: "Intake"
-    legend: "°C"
+    legend: "°F"
     row: 0
     column: 1
     max_value: 50
@@ -99,7 +99,7 @@ panels:
   - type: radial
     sensor: "aem 30-2011 (temperature)"
     label: "Oil"
-    legend: "°C"
+    legend: "°F"
     row: 0
     column: 2
     max_value: 120
@@ -107,13 +107,13 @@ panels:
     low_warn: 38
     high_warn: 100
     border: 1
-    units: "celsius"
+    units: "FAHRENHEIT"
     panel_id: 2
     
   - type: radial
     sensor: "bosch pst-ft (pressure)"
     label: "Oil"
-    legend: "bar"
+    legend: "psi"
     row: 1
     column: 0
     max_value: 8
@@ -121,7 +121,7 @@ panels:
     high_warn: 5.5
     low_warn: 2.5
     border: 1
-    units: "bar"
+    units: "psi"
     panel_id: 3
 
   - type: radial
@@ -138,7 +138,7 @@ panels:
     units: "bar"
     panel_id: 4
 
-  - type: radial
+  - type: info
     sensor: "dummy sensor for rpm"
     label: "RPM"
     row: 1
@@ -149,4 +149,5 @@ panels:
     low_warn: 1000
     border: 1
     units: "none"
+    timeout: 1500
     panel_id: 5

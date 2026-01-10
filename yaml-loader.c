@@ -61,6 +61,7 @@ typedef struct {
   unsigned int row;
   unsigned int column;
   int panel_id;
+  unsigned int timeout;
 } PanelTmp;
 
 
@@ -177,6 +178,7 @@ Configuration configuration_load_yaml (const char *path) {
 	  else if (!strcmp (key, "row")) gt.row = atoi (v);
 	  else if (!strcmp (key, "column")) gt.column = atoi (v);
 	  else if (!strcmp (key, "panel_id")) gt.panel_id = atoi (v);
+	  else if (!strcmp (key, "timeout")) gt.timeout = atoi (v);
 	  else if (!strcmp (key, "units")) { char temp[80]; strncpy (temp, v, 15); gt.units = enum_from_unit_str (temp); }
 	}
 
@@ -197,9 +199,11 @@ Configuration configuration_load_yaml (const char *path) {
       }
 
       if (in_panels && gt.type[0]) {
-	Panel *g = !strcmp (gt.type, "radial")
-	  ? create_radial_gauge_panel (gt.row, gt.column, gt.max, gt.min)
-	  : create_linear_gauge_panel (gt.row, gt.column, gt.max, gt.min);
+	Panel *g;
+	if (0 == strcmp (gt.type, "radial")) { g = create_radial_gauge_panel (gt.row, gt.column, gt.max, gt.min); }
+	else if (0 == strcmp (gt.type, "linear")) { g = create_linear_gauge_panel (gt.row, gt.column, gt.max, gt.min); }
+	else if (0 == strcmp (gt.type, "info")) { g = create_info_panel (gt.row, gt.column); }
+
 	panel_set_warn (g, gt.low_warn, gt.high_warn);
 	panel_set_offset (g, gt.offset);
 	panel_set_label (g, gt.label);
@@ -207,6 +211,7 @@ Configuration configuration_load_yaml (const char *path) {
 	panel_set_border (g, gt.border);
 	panel_set_units (g, gt.units);
 	panel_set_panel_id (g, gt.panel_id);
+	panel_set_timeout (g, gt.timeout);
 	d.panels = realloc (d.panels, sizeof *d.panels * (d.panel_count + 1));
 	d.panels[d.panel_count++] = g;
 	memset (&gt, 0, sizeof gt);

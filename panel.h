@@ -23,11 +23,13 @@ struct Panel {
   unsigned char border;
   unit_type units;
   unsigned int panel_id;
+  unsigned int timeout;
 };
 
 /* lifecycle */
 Panel* create_linear_gauge_panel (unsigned int row, unsigned int column, double max, double min);
 Panel* create_radial_gauge_panel (unsigned int row, unsigned int column, double max, double min);
+Panel* create_info_panel (unsigned int row, unsigned int column);
 void   panel_destroy (Panel* g);
 
 /* state */
@@ -41,12 +43,14 @@ void   panel_set_legend (Panel *g, char* legend);
 void   panel_set_border (Panel *g, unsigned char on);
 void   panel_set_units(Panel *, unit_type);
 void   panel_set_panel_id(Panel *, unsigned int id);
+void   panel_set_timeout(Panel *, unsigned int tm);
 
 double panel_get_min (Panel *g);
 double panel_get_max (Panel *g);
 unsigned int panel_get_row (Panel *g);
 unsigned int panel_get_column (Panel *g);
 unsigned int panel_get_panel_id (Panel* g);
+unsigned int panel_get_timeout(Panel*);
 
 /* rendering */
 void   panel_draw (Panel* g, void* cairo_ctx);

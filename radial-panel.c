@@ -236,16 +236,13 @@ Panel* create_radial_gauge_panel (unsigned int row, unsigned int column, double 
   lg -> segment_count = DEFAULT_SEGMENT_COUNT;
   lg -> segment_gap_size = DEFAULT_SEGMENT_GAP_SIZE;
 
-  if (NULL == lg -> arc_segments) {
-    /* NULL means this cairo gauge has yet to be initialized and does not mean that an error has occured. */
-    lg -> arc_segments = (arc_segment*) malloc (lg -> segment_count * sizeof (arc_segment));
+  lg -> arc_segments = (arc_segment*) malloc (lg -> segment_count * sizeof (arc_segment));
 
-    for (int i = 0; i < lg -> segment_count; i++) {
-      double size_subarc_angle = (lg -> end_angle - lg -> start_angle) / lg -> segment_count;
-      lg -> arc_segments[i].arc_start_angle = lg -> start_angle + i * size_subarc_angle;
-      lg -> arc_segments[i].arc_end_angle = lg -> arc_segments[i].arc_start_angle
-	+ size_subarc_angle - lg -> segment_gap_size;
-    }
+  for (int i = 0; i < lg -> segment_count; i++) {
+    double size_subarc_angle = (lg -> end_angle - lg -> start_angle) / lg -> segment_count;
+    lg -> arc_segments[i].arc_start_angle = lg -> start_angle + i * size_subarc_angle;
+    lg -> arc_segments[i].arc_end_angle = lg -> arc_segments[i].arc_start_angle
+      + size_subarc_angle - lg -> segment_gap_size;
   }
 
   return (Panel*) lg;

@@ -201,9 +201,11 @@ activate (GtkApplication* app,
 
     ctx -> drawing_area = drawing_area;
     ctx -> cg = *p;
-    /* It's a little strange that the following line seems to work even for linear_gauge */
+
     gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, *p, NULL);
-    g_timeout_add (250, gtk_update_gauge_panel_value, ctx);
+    
+    unsigned int timeout = panel_get_timeout (*p);
+    g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
 
     p++;
   }
