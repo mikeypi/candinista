@@ -5,15 +5,20 @@ sensors:
     can_id: 0xb003
     can_data_offset: 0
     can_data_width: 2
-    output_id: 0
+    row: 0
+    column: 0
 
   - name: "delphi 25036751 (temperature)"
-    x_values: [52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1, 279, 329, 389, 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373, 5572, 7153, 9256, 12073, 15873, 21044, 28146, 37994, 51791, 71332, 99326]
-    y_values: [145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
+    x_values: [52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1,
+    279, 329, 389, 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373,
+    5572, 7153, 9256, 12073, 15873, 21044, 28146, 37994, 51791, 71332, 99326]
+    y_values: [145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
+    65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
     can_id: 0xb003
     can_data_offset: 2
     can_data_width: 2
-    output_id: 1
+    row: 0
+    column: 1
 
   - name: "aem 30-2011 (temperature)"
     x_values: [100000, 29000, 9800, 3700, 1500, 500, 180]
@@ -21,7 +26,8 @@ sensors:
     can_id: 0xb003
     can_data_offset: 4
     can_data_width: 2
-    output_id: 2
+    row: 0
+    column: 2
 
   - name: "bosch pst-ft (pressure)"
     x_values: [0, 500, 4500]
@@ -29,7 +35,8 @@ sensors:
     can_id: 0xb000
     can_data_offset: 0
     can_data_width: 2
-    output_id: 3
+    row: 1
+    column: 0
 
   - name: "bosch pst-ft (pressure)"
     x_values: [0, 500, 4500]
@@ -37,7 +44,8 @@ sensors:
     can_id: 0xb000
     can_data_offset: 2
     can_data_width: 2
-    output_id: 4
+    row: 1
+    column: 1
 
   - name: "dummy sensor for rpm"
     x_values: [-5000, 0, 5000]
@@ -45,14 +53,19 @@ sensors:
     can_id: 0xb000
     can_data_offset: 4
     can_data_width: 2
-    output_id: 5
+    row: 1
+    column: 2
 
   - name: "delphi 15326386 (temperature)"
-    x_values: [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469, 559, 671, 809, 980, 1195, 1465, 1806, 2240, 2795, 3511, 4441, 5658, 7263, 9399, 12261, 16120, 21371, 28582, 38583, 52594, 72437, 100865]
-    y_values: [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
+    x_values: [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469,
+    559, 671, 809, 980, 1195, 1465, 1806, 2240, 2795, 3511, 4441, 5658, 7263, 9399, 12261,
+    16120, 21371, 28582, 38583, 52594, 72437, 100865]
+    y_values: [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
+    65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
 
   - name: "bosch pst-ft (temperature)"
-    x_values: [71.9, 89.9, 113.3, 144.5, 186.6, 244, 323.4, 434.9, 594, 824, 1167, 1683, 2480, 3740, 5784, 9195, 15067, 25524, 44864]
+    x_values: [71.9, 89.9, 113.3, 144.5, 186.6, 244, 323.4, 434.9, 594, 824, 1167, 1683, 2480,
+    3740, 5784, 9195, 15067, 25524, 44864]
     y_values: [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
 
   - name: "bosch 261230119 (pressure)"
@@ -69,7 +82,7 @@ sensors:
 
 panels:
   - type: radial
-    sensor: "bosch pst-ft-2 (temperature)"
+#   sensor: "bosch pst-ft-2 (temperature)"
     label: "Water"
     legend: "°C"
     row: 0
@@ -79,11 +92,10 @@ panels:
     low_warn: 27
     high_warn: 105
     border: 1
-    units: "celsius"
-    panel_id: 0
+    units: "FAHRENHEIT"
     
   - type: radial
-    sensor: "delphi 25036751 (temperature)"
+#    sensor: "delphi 25036751 (temperature)"
     label: "Intake"
     legend: "°F"
     row: 0
@@ -94,10 +106,9 @@ panels:
     high_warn: 150
     border: 1
     units: "FAHRENHEIT"
-    panel_id: 1
 
-  - type: radial
-    sensor: "aem 30-2011 (temperature)"
+  - type: linear
+#   sensor: "aem 30-2011 (temperature)"
     label: "Oil"
     legend: "°F"
     row: 0
@@ -108,10 +119,9 @@ panels:
     high_warn: 100
     border: 1
     units: "FAHRENHEIT"
-    panel_id: 2
     
   - type: radial
-    sensor: "bosch pst-ft (pressure)"
+#   sensor: "bosch pst-ft (pressure)"
     label: "Oil"
     legend: "psi"
     row: 1
@@ -122,10 +132,9 @@ panels:
     low_warn: 2.5
     border: 1
     units: "psi"
-    panel_id: 3
 
   - type: radial
-    sensor: "bosch pst-ft (pressure)"
+#   sensor: "bosch pst-ft (pressure)"
     label: "MAP"
     legend: "bar"
     row: 1
@@ -136,10 +145,9 @@ panels:
     high_warn: 3.5
     border: 1
     units: "bar"
-    panel_id: 4
 
   - type: info
-    sensor: "dummy sensor for rpm"
+#   sensor: "dummy sensor for rpm"
     label: "RPM"
     row: 1
     column: 2
@@ -150,4 +158,3 @@ panels:
     border: 1
     units: "none"
     timeout: 1500
-    panel_id: 5

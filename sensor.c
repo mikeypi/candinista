@@ -13,15 +13,20 @@ struct Sensor {
   double* x_values;
   double* y_values;
   int number_of_interpolation_points;
-  int output_id;
+  unsigned int row;
+  unsigned int column;
 };
 
-Sensor *sensor_create (const char *name, int can_id, int offset, int width) {
+Sensor *sensor_create (unsigned int row, unsigned int column, const char *name, int can_id, int offset, int width) {
   Sensor *s = calloc (1, sizeof *s);
+  s -> row = row;
+  s -> column = column;
   s -> name  = strdup (name);
   s -> can_id = can_id;
   s -> can_data_offset = offset;
   s -> can_data_width = width;
+  s -> row = row;
+  s -> column = column;
 
   return s;
 }
@@ -50,5 +55,6 @@ void sensor_set_value (Sensor *s, double v) {
   s -> value = v;
 }
 
-void sensor_set_output_id (Sensor* s, int p) { s -> output_id = p; }
-int sensor_output_id (const Sensor* s) { return s -> output_id; }
+int sensor_row (const Sensor *s)       { return s -> row; }
+int sensor_column (const Sensor *s)       { return s -> column; }
+

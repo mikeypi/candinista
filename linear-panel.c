@@ -151,12 +151,11 @@ static const struct PanelVTable linear_vtable = {
 
 
 Panel* create_linear_gauge_panel (unsigned int row,
-				  unsigned int column,
-				  double max,
-				  double min) {
+  				  unsigned int column,
+  				  double max,
+  				  double min) {
 
   LinearPanel *lg = calloc (1, sizeof *lg);
-  int i;
   
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;
@@ -177,7 +176,7 @@ Panel* create_linear_gauge_panel (unsigned int row,
   double total_x =  lg -> bargraph_origin_x;
   double y;
 
-  for (i = 0; i < lg -> bargraph_segment_count; i++) {
+  for (int i = 0; i < lg -> bargraph_segment_count; i++) {
     lg -> bargraph_segments[i].width = delta_x; 
     lg -> bargraph_segments[i].start_x = total_x;
     lg -> bargraph_segments[i].start_y = lg -> bargraph_origin_y;

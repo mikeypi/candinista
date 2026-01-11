@@ -34,7 +34,9 @@ static void dump_sensor (const Sensor* s, size_t index)
     printf ("    can_id: %d\n", sensor_can_id (s));
     printf ("    can_data_offset: %d\n", sensor_can_data_offset (s));
     printf ("    can_data_width: %d\n", sensor_can_data_width (s));
-    printf ("    output_panel: %d\n", sensor_output_id (s));
+    printf ("    row: %d\n", sensor_row (s));
+    printf ("    column: %d\n", sensor_column (s));
+ 
     print_double_array ("x_values", sensor_x_values(s), sensor_number_of_interpolation_points (s));
     print_double_array ("y_values", sensor_y_values(s), sensor_number_of_interpolation_points (s));
 }
@@ -57,7 +59,6 @@ void dump_panel (const Panel* g, size_t index)
     printf ("    high_warn: %.3f\n", g -> high_warn);
     printf ("    row: %d\n", g -> row);
     printf ("    column: %d\n", g -> column);
-    printf ("    panel_id: %d\n", g -> panel_id);
     
     /* Optional: identify concrete type by vtable address */
     printf ("    vtable   : %p\n", (void*)g -> vtable);
@@ -74,6 +75,7 @@ void configuration_print (const Configuration* d)
     printf ("Configuration dump\n");
     printf ("====================\n");
 
+    printf ("%d total sensors %d total panels %d rows, %d columns\n", d -> sensor_count, d -> panel_count, d -> n_rows, d -> n_columns);
     printf ("Sensors (%zu)\n", d ->sensor_count);
     for (size_t i = 0; i < d -> sensor_count; i++)
         dump_sensor (d -> sensors[i], i);

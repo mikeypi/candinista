@@ -43,7 +43,8 @@ typedef struct {
   double* x_values;
   double* y_values;
   size_t number_of_interpolation_points;
-  int output_id;
+  unsigned int row;
+  unsigned int column;
 } SensorTmp;
 
 
@@ -60,19 +61,8 @@ typedef struct {
   int border;
   unsigned int row;
   unsigned int column;
-  int panel_id;
   unsigned int timeout;
 } PanelTmp;
-
-
-#if 0
-static Sensor *find_sensor (Configuration *d, const char *name) {
-  for (size_t i = 0; i < d -> sensor_count; i++)
-    if (!strcmp (sensor_name (d -> sensors[i]), name))
-      return d -> sensors[i];
-  return NULL;
-}
-#endif
 
 
 void print_yaml_event_type (const yaml_event_t *event)
@@ -163,7 +153,8 @@ Configuration configuration_load_yaml (const char *path) {
 	  else if (!strcmp (key, "can_data_width")) st.can_data_width = atoi (v);
 	  else if (!strcmp (key, "x_values")) load_double_array (&parser, &st.x_values, &st.number_of_interpolation_points);
 	  else if (!strcmp (key, "y_values")) load_double_array (&parser, &st.y_values, &st.number_of_interpolation_points);
-	  else if (!strcmp (key, "output_id")) st.output_id = atoi (v);
+	  else if (!strcmp (key, "row")) st.row = atoi (v);
+	  else if (!strcmp (key, "column")) st.column = atoi (v);
 	  else if (!strcmp (key, "can_id")) st.can_id = strtol(v, NULL, 16);
 	} else if (in_panels) {
 	  if (!strcmp (key, "type")) strncpy (gt.type, v, 15);
@@ -177,7 +168,6 @@ Configuration configuration_load_yaml (const char *path) {
 	  else if (!strcmp (key, "border")) gt.border = atoi (v);	 
 	  else if (!strcmp (key, "row")) gt.row = atoi (v);
 	  else if (!strcmp (key, "column")) gt.column = atoi (v);
-	  else if (!strcmp (key, "panel_id")) gt.panel_id = atoi (v);
 	  else if (!strcmp (key, "timeout")) gt.timeout = atoi (v);
 	  else if (!strcmp (key, "units")) { char temp[80]; strncpy (temp, v, 15); gt.units = enum_from_unit_str (temp); }
 	}
@@ -187,12 +177,13 @@ Configuration configuration_load_yaml (const char *path) {
     }
 
     if (event.type == YAML_MAPPING_END_EVENT) {
-      if (in_sensors && st.name[0]) {
-	Sensor *s = sensor_create (st.name, st.can_id, st.can_data_offset, st.can_data_width);
+      if (in_sensors && st.name[0] && (0 != st.can_id)) {
+	Sensor *s = sensor_create (st.row, st.column, st.name, st.can_id, st.can_data_offset, st.can_data_width);
 	interpolation_array_sort (st.x_values, st.y_values, st.number_of_interpolation_points);
 	sensor_set_x_values (s, st.x_values, st.number_of_interpolation_points);
 	sensor_set_y_values (s, st.y_values, st.number_of_interpolation_points);
-	sensor_set_output_id (s, st.output_id);
+	if (st.row > d.n_rows) d.n_rows = st.row;
+	if (st.column > d.n_columns) d.n_columns = st.column;
 	d.sensors = realloc (d.sensors, sizeof *d.sensors * (d.sensor_count + 1));
 	d.sensors[d.sensor_count++] = s;
 	memset (&st, 0, sizeof st);
@@ -210,8 +201,9 @@ Configuration configuration_load_yaml (const char *path) {
 	panel_set_legend (g, gt.legend);
 	panel_set_border (g, gt.border);
 	panel_set_units (g, gt.units);
-	panel_set_panel_id (g, gt.panel_id);
 	panel_set_timeout (g, gt.timeout);
+	if (gt.row > d.n_rows) d.n_rows = gt.row;
+	if (gt.column > d.n_columns) d.n_columns = gt.column;
 	d.panels = realloc (d.panels, sizeof *d.panels * (d.panel_count + 1));
 	d.panels[d.panel_count++] = g;
 	memset (&gt, 0, sizeof gt);
@@ -233,6 +225,58 @@ Configuration configuration_load_yaml (const char *path) {
 }
 
 
+Panel* get_panel (Configuration* cfg, unsigned int row, unsigned int column) {
+  return (cfg -> panels[row * cfg -> n_columns + column]);
+}
+    
+Sensor* get_sensor (Configuration* cfg, unsigned int row, unsigned int column) {
+  return (cfg -> sensors[row * cfg -> n_columns + column]);
+}
+
+
+Configuration build_tables (const Configuration old_cfg) {
+  int i;
+  int j;
+  
+  Configuration* cfg = (Configuration*) calloc (1, sizeof (Configuration));
+
+  memcpy ((void*) cfg, (void*) &old_cfg, sizeof (*cfg));
+  
+  cfg -> n_rows += 1;
+  cfg -> n_columns += 1;
+
+  Panel** ptemp = (Panel**) calloc (sizeof (Panel*), (cfg -> n_rows + 1) * (cfg -> n_columns + 1));
+  Panel** p;
+    
+  Sensor** stemp = (Sensor**) calloc (sizeof (Sensor*), (cfg -> n_rows + 1) * (cfg -> n_columns + 1));
+  Sensor** s;
+
+  p = cfg -> panels;
+  while (p < cfg -> panels + cfg -> panel_count) {
+    i = panel_get_row (*p);
+    j = panel_get_column (*p);
+
+    ptemp[i * cfg -> n_columns + j] = *p;
+    p++;
+  }
+
+  cfg -> panels = ptemp;
+
+  s = cfg -> sensors;
+  while (s < cfg -> sensors + cfg -> sensor_count) {
+    i = sensor_row (*s);
+    j = sensor_column (*s);
+
+    stemp[i * cfg -> n_columns + j] = *s;
+    s++;
+  }
+
+  cfg -> sensors = stemp;
+
+  return (*cfg);
+}
+
+
 void configuration_free (Configuration *d) {
   for (size_t i = 0; i < d -> panel_count; i++)
     panel_destroy (d -> panels[i]);
@@ -241,3 +285,4 @@ void configuration_free (Configuration *d) {
   free (d -> panels);
   free (d -> sensors);
 }
+

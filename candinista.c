@@ -62,38 +62,18 @@
 
 Configuration cfg;
 
-#define nBytesToShort(a, b) ((a << 8) | b)
-
 static short
 BytesToShort (unsigned char a, unsigned char b) {
   unsigned short x = (a << 8) ^ b;
   return (x);
 }
 
-static Panel* panel_from_id (int panel_id) {
-  Panel** p = cfg.panels;
-  while (p < cfg.panels + cfg.panel_count) {
-    if (panel_id == panel_get_panel_id (*p)) {
-      return (*p);
-    }
-
-    p++;
-  }
-
-  return NULL;
-}
-
-static void
-update_widgets_for_display (Sensor* s, double f) {
-  int output_id = sensor_output_id (s);
-  Panel* p = panel_from_id (output_id);
-  panel_set_value (p, f);
-}
 
 static gboolean
 idle_task () {
   return TRUE;
 }
+
 
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
@@ -142,7 +122,8 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 			       sensor_y_values (s),
 			       sensor_number_of_interpolation_points (s));
 
-    update_widgets_for_display (s, temp);
+    Panel* p = get_panel (&cfg, sensor_row (s), sensor_column (s));
+    panel_set_value (p, temp);
 
     if (0 != data_logging) {
       log_data (&frame);
@@ -154,11 +135,31 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   return TRUE;
 }
 
+
+static void
+on_pressed(GtkGestureClick *gesture,
+           int              n_press,
+           double           x,
+           double           y,
+           gpointer         user_data)
+{
+
+
+  typedef struct {
+    GtkDrawingArea* drawing_area;
+    Panel* cg;
+  } cx;
+
+  cx* ctx = (cx*) user_data;
+
+  fprintf (stderr, "Clicked at %d, %d\n", panel_get_row (ctx -> cg), panel_get_column (ctx -> cg));
+}
+
+
 /*
  * Build the GTK GUI and associate the output widgets with the appropriate data struture so that their values
  * can be updated dynamically.
  */
-
 static void
 activate (GtkApplication* app,
           gpointer        user_data) {
@@ -203,7 +204,14 @@ activate (GtkApplication* app,
     ctx -> cg = *p;
 
     gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, *p, NULL);
+
+    GtkGesture* click = gtk_gesture_click_new();
     
+    g_signal_connect (click, "pressed",
+    		      G_CALLBACK (on_pressed), ctx);
+
+    gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
+
     unsigned int timeout = panel_get_timeout (*p);
     g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
 
@@ -254,6 +262,7 @@ main (int argc, char** argv) {
   get_environment_variables ();
 
   cfg = configuration_load_yaml ("/home/joe/candinista/config.yaml");
+  cfg = build_tables (cfg);
 
   while (-1 != (option = getopt (argc, argv, "dp"))) {
     switch (option) {

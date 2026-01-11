@@ -37,7 +37,6 @@ void   panel_set_value (Panel *g, double value);
 void   panel_set_offset (Panel *g, double value);
 void   panel_set_warn (Panel *g, double low, double high);
 void   panel_set_minmax (Panel *g, double low, double high);
-void   panel_set_coordinates (Panel *g, unsigned int row, unsigned int column);
 void   panel_set_label (Panel *g, char* label);
 void   panel_set_legend (Panel *g, char* legend);
 void   panel_set_border (Panel *g, unsigned char on);
@@ -54,6 +53,6 @@ unsigned int panel_get_timeout(Panel*);
 
 /* rendering */
 void   panel_draw (Panel* g, void* cairo_ctx);
-#endif
 
 double convert_units (double temp, unit_type to);
+#endif

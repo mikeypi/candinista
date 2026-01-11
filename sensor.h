@@ -3,7 +3,8 @@
 
 typedef struct Sensor Sensor;
 
-Sensor* sensor_create (const char *name, int can_id, int offset, int width);
+Sensor* sensor_create (unsigned int row, unsigned int column,
+		       const char *name, int can_id, int offset, int width);
 void    sensor_destroy (Sensor*);
 
 const char* sensor_name (const Sensor*);
@@ -24,6 +25,7 @@ int sensor_number_of_interpolation_points (const Sensor*);
 void sensor_set_x_values (Sensor* s, double* v, int n);
 void sensor_set_y_values (Sensor* s, double* v, int n);
 
-void sensor_set_output_id (Sensor* s, int p);
-int sensor_output_id (const Sensor* s);
+int sensor_row (const Sensor* s);
+int sensor_column (const Sensor* s);
+
 #endif
