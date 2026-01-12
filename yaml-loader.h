@@ -11,14 +11,18 @@ typedef struct {
   Panel  **panels;
   size_t panel_count;
 
-  unsigned int n_rows;
-  unsigned int n_columns;
+  unsigned int x_dimension;
+  unsigned int y_dimension;
+  unsigned int z_dimension;
 } Configuration;
 
 Configuration configuration_load_yaml (const char *path);
 Configuration build_tables (Configuration cfg);
 void      configuration_free (Configuration *);
 
-Panel* get_panel (Configuration* cfg, unsigned int row, unsigned int column);
-Sensor* get_sensor (Configuration* cfg, unsigned int row, unsigned int column);
+Panel* cfg_get_panel (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int z_index);
+void cfg_set_panel (Configuration* cfg, Panel* p, unsigned int x_index, unsigned int y_index, unsigned int z_index);
+
+Sensor* cfg_get_sensor (Configuration* cfg, unsigned int x_index, unsigned int y_index);
+void cfg_set_sensor (Configuration* cfg, Sensor* s, unsigned int x_index, unsigned int y_index);
 #endif

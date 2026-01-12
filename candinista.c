@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
+#include <assert.h>
 #include <fcntl.h>
 #include <time.h>
 #include <sys/ioctl.h>
@@ -122,9 +122,13 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 			       sensor_y_values (s),
 			       sensor_number_of_interpolation_points (s));
 
-    Panel* p = get_panel (&cfg, sensor_row (s), sensor_column (s));
+    Panel* p = cfg_get_panel (&cfg, sensor_x_index (s), sensor_y_index (s), 0);
     panel_set_value (p, temp);
 
+    if (sensor_id (s) != panel_get_id (p)) {
+      fprintf (stderr, "id mismatch %d != %d\n", sensor_id (s), panel_get_id (p));
+    } 
+      
     if (0 != data_logging) {
       log_data (&frame);
     }
@@ -143,8 +147,6 @@ on_pressed(GtkGestureClick *gesture,
            double           y,
            gpointer         user_data)
 {
-
-
   typedef struct {
     GtkDrawingArea* drawing_area;
     Panel* cg;
@@ -152,7 +154,7 @@ on_pressed(GtkGestureClick *gesture,
 
   cx* ctx = (cx*) user_data;
 
-  fprintf (stderr, "Clicked at %d, %d\n", panel_get_row (ctx -> cg), panel_get_column (ctx -> cg));
+  fprintf (stderr, "Clicked at %d, %d\n", panel_get_x_index (ctx -> cg), panel_get_y_index (ctx -> cg));
 }
 
 
@@ -166,7 +168,7 @@ activate (GtkApplication* app,
 
   GtkBuilder* builder;
   GObject* window;
-  Panel** p;
+  Panel* p;
   char temp[80];
   
   ui_file_name = "/home/joe/candinista/candinista.ui";
@@ -190,32 +192,34 @@ activate (GtkApplication* app,
     return;
   }
 
-  p = cfg.panels;
-  while (p < cfg.panels + cfg.panel_count) {
-    sprintf (temp, "da-%d-%d", panel_get_row (*p),  panel_get_column (*p));
-    GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_builder_get_object (builder, temp);
+  for (int i = 0; i < cfg.y_dimension; i++) {
+    for (int j = 0; j < cfg.x_dimension; j++) {
+      sprintf (temp, "da-%d-%d", i, j);
+      GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_builder_get_object (builder, temp);
+      assert (NULL != temp);
 
-    struct {
-      GtkDrawingArea* drawing_area;
-      Panel* cg;
-    }* ctx = g_new0 (typeof (*ctx), 1);
+      p = cfg_get_panel (&cfg, j, i, 0);
+      assert (NULL != p);
+	
+      struct {
+	GtkDrawingArea* drawing_area;
+	Panel* cg;
+      }* ctx = g_new0 (typeof (*ctx), 1);
 
-    ctx -> drawing_area = drawing_area;
-    ctx -> cg = *p;
+      ctx -> drawing_area = drawing_area;
+      ctx -> cg = p;
 
-    gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, *p, NULL);
+      gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
+      GtkGesture* click = gtk_gesture_click_new();
+      g_signal_connect (click, "pressed",
+			G_CALLBACK (on_pressed), ctx);
 
-    GtkGesture* click = gtk_gesture_click_new();
-    
-    g_signal_connect (click, "pressed",
-    		      G_CALLBACK (on_pressed), ctx);
+      gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
+      unsigned int timeout = panel_get_timeout (p);
+      g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
 
-    gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
-
-    unsigned int timeout = panel_get_timeout (*p);
-    g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
-
-    p++;
+      p++;
+    }
   }
   
   g_object_unref (builder);

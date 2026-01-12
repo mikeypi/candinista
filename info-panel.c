@@ -102,16 +102,20 @@ static const struct PanelVTable linear_vtable = {
 };
 
 
-Panel* create_info_panel (unsigned int row,
-			  unsigned int column) {
+Panel* create_info_panel (
+			  unsigned int x_index,
+			  unsigned int y_index,
+			  unsigned int z_index
+			  ) {
 
   InfoPanel *lg = calloc (1, sizeof *lg);
   int i;
   
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_info_panel;
   lg -> base.vtable = &linear_vtable;
-  lg -> base.row = row;
-  lg -> base.column = column;
+  lg -> base.x_index = x_index;
+  lg -> base.y_index = y_index;
+  lg -> base.z_index = z_index;
 
   return (Panel*) lg;
 }

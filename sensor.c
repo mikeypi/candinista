@@ -13,20 +13,19 @@ struct Sensor {
   double* x_values;
   double* y_values;
   int number_of_interpolation_points;
-  unsigned int row;
-  unsigned int column;
+  unsigned int x_index;
+  unsigned int y_index;
+  unsigned int id;
 };
 
-Sensor *sensor_create (unsigned int row, unsigned int column, const char *name, int can_id, int offset, int width) {
+Sensor *sensor_create (unsigned int x_index, unsigned int y_index, const char *name, int can_id, int offset, int width) {
   Sensor *s = calloc (1, sizeof *s);
-  s -> row = row;
-  s -> column = column;
+  s -> x_index = x_index;
+  s -> y_index = y_index;
   s -> name  = strdup (name);
   s -> can_id = can_id;
   s -> can_data_offset = offset;
   s -> can_data_width = width;
-  s -> row = row;
-  s -> column = column;
 
   return s;
 }
@@ -46,6 +45,8 @@ int sensor_can_data_width (const Sensor *s)       { return s -> can_data_width; 
 double* sensor_x_values (const Sensor *s)       { return s -> x_values; }
 double* sensor_y_values (const Sensor *s)       { return s -> y_values; }
 int sensor_number_of_interpolation_points (const Sensor *s)       { return s -> number_of_interpolation_points; };
+unsigned int sensor_id (const Sensor *s)       { return s -> id; }
+void sensor_set_id (Sensor *s, unsigned int id)       { s -> id = id; }
 
 void sensor_set_x_values (Sensor *s, double *v, int n) { s -> x_values = v; s -> number_of_interpolation_points = n; };
 void sensor_set_y_values (Sensor *s, double *v, int n) { s -> y_values = v; s -> number_of_interpolation_points = n; };
@@ -55,6 +56,6 @@ void sensor_set_value (Sensor *s, double v) {
   s -> value = v;
 }
 
-int sensor_row (const Sensor *s)       { return s -> row; }
-int sensor_column (const Sensor *s)       { return s -> column; }
+int sensor_x_index (const Sensor *s)       { return s -> x_index; }
+int sensor_y_index (const Sensor *s)       { return s -> y_index; }
 

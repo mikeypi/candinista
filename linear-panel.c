@@ -150,8 +150,10 @@ static const struct PanelVTable linear_vtable = {
 };
 
 
-Panel* create_linear_gauge_panel (unsigned int row,
-  				  unsigned int column,
+Panel* create_linear_gauge_panel (
+				  unsigned int x_index,
+  				  unsigned int y_index,
+				  unsigned int z_index,
   				  double max,
   				  double min) {
 
@@ -159,8 +161,9 @@ Panel* create_linear_gauge_panel (unsigned int row,
   
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;
-  lg -> base.row = row;
-  lg -> base.column = column;
+  lg -> base.x_index = x_index;
+  lg -> base.y_index = y_index;
+  lg -> base.z_index = z_index;
   lg -> base.max = max;
   lg -> base.min = min;
   
