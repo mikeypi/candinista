@@ -12,6 +12,7 @@ str_from_unit_enum (unit_type unit) {
   case FAHRENHEIT: return ("°F");
   case BAR: return ("bar");
   case PSI: return ("psi");
+  case KPA: return ("kPa");
   default: return ("NONE");
   }
 }
@@ -29,6 +30,7 @@ enum_from_unit_str (char* temp) {
   if ((0 == strcmp (buffer, "celsius")) || (0 == strcmp (buffer, "c"))) { fprintf (stderr, "returning CELSIUS\n"); return (CELSIUS); }
   if ((0 == strcmp (buffer, "fahrenheit")) || (0 == strcmp (buffer, "f"))) {  fprintf (stderr, "returning FAHRENHEIT\n");return (FAHRENHEIT); }
   if (0 == strcmp (buffer, "bar")) {  fprintf (stderr, "returning BAR\n");return (BAR); }
+  if (0 == strcmp (buffer, "kPa")) {  fprintf (stderr, "returning PSI\n");return (KPA); }
   if (0 == strcmp (buffer, "psi")) {  fprintf (stderr, "returning PSI\n");return (PSI); }
   if (0 == strcmp (buffer, "none")) {  fprintf (stderr, "returning NONE\n");return (NONE); }
   
@@ -36,4 +38,19 @@ enum_from_unit_str (char* temp) {
   return (NONE);
 }
 
+double
+convert_units (double temp, unit_type to) {
+ switch (to) {
+  case FAHRENHEIT:
+    return ((temp * 9.0 / 5.0) + 32.0);
 
+  case PSI:
+    return (temp * 14.503773773);
+
+  case KPA:
+    return (temp * 100);
+
+  default: return (temp);
+    fprintf (stderr, "not convering %f to %f\n", temp);
+  }
+}

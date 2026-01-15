@@ -53,21 +53,6 @@ void panel_set_output_format (Panel* g, char* format)      { g -> vtable -> set_
 void panel_destroy (Panel* g) {  free (g); }
 
 
-double
-convert_units (double temp, unit_type to) {
- switch (to) {
-  case FAHRENHEIT:
-    return ((temp * 9.0 / 5.0) + 32.0);
-
-  case PSI:
-    return (temp * 14.503773773);
-
-  default: return (temp);
-    fprintf (stderr, "not convering %f to %f\n", temp);
-  }
-}
-
-
 unsigned int
 get_active_foreground_color (Panel *g, double value, double high_warn, double low_warn) {
   if ((high_warn == low_warn) || (isnan (value))) {
