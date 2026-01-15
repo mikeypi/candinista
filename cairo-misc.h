@@ -1,4 +1,7 @@
-typedef enum warning_level {NO_WARN = 6, LOW_WARN = 7, HIGH_WARN = 8} warning_level;
+#ifndef CAIROMISC_H
+#define CAIROMISC
+
+typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 
 #define RED_RGB 255/255.0, 8/255.0, 8/255.0
 #define BLUE_RGB 224/255.0, 224/255.0, 224/255.0
@@ -33,6 +36,13 @@ typedef enum warning_level {NO_WARN = 6, LOW_WARN = 7, HIGH_WARN = 8} warning_le
 #define DEFAULT_BARGRAPH_HEIGHT 160
 #define DEFAULT_BARGRPAH_SEGMENT_COUNT 16
 
+#define XRED_RGB    0xff0808
+#define XBLUE_RGB   0xe0e0e0
+#define XORANGE_RGB 0xffa600
+#define XBLACK_RGB  0x000000
+#define XGRAY_RGB   0x333333
+
+
 
 //extern cairo_info_panel* new_cairo_info_panel ();
 extern void draw_cairo_info_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
@@ -50,7 +60,8 @@ extern void set_rgba_for_foreground (cairo_t*, warning_level);
 extern void set_rgba_for_background (cairo_t*);
 extern void show_text_unjustified (cairo_t*,  int, int, char*);
 extern void show_text_left_justified (cairo_t*, int, int, char*);
-extern int show_text_right_justified (cairo_t*, int, int, char*, int, warning_level, bool, bool);
+extern int show_text_right_justified (cairo_t*, int, int, char*, int, unsigned int, bool, bool);
 extern void rounded_rectangle(cairo_t*, double, double, double, double, double);
 
-extern warning_level get_warning_level (double, double, double);
+extern void set_rgba (cairo_t* cr, unsigned int color, float alpha);
+#endif

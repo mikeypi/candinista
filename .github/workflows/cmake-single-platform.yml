@@ -28,8 +28,7 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Install GTK4 dependencies
-      run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev \
-      pkg-config
+      run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev && pkg-config
 
     - name: Build
       # Build your program with the given configuration

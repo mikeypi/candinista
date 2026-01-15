@@ -7,11 +7,14 @@
 #include <yaml.h>
 #include <gtk/gtk.h>
 
+#include "units.h"
 #include "candinista.h"
 #include "yaml-loader.h"
+#include "cairo-misc.h"
+
 
 static unit_type
-enum_from_unit_str (const char* temp) {
+enum_from_type_str (const char* temp) {
   char buffer[80];
   int i;
   for (i = 0; i < strlen (temp); i++) {
@@ -20,14 +23,12 @@ enum_from_unit_str (const char* temp) {
 
   buffer[i] = '\0';
 
-  if ((0 == strcmp (buffer, "celsius")) || (0 == strcmp (buffer, "c"))) { return (CELSIUS); }
-  if ((0 == strcmp (buffer, "fahrenheit")) || (0 == strcmp (buffer, "f"))) { return (FAHRENHEIT); }
-  if (0 == strcmp (buffer, "bar")) { return (BAR); }
-  if (0 == strcmp (buffer, "psi")) { return (PSI); }
-  if (0 == strcmp (buffer, "none")) { return (NONE); }
-  
-  fprintf (stderr, "unknown unit type\n");
-  return (NONE);
+  if ((0 == strcmp (buffer, "radial"))) { return (RADIAL_PANEL); }
+  if ((0 == strcmp (buffer, "linear"))) { return (LINEAR_PANEL); }
+  if ((0 == strcmp (buffer, "info"))) { return (INFO_PANEL); }
+
+  fprintf (stderr, "unknown panel type\n");
+  return (UNKNOWN_PANEL);
 }
 
 /*
@@ -36,13 +37,12 @@ enum_from_unit_str (const char* temp) {
  */
 typedef struct {
   char name[64];
-  double min, max, value;
   int can_id;
   int can_data_offset;
   int can_data_width;
   double* x_values;
   double* y_values;
-  size_t number_of_interpolation_points;
+  size_t n_values;
   unsigned int x_index;
   unsigned int y_index;
   unsigned int id;
@@ -50,7 +50,7 @@ typedef struct {
 
 
 typedef struct {
-  char type[16];
+  //  char type[16];
   double min;
   double max;
   double low_warn;
@@ -58,13 +58,18 @@ typedef struct {
   double offset;
   unit_type units; 
   char label[64];
-  char legend[64];
   int border;
   unsigned int x_index;
   unsigned int y_index;
   unsigned int z_index;
   unsigned int timeout;
   unsigned int id;
+  unsigned int foreground_color;
+  unsigned int background_color;
+  unsigned int high_warn_color;
+  unsigned int low_warn_color;
+  char output_format[64];
+  panel_type type;
 } PanelTmp;
 
 
@@ -140,6 +145,11 @@ Configuration configuration_load_yaml (const char *path) {
   SensorTmp st = {0};
   PanelTmp gt = {0};
 
+  gt.background_color = -1;
+  gt.foreground_color = -1;
+  gt.high_warn_color = -1;
+  gt.low_warn_color = -1;
+
   while (yaml_parser_parse (&parser, &event)) {
     if (event.type == YAML_SCALAR_EVENT) {
       const char *v = (const char *)event.data.scalar.value;
@@ -149,32 +159,35 @@ Configuration configuration_load_yaml (const char *path) {
       else {
 	if (in_sensors) {
 	  if (!strcmp (key, "name")) strncpy (st.name, v, 63);
-	  else if (!strcmp (key, "min")) st.min = atof (v);
-	  else if (!strcmp (key, "max")) st.max = atof (v);
-	  else if (!strcmp (key, "value")) st.value = atof (v);
 	  else if (!strcmp (key, "can_data_offset")) st.can_data_offset = atoi (v);
 	  else if (!strcmp (key, "can_data_width")) st.can_data_width = atoi (v);
-	  else if (!strcmp (key, "x_values")) load_double_array (&parser, &st.x_values, &st.number_of_interpolation_points);
-	  else if (!strcmp (key, "y_values")) load_double_array (&parser, &st.y_values, &st.number_of_interpolation_points);
+	  else if (!strcmp (key, "x_values")) load_double_array (&parser, &st.x_values, &st.n_values);
+	  else if (!strcmp (key, "y_values")) load_double_array (&parser, &st.y_values, &st.n_values);
 	  else if (!strcmp (key, "x_index")) st.x_index = atoi (v);
 	  else if (!strcmp (key, "y_index")) st.y_index = atoi (v);
 	  else if (!strcmp (key, "id")) st.id = atoi (v);
 	  else if (!strcmp (key, "can_id")) st.can_id = strtol(v, NULL, 16);
 	} else if (in_panels) {
-	  if (!strcmp (key, "type")) strncpy (gt.type, v, 15);
+	  //	  if (!strcmp (key, "type")) strncpy (gt.type, v, 15);
+	  if (!strcmp (key, "type")) { gt.type = enum_from_type_str (v); }
+
 	  else if (!strcmp (key, "low_warn")) gt.low_warn = atof (v);
 	  else if (!strcmp (key, "high_warn")) gt.high_warn = atof (v);
 	  else if (!strcmp (key, "min_value")) gt.min = atof (v);
 	  else if (!strcmp (key, "max_value")) gt.max = atof (v);
 	  else if (!strcmp (key, "offset")) gt.offset = atof (v);
 	  else if (!strcmp (key, "label")) strncpy (gt.label, v, 63);
-	  else if (!strcmp (key, "legend")) strncpy (gt.legend, v, 63);
 	  else if (!strcmp (key, "border")) gt.border = atoi (v);	 
 	  else if (!strcmp (key, "x_index")) gt.x_index = atoi (v);
 	  else if (!strcmp (key, "y_index")) gt.y_index = atoi (v);
 	  else if (!strcmp (key, "z_index")) gt.z_index = atoi (v);
 	  else if (!strcmp (key, "timeout")) gt.timeout = atoi (v);
+	  else if (!strcmp (key, "foreground_color")) gt.foreground_color = strtol(v, NULL, 16);
+	  else if (!strcmp (key, "background_color")) gt.background_color = strtol(v, NULL, 16);
+	  else if (!strcmp (key, "low_warn_color")) gt.low_warn_color = strtol(v, NULL, 16); 
+	  else if (!strcmp (key, "high_warn_color")) gt.high_warn_color = strtol(v, NULL, 16);
 	  else if (!strcmp (key, "id")) gt.id = atoi (v);
+	  else if (!strcmp (key, "output_format")) strncpy (gt.output_format, v, 63);
 	  else if (!strcmp (key, "units")) { char temp[80]; strncpy (temp, v, 15); gt.units = enum_from_unit_str (temp); }
 	}
 
@@ -185,9 +198,9 @@ Configuration configuration_load_yaml (const char *path) {
     if (event.type == YAML_MAPPING_END_EVENT) {
       if (in_sensors && st.name[0] && (0 != st.can_id)) {
 	Sensor *s = sensor_create (st.x_index, st.y_index, st.name, st.can_id, st.can_data_offset, st.can_data_width);
-	interpolation_array_sort (st.x_values, st.y_values, st.number_of_interpolation_points);
-	sensor_set_x_values (s, st.x_values, st.number_of_interpolation_points);
-	sensor_set_y_values (s, st.y_values, st.number_of_interpolation_points);
+	interpolation_array_sort (st.x_values, st.y_values, st.n_values);
+	sensor_set_x_values (s, st.x_values, st.n_values);
+	sensor_set_y_values (s, st.y_values, st.n_values);
 	sensor_set_id (s, st.id);
 	if (st.x_index > d.x_dimension) d.x_dimension = st.x_index;
 	if (st.y_index > d.y_dimension) d.y_dimension = st.y_index;
@@ -196,26 +209,63 @@ Configuration configuration_load_yaml (const char *path) {
 	memset (&st, 0, sizeof st);
       }
 
-      if (in_panels && gt.type[0]) {
+      if (in_panels && gt.type != UNKNOWN_PANEL) {
 	Panel *g;
-	if (0 == strcmp (gt.type, "radial")) { g = create_radial_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min); }
-	else if (0 == strcmp (gt.type, "linear")) { g = create_linear_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min); }
-	else if (0 == strcmp (gt.type, "info")) { g = create_info_panel (gt.x_index, gt.y_index, gt.z_index); }
+	if (RADIAL_PANEL == gt.type) {
+	  g = create_radial_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min);
+	  panel_set_warn (g, gt.low_warn, gt.high_warn);
+	  panel_set_offset (g, gt.offset);
+	  panel_set_label (g, gt.label);
+	  panel_set_border (g, gt.border);
+	  panel_set_units (g, gt.units);
+	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
+	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
+	  if (-1 != gt.low_warn_color) { panel_set_low_warn_color (g, gt.low_warn_color); }
+	  if (-1 != gt.high_warn_color) { panel_set_high_warn_color (g, gt.high_warn_color); }
+	  panel_set_timeout (g, gt.timeout);
+	  panel_set_id (g, gt.id);
+	  panel_set_type (g, gt.type);
+	  if ('\0' != gt.output_format[0]) { panel_set_output_format (g, gt.output_format); }
+	}
+	else if (LINEAR_PANEL == gt.type) {
+	  g = create_linear_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min);
+	  panel_set_warn (g, gt.low_warn, gt.high_warn);
+	  panel_set_offset (g, gt.offset);
+	  panel_set_label (g, gt.label);
+	  panel_set_border (g, gt.border);
+	  panel_set_units (g, gt.units);
+	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
+	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
+	  if (-1 != gt.low_warn_color) { panel_set_low_warn_color (g, gt.low_warn_color); }
+	  if (-1 != gt.high_warn_color) { panel_set_high_warn_color (g, gt.high_warn_color); }
+	  panel_set_timeout (g, gt.timeout);
+	  panel_set_id (g, gt.id);
+	  panel_set_type (g, gt.type);
+	  if ('\0' != gt.output_format[0]) { panel_set_output_format (g, gt.output_format); }
+	}
+	else if (INFO_PANEL == gt.type) {
+	  g = create_info_panel (gt.x_index, gt.y_index, gt.z_index);
+	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
+	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
+	  panel_set_border (g, gt.border);
+	  panel_set_timeout (g, gt.timeout);
+	  panel_set_id (g, gt.id);
+	  panel_set_type (g, gt.type);
+	}
 
-	panel_set_warn (g, gt.low_warn, gt.high_warn);
-	panel_set_offset (g, gt.offset);
-	panel_set_label (g, gt.label);
-	panel_set_legend (g, gt.legend);
-	panel_set_border (g, gt.border);
-	panel_set_units (g, gt.units);
-	panel_set_timeout (g, gt.timeout);
-	panel_set_id (g, gt.id);
 	if (gt.x_index > d.x_dimension) d.x_dimension = gt.x_index;
 	if (gt.y_index > d.y_dimension) d.y_dimension = gt.y_index;
 	if (gt.z_index > d.z_dimension) d.z_dimension = gt.z_index;
 	d.panels = realloc (d.panels, sizeof *d.panels * (d.panel_count + 1));
 	d.panels[d.panel_count++] = g;
 	memset (&gt, 0, sizeof gt);
+
+	gt.background_color = -1;
+	gt.foreground_color = -1;
+	gt.high_warn_color = -1;
+	gt.low_warn_color = -1;
+	gt.output_format[0] = '\0';
+	gt.type = UNKNOWN_PANEL;
       }
     }
 
@@ -292,8 +342,8 @@ Configuration build_tables (const Configuration old_cfg) {
 
   s = cfg -> sensors;
   while (s < cfg -> sensors + cfg -> sensor_count) {
-    i = sensor_x_index (*s);
-    j = sensor_y_index (*s);
+    i = sensor_get_x_index (*s);
+    j = sensor_get_y_index (*s);
 
     int index = index2d (cfg, i, j);
     stemp[index] = *s;
@@ -302,7 +352,19 @@ Configuration build_tables (const Configuration old_cfg) {
 
   cfg -> sensors = stemp;
 
+  cfg -> active_z_index = (int *) calloc (sizeof (int), (cfg -> x_dimension) * (cfg -> y_dimension));
+
   return (*cfg);
+}
+
+
+int get_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index) {
+  return (cfg -> active_z_index[index2d (cfg, x_index, y_index)]);
+}
+
+
+void set_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int value) {
+  cfg -> active_z_index[index2d (cfg, x_index, y_index)] = value;
 }
 
 

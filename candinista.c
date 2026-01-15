@@ -53,12 +53,14 @@
 
 #include "candinista.h"
 #include "cairo-misc.h"
+#include "units.h"
 #include "yaml-loader.h"
 #include "yaml-printer.h"
 #include "sensor.h"
 #include "panel.h"
 #include "gtk-glue.h"
 #include "datalogging.h"
+
 
 Configuration cfg;
 
@@ -68,12 +70,10 @@ BytesToShort (unsigned char a, unsigned char b) {
   return (x);
 }
 
-
 static gboolean
 idle_task () {
   return TRUE;
 }
-
 
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
@@ -96,7 +96,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
   while (i < cfg.sensor_count) {
     Sensor* s = cfg.sensors[i];
-    if (sensor_can_id (s) != (frame.can_id & 0x7fffffff)) {
+    if (sensor_get_can_id (s) != (frame.can_id & 0x7fffffff)) {
       i++;
       continue;
     }
@@ -105,8 +105,8 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
      * retrieve the individual data values from the can frame. This handles char and short,
      * would need to be expanded for 32 or 64 bit data
      */
-    int offset = sensor_can_data_offset (s);
-    if (sizeof (short) == sensor_can_data_width (s)) {
+    int offset = sensor_get_can_data_offset (s);
+    if (sizeof (short) == sensor_get_can_data_width (s)) {
       temp = BytesToShort (frame.data[offset], frame.data[offset + 1]);
     } else {
       temp = frame.data[offset];
@@ -115,18 +115,26 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     if (0 > temp) {
       fprintf (stderr, "bad sensor data\n");
     }
-    
+
     /* apply interpolation */
     temp = linear_interpolate (temp,
-			       sensor_x_values (s),
-			       sensor_y_values (s),
-			       sensor_number_of_interpolation_points (s));
+			       sensor_get_x_values (s),
+			       sensor_get_y_values (s),
+			       sensor_get_n_values (s));
 
-    Panel* p = cfg_get_panel (&cfg, sensor_x_index (s), sensor_y_index (s), 0);
+    unsigned int x_index = sensor_get_x_index (s);
+    unsigned int y_index = sensor_get_y_index (s);
+    int z_index =  get_active_z (&cfg, x_index, y_index);
+
+    Panel* p = cfg_get_panel (&cfg,
+			      x_index,
+			      y_index,
+			      z_index);
+
     panel_set_value (p, temp);
 
-    if (sensor_id (s) != panel_get_id (p)) {
-      fprintf (stderr, "id mismatch %d != %d\n", sensor_id (s), panel_get_id (p));
+    if (sensor_get_id (s) != panel_get_id (p)) {
+      fprintf (stderr, "id mismatch %d != %d\n", sensor_get_id (s), panel_get_id (p));
     } 
       
     if (0 != data_logging) {
@@ -139,7 +147,10 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   return TRUE;
 }
 
-
+/*
+ * clicking a panel is supposed to cycle through all of the panels that have the same x, and
+ * y but different z coordinates.
+ */
 static void
 on_pressed(GtkGestureClick *gesture,
            int              n_press,
@@ -154,7 +165,26 @@ on_pressed(GtkGestureClick *gesture,
 
   cx* ctx = (cx*) user_data;
 
-  fprintf (stderr, "Clicked at %d, %d\n", panel_get_x_index (ctx -> cg), panel_get_y_index (ctx -> cg));
+  unsigned int x_index = panel_get_x_index (ctx -> cg);
+  unsigned int y_index = panel_get_y_index (ctx -> cg);
+  unsigned int active_z = get_active_z (&cfg, x_index, y_index);
+
+  Panel* p = NULL;
+  
+  for (int i = 1; i < cfg.z_dimension; i++) {
+    int j = (active_z + i) % cfg.z_dimension;
+    if (NULL != (p = cfg_get_panel (&cfg, x_index, y_index, j))) {
+      set_active_z (&cfg, x_index, y_index, j);
+      break;
+    }
+  }
+
+  if (NULL != p) {
+    ctx -> cg = p;
+    gtk_drawing_area_set_draw_func (ctx -> drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
+    unsigned int timeout = panel_get_timeout (p);
+    g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
+  }
 }
 
 

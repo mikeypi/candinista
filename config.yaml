@@ -89,24 +89,37 @@ sensors:
 panels:
   - type: radial
 #   sensor: "bosch pst-ft-2 (temperature)" 1
-#    label: "Water"
-    label: "0/0"    
-    legend: "°C"
+    label: "Water"
+    legend: "°F"
     y_index: 0
     x_index: 0
     max_value: 120
     min_value: 0
-    low_warn: 27
+    low_warn: -27
     high_warn: 105
     border: 1
     units: "FAHRENHEIT"
     id: 0
+
+  - type: radial
+#   sensor: "bosch pst-ft-2 (temperature)" 1
+    label: "Water"
+    legend: "°C"
+    y_index: 0
+    x_index: 0
+    z_index: 1
+    max_value: 120
+    min_value: 0
+    low_warn: -27
+    high_warn: 105
+    border: 1
+    units: "CELSIUS"
+    id: 0
     
   - type: radial
 #    sensor: "delphi 25036751 (temperature)" 2
-#    label: "Intake"
-    label: "0/1"    
-    legend: "°F"
+    label: "Intake"
+    legend: "°C"
     y_index: 0
     x_index: 1
     max_value: 50
@@ -114,19 +127,33 @@ panels:
     low_warn: -100
     high_warn: 150
     border: 1
-    units: "FAHRENHEIT"
+    units: "CELSIUS"
     id: 1
 
   - type: radial
+#    sensor: "delphi 25036751 (temperature)" 2
+    label: "Intake"
+    legend: "°F"
+    y_index: 0
+    x_index: 1
+    z_index: 1
+    max_value: 122
+    min_value: 0
+    low_warn: -148
+    high_warn: 302
+    border: 1
+    units: "FAHRENHEIT"
+    id: 1
+
+  - type: linear
 #   sensor: "aem 30-2011 (temperature)" 3
-#    label: "Oil"
-    label: "0/2"    
+    label: "Oil"
     legend: "°F"
     y_index: 0
     x_index: 2
     max_value: 120
-    min_value: 0
-    low_warn: 38
+    min_value: -1000
+    low_warn: -38
     high_warn: 100
     border: 1
     units: "FAHRENHEIT"
@@ -134,14 +161,28 @@ panels:
     
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 4
-#    label: "Oil"
-    label: "1/0"
-    legend: "psi"
+    label: "Oil"
+    legend: "bar"
     y_index: 1
     x_index: 0
     max_value: 8
     min_value: 0
     high_warn: 5.5
+    low_warn: 0
+    border: 1
+    units: "bar"
+    id: 3
+
+  - type: radial
+#   sensor: "bosch pst-ft (pressure)" 4
+    label: "Oil"
+    legend: "psi"
+    y_index: 1
+    x_index: 0
+    z_index: 1
+    max_value: 8
+    min_value: 0
+    high_warn: 180
     low_warn: 2.5
     border: 1
     units: "psi"
@@ -149,8 +190,7 @@ panels:
 
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 5
-#    label: "MAP"
-    label: "1/1"
+    label: "MAP"
     legend: "bar"
     y_index: 1
     x_index: 1
@@ -163,9 +203,39 @@ panels:
     id: 4
 
   - type: radial
+#   sensor: "bosch pst-ft (pressure)" 5
+    label: "MAP"
+    legend: "psi"
+    y_index: 1
+    x_index: 1
+    z_index: 1
+    max_value: 100
+    min_value: -101
+    low_warn: -1000
+    high_warn: 1000
+    border: 1
+    units: "psi"
+    id: 4
+
+  - type: radial
+#   sensor: "bosch pst-ft (pressure)" 5
+    label: "MAP"
+    legend: "bar"
+    y_index: 1
+    x_index: 1
+    z_index: 2
+    max_value: 4.0
+    min_value: 1.0
+    low_warn: 1.5
+    high_warn: 3.5
+    border: 1
+    units: "bar"
+    output_format: "%.1f"
+    id: 4
+
+  - type: info
 #   sensor: "dummy sensor for rpm" 6
-#    label: "RPM"
-    label: "1/2"
+    label: "RPM"
     y_index: 1
     x_index: 2
     max_value: 8000

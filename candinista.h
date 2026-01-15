@@ -1,3 +1,6 @@
+#ifndef CANDINISTA_H
+#define CANDINISTA_H
+
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -30,7 +33,6 @@
 #define MAX_CAN_FIELDS 8
 #define MAX_LABEL_LENGTH 40
 
-typedef enum {FAHRENHEIT, CELSIUS, BAR, PSI, NONE} unit_type;
 
 typedef enum {CAIRO_GAUGE_PANEL, CAIRO_INFO_PANEL, CAIRO_BARGRAPH_PANEL} output_type;
 
@@ -66,3 +68,4 @@ extern void read_config_from_json (void);
 extern void print_config (FILE*);
 
 #define DISPALY_UPDATE_INTERVAL 2
+#endif

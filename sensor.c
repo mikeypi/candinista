@@ -5,14 +5,12 @@
 struct Sensor {
   char  *name;
   double value;
-  double min;
-  double max;
   unsigned int can_id;
   unsigned int can_data_offset;
   unsigned int can_data_width;
   double* x_values;
   double* y_values;
-  int number_of_interpolation_points;
+  int n_values;
   unsigned int x_index;
   unsigned int y_index;
   unsigned int id;
@@ -35,27 +33,19 @@ void sensor_destroy (Sensor *s) {
   free (s);
 }
 
-const char *sensor_name (const Sensor *s) { return s -> name; }
-double sensor_value (const Sensor *s)     { return s -> value; }
-double sensor_min (const Sensor *s)       { return s -> min; }
-double sensor_max (const Sensor *s)       { return s -> max; }
-int sensor_can_id (const Sensor *s)       { return s -> can_id; }
-int sensor_can_data_offset (const Sensor *s)       { return s -> can_data_offset; }
-int sensor_can_data_width (const Sensor *s)       { return s -> can_data_width; }
-double* sensor_x_values (const Sensor *s)       { return s -> x_values; }
-double* sensor_y_values (const Sensor *s)       { return s -> y_values; }
-int sensor_number_of_interpolation_points (const Sensor *s)       { return s -> number_of_interpolation_points; };
-unsigned int sensor_id (const Sensor *s)       { return s -> id; }
-void sensor_set_id (Sensor *s, unsigned int id)       { s -> id = id; }
+const char *sensor_get_name (const Sensor *s)                         { return s -> name; }
+int sensor_get_can_id (const Sensor *s)                               { return s -> can_id; }
+int sensor_get_can_data_offset (const Sensor *s)                      { return s -> can_data_offset; }
+int sensor_get_can_data_width (const Sensor *s)                       { return s -> can_data_width; }
+double* sensor_get_x_values (const Sensor *s)                         { return s -> x_values; }
+double* sensor_get_y_values (const Sensor *s)                         { return s -> y_values; }
+int sensor_get_n_values (const Sensor *s)                             { return s -> n_values; };
+unsigned int sensor_get_id (const Sensor *s)                          { return s -> id; }
 
-void sensor_set_x_values (Sensor *s, double *v, int n) { s -> x_values = v; s -> number_of_interpolation_points = n; };
-void sensor_set_y_values (Sensor *s, double *v, int n) { s -> y_values = v; s -> number_of_interpolation_points = n; };
-void sensor_set_value (Sensor *s, double v) {
-  if  (v < s -> min) v = s -> min;
-  if  (v > s -> max) v = s -> max;
-  s -> value = v;
-}
+int sensor_get_x_index (const Sensor *s)                              { return s -> x_index; }
+int sensor_get_y_index (const Sensor *s)                              { return s -> y_index; }
 
-int sensor_x_index (const Sensor *s)       { return s -> x_index; }
-int sensor_y_index (const Sensor *s)       { return s -> y_index; }
+void sensor_set_id (Sensor *s, unsigned int id)                       { s -> id = id; }
+void sensor_set_x_values (Sensor *s, double *v, int n)                { s -> x_values = v; s -> n_values = n; };
+void sensor_set_y_values (Sensor *s, double *v, int n)                { s -> y_values = v; s -> n_values = n; };
 

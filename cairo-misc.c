@@ -3,51 +3,13 @@
 #include <stdio.h>
 #include "cairo-misc.h"
 
-warning_level
-get_warning_level (double value, double high_warn, double low_warn) {
-  if (!isnan (low_warn) && (value < low_warn)) {
-    return (LOW_WARN);
-  }
-  if (!isnan (high_warn) && (value > high_warn)) {
-    return (HIGH_WARN);
-  }
-
-  return (NO_WARN);
-}
-
 void
-set_rgba_for_burn_in (cairo_t* cr, enum warning_level wl) {
-  switch (wl) {
-  case HIGH_WARN:
-    cairo_set_source_rgba (cr, HIGH_WARN_BURN_IN_RGBA);
-    break;
-  case LOW_WARN:
-    cairo_set_source_rgba (cr, LOW_WARN_BURN_IN_RGBA);
-    break;
-  case NO_WARN:
-    cairo_set_source_rgba (cr, BURN_IN_RGBA);
-    break;
-  }
-}
+set_rgba (cairo_t* cr, unsigned int color, float alpha) {
+  unsigned int red =   (color >> 16) & 0xff;
+  unsigned int green = (color >> 8) & 0xff;
+  unsigned int blue =  (color) & 0xff;
 
-void
-set_rgba_for_foreground  (cairo_t* cr, enum warning_level wl) {
-  switch (wl) {
-  case HIGH_WARN:
-    cairo_set_source_rgba (cr, HIGH_WARN_RGBA);
-    break;
-  case LOW_WARN:
-    cairo_set_source_rgba (cr, LOW_WARN_RGBA);
-    break;
-  case NO_WARN:
-    cairo_set_source_rgba (cr, FOREGROUND_RGBA);
-    break;
-  }
-}
-
-void
-set_rgba_for_background (cairo_t* cr) {
-  cairo_set_source_rgba (cr, BACKGROUND_RGBA);
+  cairo_set_source_rgba (cr, (double)red/255.0, (double)green/255.0, (double)blue/255.0, alpha);
 }
 
 void
@@ -71,7 +33,7 @@ show_text_right_justified (cairo_t* cr,
 			   int y,
 			   char* buffer,
 			   int width,
-			   warning_level warn,
+			   unsigned int color,
 			   bool burn_in,
 			   bool add_box) {
 
@@ -86,7 +48,7 @@ show_text_right_justified (cairo_t* cr,
   case 2:
   case 1:
     cairo_text_extents(cr, ghost_chars[width - 1], &extents);
-  break;
+    break;
   
   default:
     return (-1);
@@ -96,7 +58,7 @@ show_text_right_justified (cairo_t* cr,
 #define BOX_WIDTH_MARGIN 5
   
   if (add_box) {
-    set_rgba_for_foreground (cr, warn);
+    set_rgba (cr, color, 0.9);
     rounded_rectangle(cr,
 		      x - (BOX_WIDTH_MARGIN / 2),
 		      y - (extents.height + BOX_HEIGHT_MARGIN),
@@ -109,12 +71,12 @@ show_text_right_justified (cairo_t* cr,
   double start_x = x + ((extents.x_advance / width) * (width - strlen (buffer)));
 
   if (burn_in) {
-    set_rgba_for_burn_in (cr, warn);
+    set_rgba (cr, color, 0.14);
     cairo_move_to (cr, x , y);
     cairo_show_text (cr, ghost_chars[width - 1]);
   }
   
-  set_rgba_for_foreground (cr, warn);
+  set_rgba (cr, color, 0.9);
   cairo_move_to (cr, start_x , y);
   cairo_show_text (cr, buffer);
 }

@@ -11,6 +11,8 @@ typedef struct {
   Panel  **panels;
   size_t panel_count;
 
+  int *active_z_index;
+  
   unsigned int x_dimension;
   unsigned int y_dimension;
   unsigned int z_dimension;
@@ -25,4 +27,9 @@ void cfg_set_panel (Configuration* cfg, Panel* p, unsigned int x_index, unsigned
 
 Sensor* cfg_get_sensor (Configuration* cfg, unsigned int x_index, unsigned int y_index);
 void cfg_set_sensor (Configuration* cfg, Sensor* s, unsigned int x_index, unsigned int y_index);
+
+int get_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index);
+void set_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int value);
+
+
 #endif

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 
+#include "units.h"
 #include "candinista.h"
 #include "panel.h"
 
