@@ -1,7 +1,9 @@
 sensors:
   - name: "bosch pst-ft-2 (temperature)"
-    x_values: [26108, 15458, 9395, 5895, 3791, 2499, 2056, 1706, 1174, 833.8, 595.4, 435.6, 322.5, 243.1, 186.6, 144.2, 112.7, 89.28]
-    y_values: [-30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
+#    x_values: [26108, 15458, 9395, 5895, 3791, 2499, 2056, 1706, 1174, 833.8, 595.4, 435.6, 322.5, 243.1, 186.6, 144.2, 112.7, 89.28]
+#    y_values: [-30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
+    x_values: [45303, 26108, 15458, 9395, 5895, 3791, 2499, 2056, 1706, 1174, 833.8, 595.4, 435.6, 322.5, 243.1, 186.6, 144.2, 112.7, 89.28]
+    y_values: [-40, -30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]			 
     can_id: 0xb003
     can_data_offset: 0
     can_data_width: 2
@@ -90,7 +92,6 @@ panels:
   - type: radial
 #   sensor: "bosch pst-ft-2 (temperature)" 1
     label: "Water"
-    legend: "°F"
     y_index: 0
     x_index: 0
     max_value: 120
@@ -98,13 +99,13 @@ panels:
     low_warn: -27
     high_warn: 105
     border: 1
+    offset: 0
     units: "FAHRENHEIT"
     id: 0
 
   - type: radial
 #   sensor: "bosch pst-ft-2 (temperature)" 1
     label: "Water"
-    legend: "°C"
     y_index: 0
     x_index: 0
     z_index: 1
@@ -112,43 +113,43 @@ panels:
     min_value: 0
     low_warn: -27
     high_warn: 105
-    border: 1
+    border: 0
     units: "CELSIUS"
     id: 0
     
   - type: radial
 #    sensor: "delphi 25036751 (temperature)" 2
     label: "Intake"
-    legend: "°C"
     y_index: 0
     x_index: 1
+    z_index: 1
     max_value: 50
     min_value: 0
     low_warn: -100
     high_warn: 150
     border: 1
+    offset: 3
     units: "CELSIUS"
     id: 1
 
   - type: radial
 #    sensor: "delphi 25036751 (temperature)" 2
     label: "Intake"
-    legend: "°F"
     y_index: 0
     x_index: 1
-    z_index: 1
+    z_index: 0
     max_value: 122
     min_value: 0
     low_warn: -148
     high_warn: 302
     border: 1
+    offset: 3
     units: "FAHRENHEIT"
     id: 1
 
   - type: linear
 #   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
-    legend: "°F"
     y_index: 0
     x_index: 2
     max_value: 120
@@ -156,13 +157,13 @@ panels:
     low_warn: -38
     high_warn: 100
     border: 1
+    offset: -5
     units: "FAHRENHEIT"
     id: 2
     
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 4
     label: "Oil"
-    legend: "bar"
     y_index: 1
     x_index: 0
     max_value: 8
@@ -176,7 +177,6 @@ panels:
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 4
     label: "Oil"
-    legend: "psi"
     y_index: 1
     x_index: 0
     z_index: 1
@@ -191,7 +191,6 @@ panels:
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
-    legend: "bar"
     y_index: 1
     x_index: 1
     max_value: 4.0
@@ -205,7 +204,6 @@ panels:
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
-    legend: "psi"
     y_index: 1
     x_index: 1
     z_index: 1
@@ -220,7 +218,6 @@ panels:
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
-    legend: "bar"
     y_index: 1
     x_index: 1
     z_index: 2

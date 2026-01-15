@@ -15,11 +15,11 @@ unsigned int panel_get_y_index (const Panel* g)            { return (g -> y_inde
 unsigned int panel_get_z_index (const Panel* g)            { return (g -> z_index); }
 unsigned int panel_get_timeout (const Panel* g)            { return (g -> timeout); }
 unsigned int panel_get_id (const Panel* g)                 { return (g -> id); }
-unsigned int panel_get_foreground_color(Panel* g)          { return (g -> foreground_color); }
-unsigned int panel_get_background_color(Panel* g)          { return (g -> background_color); }
-unsigned int panel_get_low_warn_color(Panel* g)            { return (g -> low_warn_color); }
-unsigned int panel_get_high_warn_color(Panel* g)           { return (g -> high_warn_color); }
-panel_type panel_get_type (Panel *g)                       { return (g -> type); }
+unsigned int panel_get_foreground_color(const Panel* g)    { return (g -> foreground_color); }
+unsigned int panel_get_background_color(const Panel* g)    { return (g -> background_color); }
+unsigned int panel_get_low_warn_color(const Panel* g)      { return (g -> low_warn_color); }
+unsigned int panel_get_high_warn_color(const Panel* g)     { return (g -> high_warn_color); }
+panel_type panel_get_type (const Panel *g)                 { return (g -> type); }
 
 void panel_set_border (Panel *g, unsigned char on)             { g -> border = on; }
 void panel_set_id (Panel *g, unsigned int id)                  { g -> id = id; }
@@ -38,7 +38,8 @@ double panel_get_min (const Panel* g)                      { return (g -> vtable
 double panel_get_max (const Panel* g)                      { return (g -> vtable -> get_max (g)); }
 double panel_get_low_warn (const Panel* g)                 { return (g -> vtable -> get_low_warn (g)); }
 double panel_get_high_warn (const Panel* g)                { return (g -> vtable -> get_high_warn (g)); }
-unit_type panel_get_units (Panel* g)                       { g -> vtable -> get_units (g); }
+unit_type panel_get_units (const Panel* g)                 { return (g -> vtable -> get_units (g)); }
+double panel_get_offset (const Panel* g)                   { return (g -> vtable -> get_offset (g)); }
 char* panel_get_label (const Panel* g)                     { return (g -> vtable -> get_label (g)); }
 
 void panel_set_value (Panel* g, double value)              { g -> vtable -> set_value (g, value); }
@@ -54,7 +55,7 @@ void panel_destroy (Panel* g) {  free (g); }
 
 double
 convert_units (double temp, unit_type to) {
-  switch (to) {
+ switch (to) {
   case FAHRENHEIT:
     return ((temp * 9.0 / 5.0) + 32.0);
 

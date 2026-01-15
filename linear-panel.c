@@ -170,7 +170,7 @@ static void set_warn (Panel* g, double low, double high) { LinearPanel* rp = (Li
 static void set_offset (Panel* g, double offset)  { LinearPanel* rp = (LinearPanel*) g; rp -> offset = offset; }
 static void set_units (Panel* g, unit_type ut)  { LinearPanel* rp = (LinearPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { LinearPanel* rp = (LinearPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value) { LinearPanel* rp = (LinearPanel*) g; rp -> offset = value; }
+static void set_value (Panel* g, double value) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
 static void set_output_format (Panel* g, char* format) { LinearPanel* rp = (LinearPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable linear_vtable = {

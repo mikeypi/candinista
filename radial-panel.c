@@ -60,7 +60,6 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   assert (NULL != rp);
 
   double value = convert_units (rp -> value, rp -> units) + rp -> offset;
-    
   unsigned int foreground_color = get_active_foreground_color (p, value, rp -> high_warn, rp -> low_warn);
   unsigned int background_color = p -> background_color;
   
@@ -237,7 +236,7 @@ static void set_warn (Panel* g, double low, double high) { RadialPanel* rp = (Ra
 static void set_offset (Panel* g, double offset)  { RadialPanel* rp = (RadialPanel*) g; rp -> offset = offset; }
 static void set_units (Panel* g, unit_type ut)  { RadialPanel* rp = (RadialPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { RadialPanel* rp = (RadialPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value) { RadialPanel* rp = (RadialPanel*) g; rp -> offset = value; }
+static void set_value (Panel* g, double value) { RadialPanel* rp = (RadialPanel*) g; rp -> value = value; }
 static void set_output_format (Panel* g, char* format) { RadialPanel* rp = (RadialPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable radial_vtable = {

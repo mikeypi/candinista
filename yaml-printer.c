@@ -56,7 +56,8 @@ void dump_panel (const Panel* g, size_t index)
       printf ("    max : %.3f\n", panel_get_max (g));
       printf ("    low_warn : %.3f\n", panel_get_low_warn (g));
       printf ("    high_warn: %.3f\n", panel_get_high_warn (g));
-      printf ("    units: %s\n", str_from_unit_enum (panel_get_units ((Panel*) g)));
+      printf ("    offset: %.3f\n", panel_get_offset (g));
+      printf ("    units: %s\n", str_from_unit_enum (panel_get_units (g)));
     }
     
     printf ("    location:\n");

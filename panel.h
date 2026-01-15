@@ -31,6 +31,7 @@ struct Panel {
   double (*get_min) (const Panel* g);
   double (*get_max) (const Panel* g);
   unit_type (*get_units) (const Panel* g);
+  double (*get_offset) (const Panel* g);
   void (*set_offset) (Panel* g, double value);
   void (*set_warn) (Panel* g, double low, double high);
   void (*set_minmax) (Panel* g, double min, double max);
@@ -84,12 +85,13 @@ unsigned int panel_get_z_index (const Panel* g);
 unsigned int panel_get_panel_id (const Panel* g);
 unsigned int panel_get_timeout (const Panel* g);
 unsigned int panel_get_id (const Panel* g);
-unsigned int panel_get_foreground_color(Panel* g);
-unsigned int panel_get_background_color(Panel* g);
-unsigned int panel_get_low_warn_color(Panel* g);
-unsigned int panel_get_high_warn_color(Panel* g);
-panel_type panel_get_type (Panel* g);
-unit_type panel_get_units (Panel* g);
+unsigned int panel_get_foreground_color(const Panel* g);
+unsigned int panel_get_background_color(const Panel* g);
+unsigned int panel_get_low_warn_color(const Panel* g);
+unsigned int panel_get_high_warn_color(const Panel* g);
+panel_type panel_get_type (const Panel* g);
+unit_type panel_get_units (const Panel* g);
+double panel_get_offset (const Panel *g);
 
 char* panel_get_label (const Panel* g);
 char* panel_get_legend (const Panel* g);
