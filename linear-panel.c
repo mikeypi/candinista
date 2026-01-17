@@ -56,22 +56,21 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 				gpointer user_data)
 {
   LinearPanel* rp = user_data;
-  Panel* p = user_data;
   char buffer[80];
   int i;
 
   assert (NULL != rp);
 
   double value = convert_units (rp -> value, rp -> units) + rp -> offset;
-  unsigned int foreground_color = get_active_foreground_color (p, value, rp -> high_warn, rp -> low_warn);
-  unsigned int background_color = p -> background_color;
+  unsigned int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
+  unsigned int background_color = rp -> base.background_color;
   
   set_rgba (cr, background_color, 1.0);
   cairo_paint (cr);
   
-  if (0 != p -> border) {
+  if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, p -> foreground_color, 0.9);
+    set_rgba (cr, rp -> base.foreground_color, 0.9);
     rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
     cairo_stroke (cr);
   }
@@ -80,20 +79,22 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 
   for (i = 0; i < rp -> bargraph_segment_count; i++) {
     if (value >  rp -> bargraph_segments[i].max) {
+
+      set_rgba (cr, foreground_color, 0.9);
       cairo_rectangle (cr,
-		       rp -> bargraph_segments[i].start_x,
-		       rp -> bargraph_segments[i].start_y,
-		       rp -> bargraph_segments[i].width,
-		       rp -> bargraph_segments[i].height);
+		       rp -> bargraph_segments[i].start_x + 2,
+		       rp -> bargraph_segments[i].start_y + 2,
+		       rp -> bargraph_segments[i].width - 4,
+		       rp -> bargraph_segments[i].height - 4);
       cairo_fill (cr);
     }
 
+    set_rgba (cr, background_color, 1.0);
     cairo_rectangle (cr,
 		     rp -> bargraph_segments[i].start_x,
 		     rp -> bargraph_segments[i].start_y,
 		     rp -> bargraph_segments[i].width,
 		     rp -> bargraph_segments[i].height);
-  
     cairo_stroke (cr);
   }
 
@@ -112,6 +113,11 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
   set_rgba (cr, foreground_color, 0.9);
+
+  cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
+  sprintf (buffer, "%s", str_from_unit_enum (panel_get_units (&rp -> base)));
+  show_text_left_justified (cr, 238 + XOFFSET + 40, 85 + YOFFSET, buffer);
+  cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Label
   if (NULL != rp -> label) {
@@ -134,8 +140,8 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   if (3 < strlen (buffer)) {
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
     show_text_right_justified (cr,
-			       99 + XOFFSET,
-			       160 + YOFFSET, 
+			       99 + XOFFSET - 20,
+			       160 + YOFFSET - 10, 
 			       buffer,
 			       4,
 			       foreground_color,
@@ -144,8 +150,8 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   } else {
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
     show_text_right_justified (cr,
-			       99 + XOFFSET,
-			       160 + YOFFSET, 
+			       99 + XOFFSET - 20,
+			       160 + YOFFSET - 10, 
 			       buffer,
 			       3,
 			       foreground_color,
@@ -199,7 +205,7 @@ Panel* create_linear_gauge_panel (
   				  double max,
   				  double min) {
 
-  LinearPanel *lg = calloc (1, sizeof *lg);
+  LinearPanel *lg = g_new0 (typeof (*lg), 1);
   
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;

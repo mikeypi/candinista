@@ -53,17 +53,16 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 			 gpointer user_data)
 {
   RadialPanel* rp = user_data;
-  Panel* p = user_data;
   
   char buffer[80];
   
   assert (NULL != rp);
 
   double value = convert_units (rp -> value, rp -> units) + rp -> offset;
-  unsigned int foreground_color = get_active_foreground_color (p, value, rp -> high_warn, rp -> low_warn);
-  unsigned int background_color = p -> background_color;
+  unsigned int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
+  unsigned int background_color = rp -> base.background_color;
   
-  cairo_set_antialias(cr, CAIRO_ANTIALIAS_BEST);
+  //  cairo_set_antialias(cr, CAIRO_ANTIALIAS_BEST);
   
   /*
    * Draw background, arc and segments
@@ -72,9 +71,9 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   set_rgba (cr, background_color, 1.0);
   cairo_paint (cr);
 
-  if (0 != p -> border) {
+  if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, p -> foreground_color, 0.9);
+    set_rgba (cr, rp -> base.foreground_color, 0.9);
     rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
     cairo_stroke (cr);
   }
@@ -152,17 +151,13 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   cairo_surface_t *surface =
     cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
 
-  cairo_select_font_face (
-			  cr,
+  cairo_select_font_face (cr,
 			  "Orbitron",
 			  CAIRO_FONT_SLANT_NORMAL,
-			  CAIRO_FONT_WEIGHT_NORMAL
-			  );
-
-  cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
+			  CAIRO_FONT_WEIGHT_NORMAL);
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
-  sprintf (buffer, "%s", str_from_unit_enum (panel_get_units (p)));
+  sprintf (buffer, "%s", str_from_unit_enum (panel_get_units (&rp -> base)));
   show_text_left_justified (cr, 238 + XOFFSET, 85 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
@@ -197,7 +192,11 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 
   sprintf (buffer, rp -> output_format, value);
   
-  if (3 < strlen (buffer)) {
+  if (3 < strlen (buffer)
+      && '.' != buffer[1]
+      && '.' != buffer[2]
+      ) {
+    
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
     show_text_right_justified (cr,
 			       99 + XOFFSET,
@@ -229,7 +228,7 @@ static double get_low_warn (const Panel* g) { RadialPanel* rp = (RadialPanel*) g
 static double get_offset (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> offset); }
 static unit_type get_units (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> units); }
 static char* get_label (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> label); }
-static double get_value (Panel* g, double value) { RadialPanel* rp = (RadialPanel*) g; return (rp -> value); }
+static double get_value (const Panel* g, double value) { RadialPanel* rp = (RadialPanel*) g; return (rp -> value); }
 
 static void set_minmax (Panel* g, double min, double max) { RadialPanel* rp = (RadialPanel*) g; rp -> min = min; rp -> max = max; }
 static void set_warn (Panel* g, double low, double high) { RadialPanel* rp = (RadialPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
@@ -265,8 +264,9 @@ Panel* create_radial_gauge_panel (
 				  unsigned int z_index,
   				  double max,
   				  double min) {
-  
-  RadialPanel *lg = calloc (1, sizeof *lg);
+
+  RadialPanel *lg = g_new0 (typeof (*lg), 1);
+
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_radial_gauge_panel;
   lg -> base.vtable = &radial_vtable;
   lg -> base.x_index = x_index;

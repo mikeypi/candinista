@@ -31,7 +31,6 @@ void draw_info_panel (GtkDrawingArea* area,
 				gpointer user_data)
 {
   InfoPanel* rp = user_data;
-  Panel* p = user_data;
   char buffer[80];
   int i;
 
@@ -39,13 +38,13 @@ void draw_info_panel (GtkDrawingArea* area,
     return;
   }
 
-  unsigned int foreground_color = p -> foreground_color;
-  unsigned int background_color = p -> background_color;
+  unsigned int foreground_color = rp -> base.foreground_color;
+  unsigned int background_color = rp -> base.background_color;
   
   set_rgba (cr, background_color, 1.0);
   cairo_paint (cr);
   
-  if (0 != p -> border) {
+  if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
     set_rgba (cr, foreground_color, 0.9);    
     rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
@@ -116,7 +115,6 @@ Panel* create_info_panel (
 			  ) {
 
   InfoPanel *lg = calloc (1, sizeof *lg);
-  int i;
   
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_info_panel;
   lg -> base.vtable = &linear_vtable;

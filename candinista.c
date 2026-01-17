@@ -188,6 +188,21 @@ on_pressed(GtkGestureClick *gesture,
 }
 
 
+static void
+on_drawing_area_destroy (GtkWidget *widget, gpointer user_data)
+{
+  struct {
+    GtkDrawingArea* drawing_area;
+    Panel* cg;
+    unsigned int timeout_id;
+  }* ctx = user_data;
+
+  if (0 != ctx -> timeout_id) {
+    g_source_remove (ctx -> timeout_id);
+  }
+}
+
+
 /*
  * Build the GTK GUI and associate the output widgets with the appropriate data struture so that their values
  * can be updated dynamically.
@@ -202,6 +217,7 @@ activate (GtkApplication* app,
   char temp[80];
   
   ui_file_name = "/home/joe/candinista/candinista.ui";
+  
   if (NULL == (builder = gtk_builder_new_from_file (ui_file_name))) {
     char temp[PATH_MAX];
     fprintf (stderr, "could not open UI configuration file %s in %s\n", ui_file_name, getcwd (temp, sizeof(temp)));
@@ -226,7 +242,6 @@ activate (GtkApplication* app,
     for (int j = 0; j < cfg.x_dimension; j++) {
       sprintf (temp, "da-%d-%d", i, j);
       GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_builder_get_object (builder, temp);
-      assert (NULL != temp);
 
       p = cfg_get_panel (&cfg, j, i, 0);
       assert (NULL != p);
@@ -234,24 +249,34 @@ activate (GtkApplication* app,
       struct {
 	GtkDrawingArea* drawing_area;
 	Panel* cg;
+	unsigned int timeout_id;
       }* ctx = g_new0 (typeof (*ctx), 1);
+
+      unsigned int timeout = panel_get_timeout (p);
 
       ctx -> drawing_area = drawing_area;
       ctx -> cg = p;
+      ctx -> timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT,
+					      (timeout == 0) ? 600 : timeout,
+					      gtk_update_gauge_panel_value,
+					      ctx,
+      					      g_free);
+
+      g_signal_connect (drawing_area, "destroy",
+                 G_CALLBACK(on_drawing_area_destroy), ctx);
 
       gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
+      
       GtkGesture* click = gtk_gesture_click_new();
       g_signal_connect (click, "pressed",
 			G_CALLBACK (on_pressed), ctx);
 
       gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
-      unsigned int timeout = panel_get_timeout (p);
-      g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
 
       p++;
     }
   }
-  
+
   g_object_unref (builder);
   gtk_window_present (GTK_WINDOW (window));
 }
@@ -296,7 +321,7 @@ main (int argc, char** argv) {
   get_environment_variables ();
 
   cfg = configuration_load_yaml ("/home/joe/candinista/config.yaml");
-  cfg = build_tables (cfg);
+  build_tables (&cfg);
 
   while (-1 != (option = getopt (argc, argv, "dp"))) {
     switch (option) {
@@ -331,7 +356,7 @@ main (int argc, char** argv) {
   
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   g_io_add_watch (input_channel, G_IO_IN, can_data_ready_task, NULL);
-  g_idle_add (idle_task, NULL);
+  //g_idle_add (idle_task, NULL);
 
   /* not sure why this is required, but g_application_run will throw an error if it is called with
    * additional flags in argv (e.g., -n).
@@ -339,6 +364,7 @@ main (int argc, char** argv) {
   argv[1] = NULL;
   argc = 1;
   status = g_application_run (G_APPLICATION (app), argc, argv);
+
   
   g_object_unref (app);
   configuration_free (&cfg);

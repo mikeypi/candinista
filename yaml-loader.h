@@ -5,10 +5,12 @@
 #include "panel.h"
 
 typedef struct {
-  Sensor **sensors;
+  Sensor** sensors;
+  Sensor** _sensors;
   size_t sensor_count;
   
-  Panel  **panels;
+  Panel** panels;
+  Panel** _panels;
   size_t panel_count;
 
   int *active_z_index;
@@ -19,8 +21,8 @@ typedef struct {
 } Configuration;
 
 Configuration configuration_load_yaml (const char *path);
-Configuration build_tables (Configuration cfg);
-void      configuration_free (Configuration *);
+void build_tables (Configuration* cfg);
+void      configuration_free (Configuration*);
 
 Panel* cfg_get_panel (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int z_index);
 void cfg_set_panel (Configuration* cfg, Panel* p, unsigned int x_index, unsigned int y_index, unsigned int z_index);
@@ -30,6 +32,4 @@ void cfg_set_sensor (Configuration* cfg, Sensor* s, unsigned int x_index, unsign
 
 int get_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index);
 void set_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int value);
-
-
 #endif

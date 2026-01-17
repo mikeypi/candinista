@@ -27,12 +27,12 @@ enum_from_unit_str (char* temp) {
 
   buffer[i] = '\0';
 
-  if ((0 == strcmp (buffer, "celsius")) || (0 == strcmp (buffer, "c"))) { fprintf (stderr, "returning CELSIUS\n"); return (CELSIUS); }
-  if ((0 == strcmp (buffer, "fahrenheit")) || (0 == strcmp (buffer, "f"))) {  fprintf (stderr, "returning FAHRENHEIT\n");return (FAHRENHEIT); }
-  if (0 == strcmp (buffer, "bar")) {  fprintf (stderr, "returning BAR\n");return (BAR); }
-  if (0 == strcmp (buffer, "kPa")) {  fprintf (stderr, "returning PSI\n");return (KPA); }
-  if (0 == strcmp (buffer, "psi")) {  fprintf (stderr, "returning PSI\n");return (PSI); }
-  if (0 == strcmp (buffer, "none")) {  fprintf (stderr, "returning NONE\n");return (NONE); }
+  if ((0 == strcmp (buffer, "celsius")) || (0 == strcmp (buffer, "c"))) { return (CELSIUS); }
+  if ((0 == strcmp (buffer, "fahrenheit")) || (0 == strcmp (buffer, "f"))) { return (FAHRENHEIT); }
+  if (0 == strcmp (buffer, "bar"))  {  return (BAR); }
+  if (0 == strcmp (buffer, "kPa"))  {  return (KPA); }
+  if (0 == strcmp (buffer, "psi"))  {  return (PSI); }
+  if (0 == strcmp (buffer, "none")) {  return (NONE); }
   
   fprintf (stderr, "unknown unit type\n");
   return (NONE);

@@ -51,8 +51,7 @@ define(`grid_drawing_area', `
       }
 ')
 
-
-Window window {
+ApplicationWindow window {
   default-height: 600;
   default-width: 1024;
   hexpand: true;

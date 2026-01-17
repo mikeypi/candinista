@@ -50,7 +50,6 @@ typedef struct {
 
 
 typedef struct {
-  //  char type[16];
   double min;
   double max;
   double low_warn;
@@ -168,9 +167,7 @@ Configuration configuration_load_yaml (const char *path) {
 	  else if (!strcmp (key, "id")) st.id = atoi (v);
 	  else if (!strcmp (key, "can_id")) st.can_id = strtol(v, NULL, 16);
 	} else if (in_panels) {
-	  //	  if (!strcmp (key, "type")) strncpy (gt.type, v, 15);
 	  if (!strcmp (key, "type")) { gt.type = enum_from_type_str (v); }
-
 	  else if (!strcmp (key, "low_warn")) gt.low_warn = atof (v);
 	  else if (!strcmp (key, "high_warn")) gt.high_warn = atof (v);
 	  else if (!strcmp (key, "min_value")) gt.min = atof (v);
@@ -286,75 +283,63 @@ Configuration configuration_load_yaml (const char *path) {
 
 int index3d (Configuration* cfg, unsigned i, unsigned j, unsigned k) 
 {
-  return (k * (cfg -> x_dimension * cfg -> y_dimension) + j * (cfg -> x_dimension) + i);
+  return (i * (cfg -> x_dimension * cfg -> y_dimension) + j * (cfg -> x_dimension) + k);
 }
 
 
 int index2d (Configuration* cfg, unsigned i, unsigned j) 
 {
-  return (j * (cfg -> x_dimension) + i);
+  return (i * (cfg -> y_dimension) + j);
 }
 
 
 Panel* cfg_get_panel (Configuration* cfg, unsigned int i, unsigned int j, unsigned int k) {
   int index = index3d (cfg, i, j, k);
-  return (cfg -> panels[index3d (cfg, i, j, k)]);
+  return (cfg -> _panels[index3d (cfg, i, j, k)]);
 }
 
     
 Sensor* cfg_get_sensor (Configuration* cfg, unsigned int i, unsigned int j) {
   int index = index2d (cfg, i, j);
-  return (cfg -> sensors[index2d (cfg, i, j)]);
+  return (cfg -> _sensors[index2d (cfg, i, j)]);
 }
 
 
-Configuration build_tables (const Configuration old_cfg) {
+void build_tables (Configuration* cfg) {
   int i;
   int j;
   int k;
-  
-  Configuration* cfg = (Configuration*) calloc (1, sizeof (Configuration));
-
-  memcpy ((void*) cfg, (void*) &old_cfg, sizeof (*cfg));
   
   cfg -> x_dimension += 1;
   cfg -> y_dimension += 1;
   cfg -> z_dimension += 1;
 
-  Panel** ptemp = (Panel**) calloc (sizeof (Panel*), (cfg -> x_dimension) * (cfg -> y_dimension) * (cfg -> z_dimension));
-  Panel** p;
-    
-  p = cfg -> panels;
+  cfg -> _panels = (Panel**) calloc (sizeof (Panel*), (cfg -> x_dimension) * (cfg -> y_dimension) * (cfg -> z_dimension));
+
+  Panel** p = cfg -> panels;
   while (p < cfg -> panels + cfg -> panel_count) {
     i = panel_get_x_index (*p);
     j = panel_get_y_index (*p);
     k = panel_get_z_index (*p);
-
+    
     int index = index3d (cfg, i, j, k);
-    ptemp[index] = *p;
+    cfg -> _panels[index] = *p;
     p++;
   }
 
-  cfg -> panels = ptemp;
+  cfg -> _sensors = (Sensor**) calloc (sizeof (Sensor*), (cfg -> x_dimension) * (cfg -> y_dimension));
 
-  Sensor** stemp = (Sensor**) calloc (sizeof (Sensor*), (cfg -> x_dimension) * (cfg -> y_dimension));
-  Sensor** s;
-
-  s = cfg -> sensors;
+  Sensor** s = cfg -> sensors;
   while (s < cfg -> sensors + cfg -> sensor_count) {
     i = sensor_get_x_index (*s);
     j = sensor_get_y_index (*s);
 
     int index = index2d (cfg, i, j);
-    stemp[index] = *s;
+    cfg -> _sensors[index] = *s;
     s++;
   }
 
-  cfg -> sensors = stemp;
-
   cfg -> active_z_index = (int *) calloc (sizeof (int), (cfg -> x_dimension) * (cfg -> y_dimension));
-
-  return (*cfg);
 }
 
 
