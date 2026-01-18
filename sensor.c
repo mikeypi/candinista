@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "sensor.h"
 #include <stdlib.h>
 #include <string.h>
@@ -29,7 +30,10 @@ Sensor *sensor_create (unsigned int x_index, unsigned int y_index, const char *n
 }
 
 void sensor_destroy (Sensor *s) {
+  fprintf (stderr, "freeing %s\n", s -> name);
   free (s -> name);
+  free (s -> x_values);
+  free (s -> y_values);
   free (s);
 }
 

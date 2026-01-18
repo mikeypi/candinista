@@ -61,9 +61,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   double value = convert_units (rp -> value, rp -> units) + rp -> offset;
   unsigned int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
   unsigned int background_color = rp -> base.background_color;
-  
-  //  cairo_set_antialias(cr, CAIRO_ANTIALIAS_BEST);
-  
+
   /*
    * Draw background, arc and segments
    */
@@ -192,30 +190,55 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 
   sprintf (buffer, rp -> output_format, value);
   
-  if (3 < strlen (buffer)
-      && '.' != buffer[1]
-      && '.' != buffer[2]
-      ) {
-    
-    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
-    show_text_right_justified (cr,
-			       99 + XOFFSET,
-			       160 + YOFFSET, 
-			       buffer,
-			       4,
-			       foreground_color,
-			       true,
-			       true);
-  } else {
+  int w = strlen (buffer);
+  switch (w) {
+  case 0:
+  case 1:
+  case 2:
+  case 3:
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 10);
     show_text_right_justified (cr,
-			       99 + XOFFSET,
+			       width / 2.0,
 			       160 + YOFFSET, 
 			       buffer,
 			       3,
 			       foreground_color,
 			       true,
 			       true);
+    break;
+    
+  case 4:
+    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
+    show_text_right_justified (cr,
+			       width / 2.0,
+			       160 + YOFFSET, 
+			       buffer,
+			       (NULL == strchr (buffer, '.')) ? 4 : 3,
+			       foreground_color,
+			       true,
+			       true);
+    break;
+			       
+  default:
+    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
+
+    if (NULL != strchr (buffer, '.')) {
+      buffer[strlen (buffer) - 1] = '\0';
+    }
+
+    if (NULL != strchr (buffer, '.')) {
+      buffer[strlen (buffer) - 1] = '\0';
+    }
+    
+    show_text_right_justified (cr,
+			       width / 2.0,
+			       160 + YOFFSET, 
+			       buffer,
+			       strlen (buffer),
+			       foreground_color,
+			       true,
+			       true);
+    break;
   }
   
   cairo_surface_destroy (surface);
@@ -260,10 +283,10 @@ static const struct PanelVTable radial_vtable = {
 
 Panel* create_radial_gauge_panel (
 				  unsigned int x_index,
-  				  unsigned int y_index,
+				  unsigned int y_index,
 				  unsigned int z_index,
-  				  double max,
-  				  double min) {
+				  double max,
+				  double min) {
 
   RadialPanel *lg = g_new0 (typeof (*lg), 1);
 

@@ -124,10 +124,10 @@ panels:
     y_index: 0
     x_index: 1
     z_index: 1
-    max_value: 50
-    min_value: 0
-    low_warn: -100
-    high_warn: 150
+    max_value: 65
+    min_value: -40
+    low_warn: 0
+    high_warn: 70
     border: 1
     offset: 3
     units: "CELSIUS"
@@ -139,10 +139,10 @@ panels:
     y_index: 0
     x_index: 1
     z_index: 0
-    max_value: 122
+    max_value: 130
     min_value: 0
-    low_warn: -148
-    high_warn: 302
+    low_warn: -10
+    high_warn: 110
     border: 1
     offset: 3
     units: "FAHRENHEIT"
@@ -153,10 +153,10 @@ panels:
     label: "Oil"
     y_index: 0
     x_index: 2
-    max_value: 120
-    min_value: -1000
-    low_warn: -38
-    high_warn: 100
+    max_value: 220
+    min_value: -1
+    low_warn: 60
+    high_warn: 180
     border: 1
     offset: -5
     units: "FAHRENHEIT"
@@ -167,10 +167,11 @@ panels:
     label: "Oil"
     y_index: 1
     x_index: 0
+    z_index: 0
     max_value: 8
     min_value: 0
     high_warn: 5.5
-    low_warn: 0
+    low_warn: 3
     border: 1
     units: "bar"
     id: 3
@@ -181,10 +182,10 @@ panels:
     y_index: 1
     x_index: 0
     z_index: 1
-    max_value: 8
+    max_value: 250
     min_value: 0
     high_warn: 180
-    low_warn: 2.5
+    low_warn: 40
     border: 1
     units: "psi"
     id: 3
@@ -213,7 +214,8 @@ panels:
     low_warn: -1000
     high_warn: 1000
     border: 1
-    units: "psi"
+    units: "kPa"
+    output_format: "%.1f"
     id: 4
 
   - type: radial
@@ -228,7 +230,7 @@ panels:
     high_warn: 3.5
     border: 1
     units: "bar"
-    output_format: "%.1f"
+    output_format: "%.2f"
     id: 4
 ##############################################################################################
   - type: info

@@ -214,7 +214,6 @@ activate (GtkApplication* app,
   GtkBuilder* builder;
   GObject* window;
   Panel* p;
-  char temp[80];
   
   ui_file_name = "/home/joe/candinista/candinista.ui";
   
@@ -225,12 +224,12 @@ activate (GtkApplication* app,
   }
 
   window = gtk_builder_get_object (builder, "window");
+  
+  gtk_window_set_application (GTK_WINDOW (window), app);
 
   if (0 == remote_display) {
     gtk_window_fullscreen (GTK_WINDOW(window));
   }
-
-  gtk_window_set_application (GTK_WINDOW (window), app);
 
   GtkGrid* grid = (GtkGrid*) gtk_builder_get_object (builder, "grid-0");
   if (NULL == grid) {
@@ -238,10 +237,16 @@ activate (GtkApplication* app,
     return;
   }
 
+  gtk_grid_set_column_homogeneous (grid, TRUE);
+
+  g_object_unref (builder);
+  gtk_window_present (GTK_WINDOW (window));
+
   for (int i = 0; i < cfg.y_dimension; i++) {
     for (int j = 0; j < cfg.x_dimension; j++) {
-      sprintf (temp, "da-%d-%d", i, j);
-      GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_builder_get_object (builder, temp);
+      GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_drawing_area_new ();
+      gtk_widget_set_hexpand (GTK_WIDGET(drawing_area), TRUE);
+      gtk_widget_set_vexpand (GTK_WIDGET(drawing_area), TRUE);
 
       p = cfg_get_panel (&cfg, j, i, 0);
       assert (NULL != p);
@@ -263,7 +268,7 @@ activate (GtkApplication* app,
       					      g_free);
 
       g_signal_connect (drawing_area, "destroy",
-                 G_CALLBACK(on_drawing_area_destroy), ctx);
+                 G_CALLBACK (on_drawing_area_destroy), ctx);
 
       gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
       
@@ -273,12 +278,11 @@ activate (GtkApplication* app,
 
       gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
 
-      p++;
+      gtk_widget_set_size_request (GTK_WIDGET (drawing_area), 1024/3 - 1 , 600/2);  
+
+      gtk_grid_attach(grid, GTK_WIDGET(drawing_area), j, i, 1, 1);
     }
   }
-
-  g_object_unref (builder);
-  gtk_window_present (GTK_WINDOW (window));
 }
 
 /*

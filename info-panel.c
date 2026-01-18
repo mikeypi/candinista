@@ -66,7 +66,7 @@ void draw_info_panel (GtkDrawingArea* area,
 			  CAIRO_FONT_WEIGHT_NORMAL
 			  );
 
-  cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 14);
+  cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 12);
   set_rgba (cr, foreground_color, 0.9);
 
   time_t timer = time (NULL);

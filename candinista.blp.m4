@@ -36,19 +36,18 @@ define(`gridbox', `
       }
 ')
 
-
 define(`grid_drawing_area', `
       Gtk.DrawingArea $1 {
       hexpand: true;
       vexpand: true;
-      layout {
+      styles["drawing-area-style"]
+        layout {
         row: $2;
         row-span: 1;
         column: $3;
         column-span: 1;
         }
-      styles["drawing-area-style"]
-      }
+    }
 ')
 
 ApplicationWindow window {
@@ -60,15 +59,7 @@ ApplicationWindow window {
   Grid grid-0 {
     hexpand: true;
     vexpand: true;
+    row-homogeneous: true;
     column-homogeneous: true;
-    grid_drawing_area(da-0-0, 0, 0)
-    grid_drawing_area(da-0-1, 0, 1)
-    grid_drawing_area(da-0-2, 0, 2)
-    grid_drawing_area(da-1-0, 1, 0)
-    grid_drawing_area(da-1-1, 1, 1)
-    grid_drawing_area(da-1-2, 1, 2)
-    styles["grid-style"]
     }
-
-  styles["window-style"]
 }

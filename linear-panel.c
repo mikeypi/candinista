@@ -134,13 +134,12 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 			  CAIRO_FONT_WEIGHT_NORMAL
 			  );
 
-
   sprintf (buffer, rp -> output_format, value);
 
   if (3 < strlen (buffer)) {
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
     show_text_right_justified (cr,
-			       99 + XOFFSET - 20,
+			       width / 2.0,
 			       160 + YOFFSET - 10, 
 			       buffer,
 			       4,
@@ -150,7 +149,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   } else {
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
     show_text_right_justified (cr,
-			       99 + XOFFSET - 20,
+			       width / 2.0,
 			       160 + YOFFSET - 10, 
 			       buffer,
 			       3,
@@ -158,7 +157,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 			       true,
 			       true);
   }
-  
+
   cairo_surface_destroy (surface);
 }
 

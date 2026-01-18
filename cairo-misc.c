@@ -27,6 +27,9 @@ show_text_left_justified (cairo_t* cr, int x, int y, char* buffer) {
   cairo_show_text (cr, buffer);
 }
 
+#define BOX_HEIGHT_MARGIN 5
+#define BOX_WIDTH_MARGIN 5
+
 int
 show_text_right_justified (cairo_t* cr,
 			   int x,
@@ -37,7 +40,8 @@ show_text_right_justified (cairo_t* cr,
 			   bool burn_in,
 			   bool add_box) {
 
-  cairo_text_extents_t extents;
+  cairo_text_extents_t ghost_extents;
+  cairo_text_extents_t buffer_extents;
   char* ghost_chars[] = {"8", "88", "888", "8888", "88888", "888888"};
     
   switch (width) {
@@ -47,37 +51,42 @@ show_text_right_justified (cairo_t* cr,
   case 3:
   case 2:
   case 1:
-    cairo_text_extents(cr, ghost_chars[width - 1], &extents);
+    cairo_text_extents (cr, ghost_chars[width - 1], &ghost_extents);
+    cairo_text_extents (cr, buffer, &buffer_extents);
     break;
   
   default:
+    fprintf (stderr, "unsupported width\n");
     return (-1);
   }
 
-#define BOX_HEIGHT_MARGIN 7
-#define BOX_WIDTH_MARGIN 5
+  double field_width = (buffer_extents.width < ghost_extents.width) ?  ghost_extents.x_advance : buffer_extents.x_advance;
+  double field_height = ghost_extents.height;  
+  double right_margin = x + (field_width / 2.0);
+  double left_margin = right_margin - field_width;
+  double buffer_left_margin = right_margin - buffer_extents.x_advance;
   
   if (add_box) {
     set_rgba (cr, color, 0.9);
     rounded_rectangle(cr,
-		      x - (BOX_WIDTH_MARGIN / 2),
-		      y - (extents.height + BOX_HEIGHT_MARGIN),
-		      extents.width + BOX_WIDTH_MARGIN * 2,
-		      extents.height + BOX_HEIGHT_MARGIN * 2,
+		      left_margin - BOX_WIDTH_MARGIN,
+		      y - field_height - BOX_HEIGHT_MARGIN,
+		      field_width + (2 * BOX_WIDTH_MARGIN),
+		      field_height + (2 * BOX_HEIGHT_MARGIN),
 		      5.0);
+
     cairo_stroke (cr);
   }
 
-  double start_x = x + ((extents.x_advance / width) * (width - strlen (buffer)));
-
   if (burn_in) {
     set_rgba (cr, color, 0.14);
-    cairo_move_to (cr, x , y);
+    cairo_move_to (cr,left_margin, y);
+
     cairo_show_text (cr, ghost_chars[width - 1]);
   }
   
   set_rgba (cr, color, 0.9);
-  cairo_move_to (cr, start_x , y);
+  cairo_move_to (cr, buffer_left_margin, y);
   cairo_show_text (cr, buffer);
 }
 
