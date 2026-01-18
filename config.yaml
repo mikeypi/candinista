@@ -161,6 +161,36 @@ panels:
     offset: -5
     units: "FAHRENHEIT"
     id: 2
+
+  - type: linear
+#   sensor: "aem 30-2011 (temperature)" 3
+    label: "Oil"
+    y_index: 0
+    x_index: 2
+    z_index: 1
+    max_value: 105
+    min_value: -1
+    low_warn: 16
+    high_warn: 82
+    border: 1
+    offset: -5
+    units: "CELSIUS"
+    id: 2
+
+  - type: radial
+#   sensor: "aem 30-2011 (temperature)" 3
+    label: "Oil"
+    y_index: 0
+    x_index: 2
+    z_index: 2
+    max_value: 220
+    min_value: -1
+    low_warn: 60
+    high_warn: 180
+    border: 1
+    offset: -5
+    units: "FAHRENHEIT"
+    id: 2
 ##############################################################################################    
   - type: radial
 #   sensor: "bosch pst-ft (pressure)" 4

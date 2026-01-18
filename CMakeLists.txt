@@ -41,34 +41,6 @@ target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} ${YAML_
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR})
 set(BIN ${CMAKE_CURRENT_BINARY_DIR})
 
-set(M4_IN   ${SRC}/candinista.blp.m4)
-set(BLP_OUT ${SRC}/candinista.blp)
-set(UI_OUT  ${SRC}/candinista.ui)
-
-add_custom_command(
-    OUTPUT ${BLP_OUT}
-    COMMAND ${M4_EXECUTABLE} ${M4_IN}
-            > ${BLP_OUT}
-    DEPENDS ${M4_IN}
-    BYPRODUCTS ${BLP_OUT}
-    COMMENT "m4: candinista.blp.m4 → candinista.blp"
-    VERBATIM
-)
-
-add_custom_command(
-    OUTPUT ${UI_OUT}
-    COMMAND ${BP_EXECUTABLE} compile
-            ${BLP_OUT}
-            > ${UI_OUT}
-    DEPENDS ${BLP_OUT}
-    BYPRODUCTS ${UI_OUT}
-    COMMENT "bp: candinista.blp → candinista.ui"
-    VERBATIM
-)
-
-add_custom_target(generate_ui ALL
-    DEPENDS ${UI_OUT}
-)
 
 add_executable(microsleep "")
 #  and its sources

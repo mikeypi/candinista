@@ -75,12 +75,13 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
     cairo_stroke (cr);
   }
 
+  cairo_set_line_width (cr, 2.0);
   set_rgba (cr, foreground_color, 0.9);
 
   for (i = 0; i < rp -> bargraph_segment_count; i++) {
     if (value >  rp -> bargraph_segments[i].max) {
 
-      set_rgba (cr, foreground_color, 0.9);
+      set_rgba (cr, foreground_color, 1.0);
       cairo_rectangle (cr,
 		       rp -> bargraph_segments[i].start_x + 2,
 		       rp -> bargraph_segments[i].start_y + 2,
@@ -89,7 +90,6 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
       cairo_fill (cr);
     }
 
-    set_rgba (cr, background_color, 1.0);
     cairo_rectangle (cr,
 		     rp -> bargraph_segments[i].start_x,
 		     rp -> bargraph_segments[i].start_y,

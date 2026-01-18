@@ -200,6 +200,8 @@ on_drawing_area_destroy (GtkWidget *widget, gpointer user_data)
   if (0 != ctx -> timeout_id) {
     g_source_remove (ctx -> timeout_id);
   }
+
+  g_free (ctx);
 }
 
 
@@ -210,41 +212,29 @@ on_drawing_area_destroy (GtkWidget *widget, gpointer user_data)
 static void
 activate (GtkApplication* app,
           gpointer        user_data) {
-
-  GtkBuilder* builder;
-  GObject* window;
+  GtkWidget* window;
   Panel* p;
-  
-  ui_file_name = "/home/joe/candinista/candinista.ui";
-  
-  if (NULL == (builder = gtk_builder_new_from_file (ui_file_name))) {
-    char temp[PATH_MAX];
-    fprintf (stderr, "could not open UI configuration file %s in %s\n", ui_file_name, getcwd (temp, sizeof(temp)));
-    exit (-1);
-  }
 
-  window = gtk_builder_get_object (builder, "window");
-  
+  window = gtk_window_new ();
+  g_return_if_fail (GTK_IS_WIDGET (window));
+
+  gtk_window_set_default_size(GTK_WINDOW(window), 1024, 600);
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   if (0 == remote_display) {
     gtk_window_fullscreen (GTK_WINDOW(window));
   }
 
-  GtkGrid* grid = (GtkGrid*) gtk_builder_get_object (builder, "grid-0");
-  if (NULL == grid) {
-    fprintf (stderr, "unable to load grid\n");
-    return;
-  }
+  GtkGrid *grid = GTK_GRID(gtk_grid_new());
+  g_return_if_fail (GTK_IS_WIDGET (grid));
 
+  gtk_window_set_child (GTK_WINDOW (window), GTK_WIDGET(grid));
   gtk_grid_set_column_homogeneous (grid, TRUE);
-
-  g_object_unref (builder);
-  gtk_window_present (GTK_WINDOW (window));
 
   for (int i = 0; i < cfg.y_dimension; i++) {
     for (int j = 0; j < cfg.x_dimension; j++) {
-      GtkDrawingArea* drawing_area = (GtkDrawingArea*) gtk_drawing_area_new ();
+      GtkDrawingArea *drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
+
       gtk_widget_set_hexpand (GTK_WIDGET(drawing_area), TRUE);
       gtk_widget_set_vexpand (GTK_WIDGET(drawing_area), TRUE);
 
@@ -257,7 +247,7 @@ activate (GtkApplication* app,
 	unsigned int timeout_id;
       }* ctx = g_new0 (typeof (*ctx), 1);
 
-      unsigned int timeout = panel_get_timeout (p);
+      guint timeout = panel_get_timeout (p);
 
       ctx -> drawing_area = drawing_area;
       ctx -> cg = p;
@@ -265,7 +255,7 @@ activate (GtkApplication* app,
 					      (timeout == 0) ? 600 : timeout,
 					      gtk_update_gauge_panel_value,
 					      ctx,
-      					      g_free);
+      					      NULL);
 
       g_signal_connect (drawing_area, "destroy",
                  G_CALLBACK (on_drawing_area_destroy), ctx);
@@ -277,12 +267,11 @@ activate (GtkApplication* app,
 			G_CALLBACK (on_pressed), ctx);
 
       gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
-
-      gtk_widget_set_size_request (GTK_WIDGET (drawing_area), 1024/3 - 1 , 600/2);  
-
-      gtk_grid_attach(grid, GTK_WIDGET(drawing_area), j, i, 1, 1);
+      gtk_grid_attach (grid, GTK_WIDGET(drawing_area), j, i, 1, 1);
     }
   }
+
+  gtk_window_present(GTK_WINDOW(window));
 }
 
 /*
