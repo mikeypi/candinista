@@ -14,7 +14,6 @@ struct PanelVTable {
   double (*get_offset) (const Panel*);
   unit_type (*get_units) (const Panel*);
   char* (*get_label) (const Panel*);
-  double (*get_value) (const Panel*);
 
   void (*set_minmax) (Panel* g, double min, double max);
   void (*set_warn) (Panel* g, double low, double high);
@@ -30,13 +29,19 @@ struct Panel {
   void (*draw)(void* area, cairo_t* cr, int height, int width, void* p);
   double (*get_min) (const Panel* g);
   double (*get_max) (const Panel* g);
-  unit_type (*get_units) (const Panel* g);
+  double (*get_high_warn) (const Panel*);
+  double (*get_low_warn) (const Panel*);
   double (*get_offset) (const Panel* g);
-  void (*set_offset) (Panel* g, double value);
-  void (*set_warn) (Panel* g, double low, double high);
+  unit_type (*get_units) (const Panel* g);
+  char* (*get_label) (const Panel*);
+
   void (*set_minmax) (Panel* g, double min, double max);
-  void (*set_label) (Panel* g, char* label);
+  void (*set_warn) (Panel* g, double low, double high);
+  void (*set_offset) (Panel* g, double value);
   void (*set_units) (Panel* g, unit_type ut);
+  void (*set_label) (Panel* g, char* label);
+  void (*set_value) (Panel* g, double value, int sensor_count);
+  void (*set_output_format) (Panel* g, char* value);
   int x_index;
   int y_index;
   int z_index;

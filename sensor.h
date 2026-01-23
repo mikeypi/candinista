@@ -23,7 +23,6 @@ int sensor_get_y_index (const Sensor* s);
 int sensor_get_z_index (const Sensor* s);
 
 int sensor_get_id (const Sensor* s);
-int sensor_get_atomic (const Sensor* s);
 
 void sensor_set_id (Sensor* s, int id);
 void sensor_set_x_values (Sensor* s, double* v, int n);

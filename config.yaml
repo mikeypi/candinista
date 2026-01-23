@@ -52,16 +52,6 @@ sensors:
     x_index: 1
     id: 4
 
-  - name: "dummy sensor for rpm"
-    x_values: [-5000, 0, 5000]
-    y_values: [-3000, 0, 3000]
-    can_id: 0xb000
-    can_data_offset: 4
-    can_data_width: 2
-    y_index: 1
-    x_index: 2
-    id: 5
-
   - name: "TPMS multiplexor channel"
     can_id: 0x77e
     can_data_offset: 0
@@ -73,7 +63,7 @@ sensors:
   - name: "TMPS pressure channel"
     can_id: 0x77e
     can_data_offset: 1
-    can_data_width: 3
+    can_data_width: 2
     y_index: 1
     x_index: 2
     id: 5
@@ -88,7 +78,7 @@ sensors:
 
   - name: "TMPS voltage channel"
     can_id: 0x77e
-    can_data_offset: 3
+    can_data_offset: 4
     can_data_width: 1
     y_index: 1
     x_index: 2
@@ -120,10 +110,7 @@ sensors:
 
 panels:
 
-
-##############################################################################################
   - type: radial_temperature
-#   sensor: "bosch pst-ft-2 (temperature)" 1
     label: "Water"
     y_index: 0
     x_index: 0
@@ -137,7 +124,6 @@ panels:
     id: 0
 
   - type: radial_temperature
-#   sensor: "bosch pst-ft-2 (temperature)" 1
     label: "Water"
     y_index: 0
     x_index: 0
@@ -151,7 +137,6 @@ panels:
     id: 0
 ##############################################################################################    
   - type: radial_temperature
-#    sensor: "delphi 25036751 (temperature)" 2
     label: "Intake"
     y_index: 0
     x_index: 1
@@ -166,7 +151,6 @@ panels:
     id: 1
 
   - type: radial_temperature
-#    sensor: "delphi 25036751 (temperature)" 2
     label: "Intake"
     y_index: 0
     x_index: 1
@@ -181,7 +165,6 @@ panels:
     id: 1
 ##############################################################################################
   - type: linear_temperature
-#   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
     y_index: 0
     x_index: 2
@@ -195,7 +178,6 @@ panels:
     id: 2
 
   - type: linear_temperature
-#   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
     y_index: 0
     x_index: 2
@@ -210,7 +192,6 @@ panels:
     id: 2
 
   - type: radial_temperature
-#   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
     y_index: 0
     x_index: 2
@@ -225,7 +206,6 @@ panels:
     id: 2
 ##############################################################################################    
   - type: radial_pressure
-#   sensor: "bosch pst-ft (pressure)" 4
     label: "Oil"
     y_index: 1
     x_index: 0
@@ -239,7 +219,6 @@ panels:
     id: 3
 
   - type: radial_pressure
-#   sensor: "bosch pst-ft (pressure)" 4
     label: "Oil"
     y_index: 1
     x_index: 0
@@ -253,7 +232,6 @@ panels:
     id: 3
 ##############################################################################################
   - type: radial_pressure
-#   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
     y_index: 1
     x_index: 1
@@ -266,7 +244,6 @@ panels:
     id: 4
 
   - type: radial_pressure
-#   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
     y_index: 1
     x_index: 1
@@ -281,7 +258,6 @@ panels:
     id: 4
 
   - type: radial_pressure
-#   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
     y_index: 1
     x_index: 1
@@ -296,25 +272,34 @@ panels:
     id: 4
 ##############################################################################################
   - type: tpms
-#   sensor: "dummy sensor for rpm" 6
-    label: "RPM"
     y_index: 1
     x_index: 2
     z_index: 0
     high_warn: 150
     low_warn: 30
     border: 1
-    pressure_units: "kPa"
+    pressure_units: "bar"
     temperature_units: "CELSIUS"
     timeout: 1500
     id: 5
 
-  - type: info
-#   sensor: "dummy sensor for rpm" 6
-    label: "RPM"
+  - type: tpms
     y_index: 1
     x_index: 2
     z_index: 1
+    high_warn: 150
+    low_warn: 30
+    border: 1
+    pressure_units: "psi"
+    temperature units: "FAHRENHEIT"
+    timeout: 1500
+    id: 5
+
+  - type: info
+    label: "RPM"
+    y_index: 1
+    x_index: 2
+    z_index: 2
     max_value: 8000
     min_value: 500
     high_warn: 7000

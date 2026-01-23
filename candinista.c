@@ -106,15 +106,33 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 			      y_index,
 			      z_index);
     /*
-     * retrieve the individual data values from the can frame. This handles char and short,
-     * would need to be expanded for 32 or 64 bit data
+     * retrieve the individual data values from the can frame. This handles up to 4 bytes. 
+     * would need to be expanded for larger data sizes
      */
     int offset = sensor_get_can_data_offset (s);
-    if (sizeof (short) == sensor_get_can_data_width (s)) {
-      temp = (unsigned short) (frame.data[offset] << 8) ^ frame.data[offset + 1];
-    } else {
-      temp = frame.data[offset];
+
+    unsigned int x = frame.data[offset];
+    
+    switch (sensor_get_can_data_width (s)) {
+    case 1:
+      break;
+    case 2:
+      x = (x << 8) ^ frame.data[offset + 1];
+      break;
+    case 3:
+      x = (x << 8) ^ frame.data[offset + 1];
+      x = (x << 8) ^ frame.data[offset + 2];
+      break;
+    case 4:
+      x = (x << 8) ^ frame.data[offset + 1];
+      x = (x << 8) ^ frame.data[offset + 2];
+      x = (x << 8) ^ frame.data[offset + 3];      
+    default:
+      fprintf (stderr, "Unsupported CAN BUS field width %d\n", sensor_get_can_data_width (s));
+      break;
     }
+
+    temp = x;
 
     if (0 != sensor_get_n_values (s)) {
       /* apply interpolation */
@@ -123,7 +141,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 				 sensor_get_y_values (s),
 				 sensor_get_n_values (s));
     }
-      
+
     panel_set_value (p, temp, matching_sensor_count++);
 
     if (sensor_get_id (s) != panel_get_id (p)) {
@@ -211,7 +229,7 @@ activate (GtkApplication* app,
   window = gtk_window_new ();
   g_return_if_fail (GTK_IS_WIDGET (window));
 
-  gtk_window_set_default_size(GTK_WINDOW(window), 1024, 620);
+  gtk_window_set_default_size(GTK_WINDOW(window), 1024, 600);
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   if (0 == remote_display) {
@@ -341,7 +359,6 @@ main (int argc, char** argv) {
   
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   g_io_add_watch (input_channel, G_IO_IN, can_data_ready_task, NULL);
-  //g_idle_add (idle_task, NULL);
 
   /* not sure why this is required, but g_application_run will throw an error if it is called with
    * additional flags in argv (e.g., -n).

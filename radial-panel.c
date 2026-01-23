@@ -246,7 +246,6 @@ static double get_low_warn (const Panel* g) { RadialPanel* rp = (RadialPanel*) g
 static double get_offset (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> offset); }
 static unit_type get_units (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> units); }
 static char* get_label (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> label); }
-static double get_value (const Panel* g, double value) { RadialPanel* rp = (RadialPanel*) g; return (rp -> value); }
 
 static void set_minmax (Panel* g, double min, double max) { RadialPanel* rp = (RadialPanel*) g; rp -> min = min; rp -> max = max; }
 static void set_warn (Panel* g, double low, double high) { RadialPanel* rp = (RadialPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
@@ -265,7 +264,6 @@ static const struct PanelVTable radial_vtable = {
   .get_offset = (double (*)(const struct Panel*))get_offset,
   .get_units = (unit_type (*)(const struct Panel*))get_units,    
   .get_label = (char* (*)(const struct Panel*))get_label,
-  .get_value = (double (*)(const struct Panel*))get_value,
 
   .set_minmax = (void (*) (Panel*, double, double))set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
