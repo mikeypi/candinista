@@ -33,7 +33,9 @@ sensor.c
 cairo-misc.c
 gtk-glue.c
 info-panel.c
+tpms-panel.c
 units.c
+d3-array.c
 )
 
 target_link_libraries(${PROJECT_NAME} ${GTK_LIBRARIES} ${JSON_LIBRARIES} ${YAML_LIBRARIES} m)

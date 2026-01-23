@@ -63,5 +63,5 @@ extern void show_text_left_justified (cairo_t*, int, int, char*);
 extern int show_text_right_justified (cairo_t*, int, int, char*, int, unsigned int, bool, bool);
 extern void rounded_rectangle(cairo_t*, double, double, double, double, double);
 
-extern void set_rgba (cairo_t* cr, unsigned int color, float alpha);
+extern void set_rgba (cairo_t* cr, unsigned int color, double alpha);
 #endif

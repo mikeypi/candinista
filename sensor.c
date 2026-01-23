@@ -6,18 +6,20 @@
 struct Sensor {
   char  *name;
   double value;
-  unsigned int can_id;
-  unsigned int can_data_offset;
-  unsigned int can_data_width;
+  int can_id;
+  int can_data_offset;
+  int can_data_width;
   double* x_values;
   double* y_values;
   int n_values;
-  unsigned int x_index;
-  unsigned int y_index;
-  unsigned int id;
+  int x_index;
+  int y_index;
+  int z_index;
+  int id;
+  int atomic;
 };
 
-Sensor *sensor_create (unsigned int x_index, unsigned int y_index, const char *name, int can_id, int offset, int width) {
+Sensor *sensor_create (int x_index, int y_index, const char *name, int can_id, int offset, int width) {
   Sensor *s = calloc (1, sizeof *s);
   s -> x_index = x_index;
   s -> y_index = y_index;
@@ -25,7 +27,8 @@ Sensor *sensor_create (unsigned int x_index, unsigned int y_index, const char *n
   s -> can_id = can_id;
   s -> can_data_offset = offset;
   s -> can_data_width = width;
-
+  s -> atomic = 0;
+  
   return s;
 }
 
@@ -44,12 +47,14 @@ int sensor_get_can_data_width (const Sensor *s)                       { return s
 double* sensor_get_x_values (const Sensor *s)                         { return s -> x_values; }
 double* sensor_get_y_values (const Sensor *s)                         { return s -> y_values; }
 int sensor_get_n_values (const Sensor *s)                             { return s -> n_values; };
-unsigned int sensor_get_id (const Sensor *s)                          { return s -> id; }
+int sensor_get_id (const Sensor *s)                          { return s -> id; }
+int sensor_get_atomic (const Sensor *s)                      { return s -> atomic; }
 
 int sensor_get_x_index (const Sensor *s)                              { return s -> x_index; }
 int sensor_get_y_index (const Sensor *s)                              { return s -> y_index; }
+int sensor_get_z_index (const Sensor *s)                              { return s -> z_index; }
 
-void sensor_set_id (Sensor *s, unsigned int id)                       { s -> id = id; }
+void sensor_set_id (Sensor *s, int id)                       { s -> id = id; }
 void sensor_set_x_values (Sensor *s, double *v, int n)                { s -> x_values = v; s -> n_values = n; };
 void sensor_set_y_values (Sensor *s, double *v, int n)                { s -> y_values = v; s -> n_values = n; };
 

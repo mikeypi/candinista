@@ -59,8 +59,8 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   assert (NULL != rp);
 
   double value = convert_units (rp -> value, rp -> units) + rp -> offset;
-  unsigned int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
-  unsigned int background_color = rp -> base.background_color;
+  int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
+  int background_color = rp -> base.background_color;
 
   /*
    * Draw background, arc and segments
@@ -72,7 +72,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
     set_rgba (cr, rp -> base.foreground_color, 0.9);
-    rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
+    rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
@@ -146,9 +146,6 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 /*
  * Draw labels and current value
  */
-  cairo_surface_t *surface =
-    cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-
   cairo_select_font_face (cr,
 			  "Orbitron",
 			  CAIRO_FONT_SLANT_NORMAL,
@@ -172,7 +169,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Label
-  if (NULL != rp -> label) {
+  if ('\0' != rp -> label[0]) {
     sprintf (buffer, "%s", rp -> label);
     show_text_unjustified (cr, 70 + XOFFSET, 210 + YOFFSET, buffer);
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
@@ -240,8 +237,6 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 			       true);
     break;
   }
-  
-  cairo_surface_destroy (surface);
 }
 
 static double get_min (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> min); }
@@ -258,7 +253,7 @@ static void set_warn (Panel* g, double low, double high) { RadialPanel* rp = (Ra
 static void set_offset (Panel* g, double offset)  { RadialPanel* rp = (RadialPanel*) g; rp -> offset = offset; }
 static void set_units (Panel* g, unit_type ut)  { RadialPanel* rp = (RadialPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { RadialPanel* rp = (RadialPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value) { RadialPanel* rp = (RadialPanel*) g; rp -> value = value; }
+static void set_value (Panel* g, double value, int sensor_count) { RadialPanel* rp = (RadialPanel*) g; rp -> value = value; }
 static void set_output_format (Panel* g, char* format) { RadialPanel* rp = (RadialPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable radial_vtable = {
@@ -277,17 +272,11 @@ static const struct PanelVTable radial_vtable = {
   .set_offset = (void (*) (Panel*, double)) set_offset,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_label = (void (*) (Panel*, char*)) set_label,
-  .set_value = (void (*) (Panel*, double)) set_value,
+  .set_value = (void (*) (Panel*, double, int)) set_value,
   .set_output_format = (void (*) (Panel*, char*)) set_output_format
 };
 
-Panel* create_radial_gauge_panel (
-				  unsigned int x_index,
-				  unsigned int y_index,
-				  unsigned int z_index,
-				  double max,
-				  double min) {
-
+Panel* create_radial_gauge_panel (int x_index, int y_index, int z_index, double max, double min) {
   RadialPanel *lg = g_new0 (typeof (*lg), 1);
 
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_radial_gauge_panel;

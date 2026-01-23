@@ -6,30 +6,32 @@
 
 typedef struct {
   Sensor** sensors;
-  Sensor** _sensors;
-  size_t sensor_count;
+  int sensor_count;
+  d3_array* sensor_array;
   
-  Panel** panels;
-  Panel** _panels;
-  size_t panel_count;
+  d2_array* active_z_index;
 
-  int *active_z_index;
+  Panel** panels;
+  int panel_count;
+  d3_array* panel_array;
   
-  unsigned int x_dimension;
-  unsigned int y_dimension;
-  unsigned int z_dimension;
+  int x_dimension;
+  int y_dimension;
+
+  int panel_z_dimension;
+  int sensor_z_dimension;
 } Configuration;
 
 Configuration configuration_load_yaml (const char *path);
 void build_tables (Configuration* cfg);
-void      configuration_free (Configuration*);
+void configuration_free (Configuration*);
 
-Panel* cfg_get_panel (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int z_index);
-void cfg_set_panel (Configuration* cfg, Panel* p, unsigned int x_index, unsigned int y_index, unsigned int z_index);
+Panel* cfg_get_panel (Configuration* cfg, int x_index, int y_index, int z_index);
+void cfg_set_panel (Configuration* cfg, Panel* p, int x_index, int y_index, int z_index);
 
-Sensor* cfg_get_sensor (Configuration* cfg, unsigned int x_index, unsigned int y_index);
-void cfg_set_sensor (Configuration* cfg, Sensor* s, unsigned int x_index, unsigned int y_index);
+Sensor* cfg_get_sensor (Configuration* cfg, int x_index, int y_index, int z);
+void cfg_set_sensor (Configuration* cfg, Sensor* s, int x_index, int y_index, int z_index);
 
-int get_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index);
-void set_active_z (Configuration* cfg, unsigned int x_index, unsigned int y_index, unsigned int value);
+int get_active_z (Configuration* cfg, int x_index, int y_index);
+void set_active_z (Configuration* cfg, int x_index, int y_index, int value);
 #endif

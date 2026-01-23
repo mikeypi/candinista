@@ -4,7 +4,7 @@
 #include "cairo-misc.h"
 
 void
-set_rgba (cairo_t* cr, unsigned int color, float alpha) {
+set_rgba (cairo_t* cr, unsigned int color, double alpha) {
   unsigned int red =   (color >> 16) & 0xff;
   unsigned int green = (color >> 8) & 0xff;
   unsigned int blue =  (color) & 0xff;
@@ -71,8 +71,8 @@ show_text_right_justified (cairo_t* cr,
     rounded_rectangle(cr,
 		      left_margin - BOX_WIDTH_MARGIN,
 		      y - field_height - BOX_HEIGHT_MARGIN,
-		      field_width + (2 * BOX_WIDTH_MARGIN),
 		      field_height + (2 * BOX_HEIGHT_MARGIN),
+		      field_width + (2 * BOX_WIDTH_MARGIN),
 		      5.0);
 
     cairo_stroke (cr);
@@ -88,14 +88,16 @@ show_text_right_justified (cairo_t* cr,
   set_rgba (cr, color, 0.9);
   cairo_move_to (cr, buffer_left_margin, y);
   cairo_show_text (cr, buffer);
+
+  return (0);
 }
 
 void
 rounded_rectangle (cairo_t* cr,
 		   double x,
 		   double y,
-		   double width,
 		   double height,
+		   double width,
 		   double radius) {
 
   double r = radius;

@@ -51,6 +51,7 @@
 
 #include <sys/time.h>
 
+#include "d3-array.h"
 #include "candinista.h"
 #include "cairo-misc.h"
 #include "units.h"
@@ -64,16 +65,6 @@
 
 Configuration cfg;
 
-static short
-BytesToShort (unsigned char a, unsigned char b) {
-  unsigned short x = (a << 8) ^ b;
-  return (x);
-}
-
-static gboolean
-idle_task () {
-  return TRUE;
-}
 
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
@@ -83,10 +74,10 @@ static gboolean
 can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer data)
 {
   int i = 0;
-  static int call_count;
+  int matching_sensor_count = 0;
   double temp;
   struct can_frame frame;
-  gsize bytes_read;
+  gsize bytes_read; 
 
   if (G_IO_STATUS_NORMAL != g_io_channel_read_chars (input_channel,
 						     (gchar*) &frame, sizeof (struct can_frame),
@@ -94,6 +85,11 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     return FALSE;
   }
 
+  /* Maybe you don't have to stack sensors at all. This looks like it will traverse all of the values in a canframe and do sensor
+     processing. So extra sensors just have to suppress outout--not be called in a specific sequence. Maybe add some triggering information
+     to the config file that suppresses updates for some of the sensor inputs that are grouped to a single panel
+  */
+  
   while (i < cfg.sensor_count) {
     Sensor* s = cfg.sensors[i];
     if (sensor_get_can_id (s) != (frame.can_id & 0x7fffffff)) {
@@ -101,37 +97,34 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
       continue;
     }
 
+    int x_index = sensor_get_x_index (s);
+    int y_index = sensor_get_y_index (s);
+    int z_index = get_active_z (&cfg, x_index, y_index);
+
+    Panel* p = cfg_get_panel (&cfg,
+			      x_index,
+			      y_index,
+			      z_index);
     /*
      * retrieve the individual data values from the can frame. This handles char and short,
      * would need to be expanded for 32 or 64 bit data
      */
     int offset = sensor_get_can_data_offset (s);
     if (sizeof (short) == sensor_get_can_data_width (s)) {
-      temp = BytesToShort (frame.data[offset], frame.data[offset + 1]);
+      temp = (unsigned short) (frame.data[offset] << 8) ^ frame.data[offset + 1];
     } else {
       temp = frame.data[offset];
     }
 
-    if (0 > temp) {
-      fprintf (stderr, "bad sensor data\n");
+    if (0 != sensor_get_n_values (s)) {
+      /* apply interpolation */
+      temp = linear_interpolate (temp,
+				 sensor_get_x_values (s),
+				 sensor_get_y_values (s),
+				 sensor_get_n_values (s));
     }
-
-    /* apply interpolation */
-    temp = linear_interpolate (temp,
-			       sensor_get_x_values (s),
-			       sensor_get_y_values (s),
-			       sensor_get_n_values (s));
-
-    unsigned int x_index = sensor_get_x_index (s);
-    unsigned int y_index = sensor_get_y_index (s);
-    int z_index =  get_active_z (&cfg, x_index, y_index);
-
-    Panel* p = cfg_get_panel (&cfg,
-			      x_index,
-			      y_index,
-			      z_index);
-
-    panel_set_value (p, temp);
+      
+    panel_set_value (p, temp, matching_sensor_count++);
 
     if (sensor_get_id (s) != panel_get_id (p)) {
       fprintf (stderr, "id mismatch %d != %d\n", sensor_get_id (s), panel_get_id (p));
@@ -165,14 +158,14 @@ on_pressed(GtkGestureClick *gesture,
 
   cx* ctx = (cx*) user_data;
 
-  unsigned int x_index = panel_get_x_index (ctx -> cg);
-  unsigned int y_index = panel_get_y_index (ctx -> cg);
-  unsigned int active_z = get_active_z (&cfg, x_index, y_index);
+  int x_index = panel_get_x_index (ctx -> cg);
+  int y_index = panel_get_y_index (ctx -> cg);
+  int active_z = get_active_z (&cfg, x_index, y_index);
 
   Panel* p = NULL;
   
-  for (int i = 1; i < cfg.z_dimension; i++) {
-    int j = (active_z + i) % cfg.z_dimension;
+  for (int i = 1; i < cfg.panel_z_dimension; i++) {
+    int j = (active_z + i) % cfg.panel_z_dimension;
     if (NULL != (p = cfg_get_panel (&cfg, x_index, y_index, j))) {
       set_active_z (&cfg, x_index, y_index, j);
       break;
@@ -182,7 +175,7 @@ on_pressed(GtkGestureClick *gesture,
   if (NULL != p) {
     ctx -> cg = p;
     gtk_drawing_area_set_draw_func (ctx -> drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
-    unsigned int timeout = panel_get_timeout (p);
+    int timeout = panel_get_timeout (p);
     g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
   }
 }
@@ -194,7 +187,7 @@ on_drawing_area_destroy (GtkWidget *widget, gpointer user_data)
   struct {
     GtkDrawingArea* drawing_area;
     Panel* cg;
-    unsigned int timeout_id;
+    int timeout_id;
   }* ctx = user_data;
 
   if (0 != ctx -> timeout_id) {
@@ -218,7 +211,7 @@ activate (GtkApplication* app,
   window = gtk_window_new ();
   g_return_if_fail (GTK_IS_WIDGET (window));
 
-  gtk_window_set_default_size(GTK_WINDOW(window), 1024, 600);
+  gtk_window_set_default_size(GTK_WINDOW(window), 1024, 620);
   gtk_window_set_application (GTK_WINDOW (window), app);
 
   if (0 == remote_display) {
@@ -231,8 +224,8 @@ activate (GtkApplication* app,
   gtk_window_set_child (GTK_WINDOW (window), GTK_WIDGET(grid));
   gtk_grid_set_column_homogeneous (grid, TRUE);
 
-  for (int i = 0; i < cfg.y_dimension; i++) {
-    for (int j = 0; j < cfg.x_dimension; j++) {
+  for (int i = 0; i < get_y_dimension_from_d3_array (cfg.panel_array); i++) {
+    for (int j = 0; j < get_x_dimension_from_d3_array (cfg.panel_array); j++) {
       GtkDrawingArea *drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
 
       gtk_widget_set_hexpand (GTK_WIDGET(drawing_area), TRUE);
@@ -244,7 +237,7 @@ activate (GtkApplication* app,
       struct {
 	GtkDrawingArea* drawing_area;
 	Panel* cg;
-	unsigned int timeout_id;
+	int timeout_id;
       }* ctx = g_new0 (typeof (*ctx), 1);
 
       guint timeout = panel_get_timeout (p);
@@ -258,7 +251,7 @@ activate (GtkApplication* app,
       					      NULL);
 
       g_signal_connect (drawing_area, "destroy",
-                 G_CALLBACK (on_drawing_area_destroy), ctx);
+			G_CALLBACK (on_drawing_area_destroy), ctx);
 
       gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
       
@@ -308,7 +301,6 @@ main (int argc, char** argv) {
   GtkApplication *app;
   GIOChannel* input_channel;
   int status;
-  int total;
   int option;
 
   get_environment_variables ();

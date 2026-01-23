@@ -6,7 +6,7 @@
 
 
 char*
-str_from_unit_enum (unit_type unit) {
+str_from_unit_enum (const unit_type unit) {
   switch (unit) {
   case CELSIUS: return ("°C");
   case FAHRENHEIT: return ("°F");
@@ -18,7 +18,7 @@ str_from_unit_enum (unit_type unit) {
 }
 
 unit_type
-enum_from_unit_str (char* temp) {
+enum_from_unit_str (const char* temp) {
   char buffer[80];
   int i;
   for (i = 0; i < strlen (temp); i++) {
@@ -39,7 +39,7 @@ enum_from_unit_str (char* temp) {
 }
 
 double
-convert_units (double temp, unit_type to) {
+convert_units (const double temp, unit_type to) {
  switch (to) {
   case FAHRENHEIT:
     return ((temp * 9.0 / 5.0) + 32.0);
@@ -50,7 +50,7 @@ convert_units (double temp, unit_type to) {
   case KPA:
     return (temp * 100);
 
-  default: return (temp);
-    fprintf (stderr, "not convering %f to %f\n", temp);
+  default:
+    return (temp);
   }
 }

@@ -34,6 +34,14 @@ int main (int argc, char* argv[]) {
 		        printf ("%d,%d,", X.bytes[1], X.bytes[0]);
 
       printf ("\n");
+
+      printf ("0:740770,0x8000077e,");
+      printf ("%d,%d,", X.bytes[1], X.bytes[0]);
+            printf ("%d,%d,", X.bytes[1], X.bytes[0]);
+	          printf ("%d,%d,", X.bytes[1], X.bytes[0]);
+		        printf ("%d,%d,", X.bytes[1], X.bytes[0]);
+
+      printf ("\n");
     }
   }
 }

@@ -57,10 +57,10 @@ log_file_open (FILE* fp) {
 }
 
 
-static void print_full_record (struct can_frame* p1, struct can_frame* p2, struct timeval* file_start_time, struct timeval* current_time, FILE* fp) {
+static void print_full_record (struct can_frame* p1, struct timeval* file_start_time, struct timeval* current_time, FILE* fp) {
   int i;
 
-  fprintf (fp, "%d:%d,%X,", current_time -> tv_sec - file_start_time -> tv_sec, current_time -> tv_usec, p1 -> can_id);
+  fprintf (fp, "%ld:%ld,%X,", current_time -> tv_sec - file_start_time -> tv_sec, current_time -> tv_usec, p1 -> can_id);
   for (i = 0; i < CAN_MAX_DLEN; i++) {
     fprintf (fp, "%d", p1 -> data[i]);
     if (i != (CAN_MAX_DLEN - 1)) {
@@ -75,7 +75,7 @@ static void print_full_record (struct can_frame* p1, struct can_frame* p2, struc
 static void print_sparse_record (struct can_frame* p1, struct can_frame* p2, struct timeval* file_start_time, struct timeval* current_time, FILE* fp) {
   int i;
 
-  fprintf (fp, "%d:%d,,", current_time -> tv_sec - file_start_time -> tv_sec, current_time -> tv_usec);
+  fprintf (fp, "%ld:%ld,,", current_time -> tv_sec - file_start_time -> tv_sec, current_time -> tv_usec);
   for (i = 0; i < CAN_MAX_DLEN; i++) {
     if (p1 -> data[i] != p2 -> data[i]) {
       fprintf (fp, "%d", p1 -> data[i]);
@@ -91,7 +91,6 @@ static void print_sparse_record (struct can_frame* p1, struct can_frame* p2, str
 
 void
 log_data (struct can_frame* p1) {
-  int i;
   static struct timeval file_start_time;
   static struct timeval current_time;
   static struct timeval temp;
@@ -105,16 +104,16 @@ log_data (struct can_frame* p1) {
    */
   if (NULL == fp) {
     if (NULL == (fp = log_file_open (fp))) {
-      fprintf (stderr, "open for log file in %s failed in %s at %d\n",
-	       __FILE__, __LINE__,log_file_directory_name);
+      fprintf (stderr, "open for log file %s failed in %s at %d\n",
+	       log_file_directory_name, __FILE__, __LINE__);
       return;
     }
 
-    //    print_config (fp);
+    // print_config (fp);
     gettimeofday (&file_start_time, NULL);
-    fprintf (fp, "File Start at: %d:%d\n\n", file_start_time.tv_sec, file_start_time.tv_usec);
+    fprintf (fp, "File Start at: %ld:%ld\n\n", file_start_time.tv_sec, file_start_time.tv_usec);
     current_time = file_start_time;
-    print_full_record (p1, &p2, &file_start_time, &current_time, fp);
+    print_full_record (p1, &file_start_time, &current_time, fp);
     p2.can_id = p1 -> can_id;
     memcpy (p2.data, p1 -> data, sizeof (p1 -> data));
 
@@ -127,15 +126,15 @@ log_data (struct can_frame* p1) {
    */
   if (0 == (call_count++ % 10000)) {
     if (NULL == (fp = log_file_open (fp))) {
-      fprintf (stderr, "open for log file in %s failed in %s at %d\n",
-	       __FILE__, __LINE__,log_file_directory_name);
+      fprintf (stderr, "open for log file %s failed in %s at %d\n",
+	       log_file_directory_name, __FILE__, __LINE__);
       return;
     }
 
     gettimeofday (&file_start_time, NULL);
-    fprintf (fp, "File Start at: %d:%d\n\n", file_start_time.tv_sec, file_start_time.tv_usec);
+    fprintf (fp, "File Start at: %ld:%ld\n\n", file_start_time.tv_sec, file_start_time.tv_usec);
     current_time = file_start_time;
-    print_full_record (p1, &p2, &file_start_time, &current_time, fp);
+    print_full_record (p1, &file_start_time, &current_time, fp);
     p2.can_id = p1 -> can_id;
     memcpy (p2.data, p1 -> data, sizeof (p1 -> data));
 
@@ -152,7 +151,7 @@ log_data (struct can_frame* p1) {
 
   /* if the current CAN id is not the same as the last CAN id, print the entire record and return */
   if (p1 -> can_id != p2.can_id) {
-    print_full_record (p1, &p2, &file_start_time, &current_time, fp);
+    print_full_record (p1, &file_start_time, &current_time, fp);
     p2.can_id = p1 -> can_id;
     memcpy (p2.data, p1 -> data, sizeof (p1 -> data));
     return;

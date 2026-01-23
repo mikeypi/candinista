@@ -62,7 +62,6 @@ comp2 (const void * elem1, const void * elem2)
  */
 void
 interpolation_array_sort (double* x_values, double* y_values, int number_of_interpolation_points) {
-  int i;
 
   if (1 > number_of_interpolation_points) {
     return;

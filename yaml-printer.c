@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <gtk/gtk.h>
 
+#include "d3-array.h"
 #include "units.h"
 #include "candinista.h"
 #include "yaml-loader.h"
@@ -87,7 +88,13 @@ void configuration_print (const Configuration* d)
     printf ("====================\n");
 
     printf ("sensors: %d panels: %d\n", d -> sensor_count, d -> panel_count);
-    printf ("panel array: %d X %d X %d\n", d -> x_dimension, d -> y_dimension, d -> z_dimension);
+
+
+    printf ("panel array: %d X %d X %d\n",
+	    get_x_dimension_from_d3_array (d -> panel_array),
+	    get_y_dimension_from_d3_array (d -> panel_array),
+	    get_z_dimension_from_d3_array (d -> panel_array));
+    
     printf ("Sensors (%zu)\n", d -> sensor_count);
     for (size_t i = 0; i < d -> sensor_count; i++)
         dump_sensor (d -> sensors[i], i);

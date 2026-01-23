@@ -33,7 +33,6 @@
 #define MAX_CAN_FIELDS 8
 #define MAX_LABEL_LENGTH 40
 
-
 typedef enum {CAIRO_GAUGE_PANEL, CAIRO_INFO_PANEL, CAIRO_BARGRAPH_PANEL} output_type;
 
 /* data logging stuff */

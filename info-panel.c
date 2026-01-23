@@ -19,8 +19,6 @@
 /* concrete type */
 typedef struct {
   Panel base;
-
-  /* layout-specific fields could go here */
 } InfoPanel;
 
 
@@ -32,14 +30,13 @@ void draw_info_panel (GtkDrawingArea* area,
 {
   InfoPanel* rp = user_data;
   char buffer[80];
-  int i;
 
   if (NULL == rp) {
     return;
   }
 
-  unsigned int foreground_color = rp -> base.foreground_color;
-  unsigned int background_color = rp -> base.background_color;
+  int foreground_color = rp -> base.foreground_color;
+  int background_color = rp -> base.background_color;
   
   set_rgba (cr, background_color, 1.0);
   cairo_paint (cr);
@@ -47,7 +44,7 @@ void draw_info_panel (GtkDrawingArea* area,
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
     set_rgba (cr, foreground_color, 0.9);    
-    rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
+    rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
@@ -56,9 +53,6 @@ void draw_info_panel (GtkDrawingArea* area,
   /*
    * Draw labels and current value
    */
-  cairo_surface_t *surface =
-    cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-
   cairo_select_font_face (
 			  cr,
 			  "Orbitron",
@@ -93,26 +87,19 @@ void draw_info_panel (GtkDrawingArea* area,
 
   sprintf (buffer, "CPU temp: %.1f°C", temp / 1000.0);
   show_text_unjustified (cr, 20 + XOFFSET, 51 + YOFFSET, buffer);
-
-  cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
-  cairo_surface_destroy (surface);
 }
 
 
-static void set_value (Panel* g, double value) {}
+static void set_value (Panel* g, double value, int sensor_offfset) {}
 
 
 static const struct PanelVTable linear_vtable = {
   .draw = (void (*)(const struct Panel *, void *))draw_info_panel,
-  .set_value = (void (*) (Panel*, double)) set_value
+  .set_value = (void (*) (Panel*, double, int)) set_value
 };
 
 
-Panel* create_info_panel (
-			  unsigned int x_index,
-			  unsigned int y_index,
-			  unsigned int z_index
-			  ) {
+Panel* create_info_panel (int x_index, int y_index, int z_index ) {
 
   InfoPanel *lg = calloc (1, sizeof *lg);
   

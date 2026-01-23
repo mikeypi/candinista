@@ -61,7 +61,39 @@ sensors:
     y_index: 1
     x_index: 2
     id: 5
-    
+
+  - name: "TPMS multiplexor channel"
+    can_id: 0x77e
+    can_data_offset: 0
+    can_data_width: 1
+    y_index: 1
+    x_index: 2
+    id: 5
+
+  - name: "TMPS pressure channel"
+    can_id: 0x77e
+    can_data_offset: 1
+    can_data_width: 3
+    y_index: 1
+    x_index: 2
+    id: 5
+
+  - name: "TMPS temperature channel"
+    can_id: 0x77e
+    can_data_offset: 3
+    can_data_width: 1
+    y_index: 1
+    x_index: 2
+    id: 5
+
+  - name: "TMPS voltage channel"
+    can_id: 0x77e
+    can_data_offset: 3
+    can_data_width: 1
+    y_index: 1
+    x_index: 2
+    id: 5
+
   - name: "delphi 15326386 (temperature)"
     x_values: [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469,
     559, 671, 809, 980, 1195, 1465, 1806, 2240, 2795, 3511, 4441, 5658, 7263, 9399, 12261,
@@ -90,7 +122,7 @@ panels:
 
 
 ##############################################################################################
-  - type: radial
+  - type: radial_temperature
 #   sensor: "bosch pst-ft-2 (temperature)" 1
     label: "Water"
     y_index: 0
@@ -104,7 +136,7 @@ panels:
     units: "FAHRENHEIT"
     id: 0
 
-  - type: radial
+  - type: radial_temperature
 #   sensor: "bosch pst-ft-2 (temperature)" 1
     label: "Water"
     y_index: 0
@@ -118,7 +150,7 @@ panels:
     units: "CELSIUS"
     id: 0
 ##############################################################################################    
-  - type: radial
+  - type: radial_temperature
 #    sensor: "delphi 25036751 (temperature)" 2
     label: "Intake"
     y_index: 0
@@ -133,7 +165,7 @@ panels:
     units: "CELSIUS"
     id: 1
 
-  - type: radial
+  - type: radial_temperature
 #    sensor: "delphi 25036751 (temperature)" 2
     label: "Intake"
     y_index: 0
@@ -148,7 +180,7 @@ panels:
     units: "FAHRENHEIT"
     id: 1
 ##############################################################################################
-  - type: linear
+  - type: linear_temperature
 #   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
     y_index: 0
@@ -162,7 +194,7 @@ panels:
     units: "FAHRENHEIT"
     id: 2
 
-  - type: linear
+  - type: linear_temperature
 #   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
     y_index: 0
@@ -177,7 +209,7 @@ panels:
     units: "CELSIUS"
     id: 2
 
-  - type: radial
+  - type: radial_temperature
 #   sensor: "aem 30-2011 (temperature)" 3
     label: "Oil"
     y_index: 0
@@ -192,7 +224,7 @@ panels:
     units: "FAHRENHEIT"
     id: 2
 ##############################################################################################    
-  - type: radial
+  - type: radial_pressure
 #   sensor: "bosch pst-ft (pressure)" 4
     label: "Oil"
     y_index: 1
@@ -206,7 +238,7 @@ panels:
     units: "bar"
     id: 3
 
-  - type: radial
+  - type: radial_pressure
 #   sensor: "bosch pst-ft (pressure)" 4
     label: "Oil"
     y_index: 1
@@ -220,7 +252,7 @@ panels:
     units: "psi"
     id: 3
 ##############################################################################################
-  - type: radial
+  - type: radial_pressure
 #   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
     y_index: 1
@@ -233,7 +265,7 @@ panels:
     units: "bar"
     id: 4
 
-  - type: radial
+  - type: radial_pressure
 #   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
     y_index: 1
@@ -248,7 +280,7 @@ panels:
     output_format: "%.1f"
     id: 4
 
-  - type: radial
+  - type: radial_pressure
 #   sensor: "bosch pst-ft (pressure)" 5
     label: "MAP"
     y_index: 1
@@ -263,11 +295,26 @@ panels:
     output_format: "%.2f"
     id: 4
 ##############################################################################################
+  - type: tpms
+#   sensor: "dummy sensor for rpm" 6
+    label: "RPM"
+    y_index: 1
+    x_index: 2
+    z_index: 0
+    high_warn: 150
+    low_warn: 30
+    border: 1
+    pressure_units: "kPa"
+    temperature_units: "CELSIUS"
+    timeout: 1500
+    id: 5
+
   - type: info
 #   sensor: "dummy sensor for rpm" 6
     label: "RPM"
     y_index: 1
     x_index: 2
+    z_index: 1
     max_value: 8000
     min_value: 500
     high_warn: 7000

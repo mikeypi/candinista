@@ -62,8 +62,8 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   assert (NULL != rp);
 
   double value = convert_units (rp -> value, rp -> units) + rp -> offset;
-  unsigned int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
-  unsigned int background_color = rp -> base.background_color;
+  int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
+  int background_color = rp -> base.background_color;
   
   set_rgba (cr, background_color, 1.0);
   cairo_paint (cr);
@@ -71,7 +71,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
     set_rgba (cr, rp -> base.foreground_color, 0.9);
-    rounded_rectangle(cr, 5.0, 5.0, width - 10, height - 10, 5.0);
+    rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
@@ -101,9 +101,6 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   /*
    * Draw labels and current value
    */
-  cairo_surface_t *surface =
-    cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-
   cairo_select_font_face (
 			  cr,
 			  "Orbitron",
@@ -115,12 +112,12 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   set_rgba (cr, foreground_color, 0.9);
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
-  sprintf (buffer, "%s", str_from_unit_enum (panel_get_units (&rp -> base)));
+  sprintf (buffer, "%s", str_from_unit_enum (rp -> units));
   show_text_left_justified (cr, 238 + XOFFSET + 40, 85 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Label
-  if (NULL != rp -> label) {
+  if ('\0' != rp -> label[0]) {
     sprintf (buffer, "%s", rp -> label);
     show_text_unjustified (cr, 70 + XOFFSET, 210 + YOFFSET, buffer);
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
@@ -157,8 +154,6 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 			       true,
 			       true);
   }
-
-  cairo_surface_destroy (surface);
 }
 
 
@@ -175,7 +170,7 @@ static void set_warn (Panel* g, double low, double high) { LinearPanel* rp = (Li
 static void set_offset (Panel* g, double offset)  { LinearPanel* rp = (LinearPanel*) g; rp -> offset = offset; }
 static void set_units (Panel* g, unit_type ut)  { LinearPanel* rp = (LinearPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { LinearPanel* rp = (LinearPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
+static void set_value (Panel* g, double value, int sensor_count) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
 static void set_output_format (Panel* g, char* format) { LinearPanel* rp = (LinearPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable linear_vtable = {
@@ -193,17 +188,11 @@ static const struct PanelVTable linear_vtable = {
   .set_offset = (void (*) (Panel*, double)) set_offset,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_label = (void (*) (Panel*, char*)) set_label,
-  .set_value = (void (*) (Panel*, double)) set_value,
+  .set_value = (void (*) (Panel*, double, int)) set_value,
   .set_output_format = (void (*) (Panel*, char*)) set_output_format  
 };
 
-Panel* create_linear_gauge_panel (
-				  unsigned int x_index,
-  				  unsigned int y_index,
-				  unsigned int z_index,
-  				  double max,
-  				  double min) {
-
+Panel* create_linear_gauge_panel (int x_index, int y_index, int z_index, double max, double min) {
   LinearPanel *lg = g_new0 (typeof (*lg), 1);
   
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
