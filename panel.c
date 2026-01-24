@@ -39,18 +39,16 @@ double panel_get_max (const Panel* g)                      { return (g -> vtable
 double panel_get_low_warn (const Panel* g)                 { return (g -> vtable -> get_low_warn (g)); }
 double panel_get_high_warn (const Panel* g)                { return (g -> vtable -> get_high_warn (g)); }
 unit_type panel_get_units (const Panel* g)                 { return (g -> vtable -> get_units (g)); }
-double panel_get_offset (const Panel* g)                   { return (g -> vtable -> get_offset (g)); }
 char* panel_get_label (const Panel* g)                     { return (g -> vtable -> get_label (g)); }
+char* panel_get_output_format (const Panel* g)             { return (g -> vtable -> get_output_format (g)); }
 
 void panel_set_minmax (Panel* g, double min, double max)   { g -> vtable -> set_minmax (g, min, max); }
 void panel_set_warn (Panel* g, double low, double high)    { g -> vtable -> set_warn (g, low, high); }
 void panel_set_units (Panel* g, unit_type ut)              { g -> vtable -> set_units (g, ut); }
-void panel_set_offset (Panel* g, double value)             { g -> vtable -> set_offset (g, value); }
 void panel_set_label (Panel* g, char* label)               { g -> vtable -> set_label (g, label); }
 
 void panel_set_output_format (Panel* g, char* format)      { g -> vtable -> set_output_format (g, format); }
-void panel_set_value (Panel* g, double value, int sensor_offset)
-                                                           { g -> vtable -> set_value (g, value, sensor_offset); }
+void panel_set_value (Panel* g, double value, int offset)  { g -> vtable -> set_value (g, value, offset); }
 
 
 void panel_destroy (Panel* g) { free (g); }

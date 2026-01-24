@@ -5,7 +5,6 @@
 
 struct Sensor {
   char  *name;
-  double value;
   int can_id;
   int can_data_offset;
   int can_data_width;
@@ -15,6 +14,8 @@ struct Sensor {
   int x_index;
   int y_index;
   int z_index;
+  double offset;
+  double scale;
   int id;
 };
 
@@ -45,13 +46,18 @@ int sensor_get_can_data_width (const Sensor *s)                       { return s
 double* sensor_get_x_values (const Sensor *s)                         { return s -> x_values; }
 double* sensor_get_y_values (const Sensor *s)                         { return s -> y_values; }
 int sensor_get_n_values (const Sensor *s)                             { return s -> n_values; };
-int sensor_get_id (const Sensor *s)                          { return s -> id; }
 
 int sensor_get_x_index (const Sensor *s)                              { return s -> x_index; }
 int sensor_get_y_index (const Sensor *s)                              { return s -> y_index; }
 int sensor_get_z_index (const Sensor *s)                              { return s -> z_index; }
 
-void sensor_set_id (Sensor *s, int id)                       { s -> id = id; }
+double sensor_get_offset (const Sensor *s)                            { return s -> offset; }
+double sensor_get_scale (const Sensor *s)                             { return s -> scale; }
+int sensor_get_id (const Sensor *s)                                   { return s -> id; }
+
 void sensor_set_x_values (Sensor *s, double *v, int n)                { s -> x_values = v; s -> n_values = n; };
 void sensor_set_y_values (Sensor *s, double *v, int n)                { s -> y_values = v; s -> n_values = n; };
+void sensor_set_offset (Sensor *s, double offset)                     { s -> offset = offset; }
+void sensor_set_scale (Sensor *s, double scale)                       { s -> scale = scale; }
+void sensor_set_id (Sensor *s, int id)                                { s -> id = id; }
 

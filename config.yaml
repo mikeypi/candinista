@@ -64,6 +64,7 @@ sensors:
     can_id: 0x77e
     can_data_offset: 1
     can_data_width: 2
+    scale: 0.001
     y_index: 1
     x_index: 2
     id: 5
@@ -83,6 +84,16 @@ sensors:
     y_index: 1
     x_index: 2
     id: 5
+
+##############################################################################################
+  - name: "Haltech (and others) TPMS"
+    can_id: 0x777
+    can_data_offset: 4
+    can_data_width: 1
+    y_index: 1
+    x_index: 2
+    id: 5
+##############################################################################################
 
   - name: "delphi 15326386 (temperature)"
     x_values: [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469,

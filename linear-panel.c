@@ -35,7 +35,6 @@ typedef struct {
   double max;
   double low_warn;
   double high_warn;
-  double offset;
   unit_type units;
   char label[64];
   char* output_format;  
@@ -61,7 +60,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 
   assert (NULL != rp);
 
-  double value = convert_units (rp -> value, rp -> units) + rp -> offset;
+  double value = convert_units (rp -> value, rp -> units);
   int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
   int background_color = rp -> base.background_color;
   
@@ -161,13 +160,12 @@ static double get_min (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; ret
 static double get_max (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> max); }
 static double get_high_warn (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> high_warn); }
 static double get_low_warn (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> low_warn); }
-static double get_offset (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> offset); }
 static unit_type get_units (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> units); }
 static char* get_label (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> label); }
+static char* get_output_format (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> output_format); }
 
 static void set_minmax (Panel* g, double min, double max) { LinearPanel* rp = (LinearPanel*) g; rp -> min = min; rp -> max = max; }
 static void set_warn (Panel* g, double low, double high) { LinearPanel* rp = (LinearPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
-static void set_offset (Panel* g, double offset)  { LinearPanel* rp = (LinearPanel*) g; rp -> offset = offset; }
 static void set_units (Panel* g, unit_type ut)  { LinearPanel* rp = (LinearPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { LinearPanel* rp = (LinearPanel*) g; strcpy (rp -> label, label); }
 static void set_value (Panel* g, double value, int sensor_count) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
@@ -179,13 +177,12 @@ static const struct PanelVTable linear_vtable = {
   .get_max = (double (*)(const struct Panel*))get_max,
   .get_high_warn = (double (*)(const struct Panel*))get_high_warn,
   .get_low_warn = (double (*)(const struct Panel*))get_low_warn,
-  .get_offset = (double (*)(const struct Panel*))get_offset,
   .get_units = (unit_type (*)(const struct Panel*))get_units,    
   .get_label = (char* (*)(const struct Panel*))get_label,
-
+  .get_output_format = (char* (*)(const struct Panel*))get_output_format,
+  
   .set_minmax = (void (*) (Panel*, double, double))set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
-  .set_offset = (void (*) (Panel*, double)) set_offset,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_label = (void (*) (Panel*, char*)) set_label,
   .set_value = (void (*) (Panel*, double, int)) set_value,

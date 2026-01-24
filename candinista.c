@@ -142,6 +142,13 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 				 sensor_get_n_values (s));
     }
 
+    double scale = sensor_get_scale (s);
+    if (0 != scale) {
+      temp *= scale;
+    }
+
+    temp += sensor_get_offset (s);
+    
     panel_set_value (p, temp, matching_sensor_count++);
 
     if (sensor_get_id (s) != panel_get_id (p)) {

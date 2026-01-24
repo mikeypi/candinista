@@ -48,6 +48,8 @@ typedef struct {
   double* x_values;
   double* y_values;
   size_t n_values;
+  double scale;
+  double offset;
   int x_index;
   int y_index;
   int z_index;
@@ -60,7 +62,6 @@ typedef struct {
   double max;
   double low_warn;
   double high_warn;
-  double offset;
   unit_type units;
   unit_type pressure_units;
   unit_type temperature_units; 
@@ -173,15 +174,16 @@ Configuration configuration_load_yaml (const char *path) {
 	  else if (!strcmp (key, "x_index")) st.x_index = atoi (v);
 	  else if (!strcmp (key, "y_index")) st.y_index = atoi (v);
 	  else if (!strcmp (key, "z_index")) st.z_index = atoi (v);
-	  else if (!strcmp (key, "id")) st.id = atoi (v);
 	  else if (!strcmp (key, "can_id")) st.can_id = strtol(v, NULL, 16);
+	  else if (!strcmp (key, "scale")) st.scale = atof (v);
+	  else if (!strcmp (key, "offset")) st.offset = atof (v);
+	  else if (!strcmp (key, "id")) st.id = atoi (v);
 	} else if (in_panels) {
 	  if (!strcmp (key, "type")) { gt.type = enum_from_type_str (v); }
 	  else if (!strcmp (key, "low_warn")) gt.low_warn = atof (v);
 	  else if (!strcmp (key, "high_warn")) gt.high_warn = atof (v);
 	  else if (!strcmp (key, "min_value")) gt.min = atof (v);
 	  else if (!strcmp (key, "max_value")) gt.max = atof (v);
-	  else if (!strcmp (key, "offset")) gt.offset = atof (v);
 	  else if (!strcmp (key, "label")) strncpy (gt.label, v, 63);
 	  else if (!strcmp (key, "border")) gt.border = atoi (v);	 
 	  else if (!strcmp (key, "x_index")) gt.x_index = atoi (v);
@@ -210,6 +212,8 @@ Configuration configuration_load_yaml (const char *path) {
 	sensor_set_x_values (s, st.x_values, st.n_values);
 	sensor_set_y_values (s, st.y_values, st.n_values);
 	sensor_set_id (s, st.id);
+	sensor_set_offset (s, st.offset);
+	sensor_set_scale (s, st.scale);
 	if (st.x_index > d.x_dimension) d.x_dimension = st.x_index;
 	if (st.y_index > d.y_dimension) d.y_dimension = st.y_index;
 	if (st.z_index > d.sensor_z_dimension) d.sensor_z_dimension = st.z_index;
@@ -225,7 +229,6 @@ Configuration configuration_load_yaml (const char *path) {
 	case RADIAL_TEMPERATURE_PANEL:
 	  g = create_radial_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min);
 	  panel_set_warn (g, gt.low_warn, gt.high_warn);
-	  panel_set_offset (g, gt.offset);
 	  panel_set_label (g, gt.label);
 	  panel_set_border (g, gt.border);
 	  panel_set_units (g, gt.units);
@@ -243,7 +246,6 @@ Configuration configuration_load_yaml (const char *path) {
 	case LINEAR_TEMPERATURE_PANEL:
 	  g = create_linear_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min);
 	  panel_set_warn (g, gt.low_warn, gt.high_warn);
-	  panel_set_offset (g, gt.offset);
 	  panel_set_label (g, gt.label);
 	  panel_set_border (g, gt.border);
 	  panel_set_units (g, gt.units);
@@ -349,7 +351,7 @@ void build_tables (Configuration* cfg) {
     i = sensor_get_x_index (*s);
     j = sensor_get_y_index (*s);
     k = sensor_get_z_index (*s);
-    set_item_in_d3_array (cfg -> sensor_array, *p, i, j, k);
+    set_item_in_d3_array (cfg -> sensor_array, *s, i, j, 0);
     s++;
   }
 
