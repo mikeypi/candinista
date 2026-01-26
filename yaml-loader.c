@@ -111,6 +111,7 @@ static double scalar_double (yaml_event_t *event) {
 
 
 static void load_double_array (yaml_parser_t *parser,
+			       yaml_event_t* last_event,
 			       double **out,
 			       size_t *count) {
   yaml_event_t event;
@@ -118,6 +119,8 @@ static void load_double_array (yaml_parser_t *parser,
   *count = 0;
   *out = malloc (capacity * sizeof (double));
 
+  (*out)[ (*count)++] = scalar_double (last_event);
+  
   while (1) {
     yaml_parser_parse (parser, &event);
 
@@ -144,6 +147,7 @@ Configuration configuration_load_yaml (const char *path) {
 
   yaml_parser_t parser;
   yaml_event_t event;
+
   yaml_parser_initialize (&parser);
   yaml_parser_set_input_file (&parser, f);
 
@@ -169,8 +173,8 @@ Configuration configuration_load_yaml (const char *path) {
 	  if (!strcmp (key, "name")) strncpy (st.name, v, 63);
 	  else if (!strcmp (key, "can_data_offset")) st.can_data_offset = atoi (v);
 	  else if (!strcmp (key, "can_data_width")) st.can_data_width = atoi (v);
-	  else if (!strcmp (key, "x_values")) load_double_array (&parser, &st.x_values, &st.n_values);
-	  else if (!strcmp (key, "y_values")) load_double_array (&parser, &st.y_values, &st.n_values);
+	  else if (!strcmp (key, "x_values")) { load_double_array (&parser, &event, &st.x_values, &st.n_values); }
+	  else if (!strcmp (key, "y_values"))  { load_double_array (&parser, &event, &st.y_values, &st.n_values);}
 	  else if (!strcmp (key, "x_index")) st.x_index = atoi (v);
 	  else if (!strcmp (key, "y_index")) st.y_index = atoi (v);
 	  else if (!strcmp (key, "z_index")) st.z_index = atoi (v);
@@ -344,18 +348,17 @@ void build_tables (Configuration* cfg) {
     p++;
   }
 
-  cfg -> sensor_array = new_d3_array (cfg -> x_dimension, cfg -> y_dimension, cfg -> panel_z_dimension);
+  cfg -> sensor_array = new_d2_vp_array (cfg -> x_dimension, cfg -> y_dimension);
 
   Sensor** s = cfg -> sensors;
   while (s < cfg -> sensors + cfg -> sensor_count) {
     i = sensor_get_x_index (*s);
     j = sensor_get_y_index (*s);
-    k = sensor_get_z_index (*s);
-    set_item_in_d3_array (cfg -> sensor_array, *s, i, j, 0);
+    set_item_in_d2_vp_array (cfg -> sensor_array, *s, i, j);
     s++;
   }
 
-  cfg -> active_z_index = new_d2_array (cfg -> x_dimension, cfg -> y_dimension);
+  cfg -> active_z_index = new_d2_int_array (cfg -> x_dimension, cfg -> y_dimension);
 }
 
 
@@ -365,11 +368,11 @@ Panel* cfg_get_panel (Configuration* cfg, int i, int j, int k) {
 }
 
 int get_active_z  (Configuration* cfg, int i, int j) {
-  return (get_item_in_d2_array (cfg -> active_z_index, i, j));
+  return (get_item_in_d2_int_array (cfg -> active_z_index, i, j));
 }
 
 void set_active_z (Configuration* cfg, int x_index, int y_index, int value) {
-  set_item_in_d2_array (cfg -> active_z_index, value, x_index, y_index);
+  set_item_in_d2_int_array (cfg -> active_z_index, value, x_index, y_index);
 }
 
 void configuration_free (Configuration *d) {

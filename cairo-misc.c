@@ -12,45 +12,40 @@ set_rgba (cairo_t* cr, unsigned int color, double alpha) {
   cairo_set_source_rgba (cr, (double)red/255.0, (double)green/255.0, (double)blue/255.0, alpha);
 }
 
-void
+double
 show_text_unjustified (cairo_t* cr, int x, int y, char* buffer) {
   cairo_move_to (cr, x, y);
   cairo_show_text (cr, buffer);
+  return (0);
 }
 
-void
+double
 show_text_left_justified (cairo_t* cr, int x, int y, char* buffer) {
   cairo_text_extents_t extents;
 
   cairo_text_extents(cr, buffer, &extents);
   cairo_move_to (cr, x - extents.width, y);
   cairo_show_text (cr, buffer);
+
+  return (extents.x_advance);
 }
 
 #define BOX_HEIGHT_MARGIN 5
 #define BOX_WIDTH_MARGIN 5
 
-int
+double
 show_text_right_justified (cairo_t* cr,
 			   int x,
 			   int y,
 			   char* buffer,
-			   int width,
-			   unsigned int color,
-			   bool burn_in,
-			   bool add_box) {
+			   int width) {
 
   cairo_text_extents_t ghost_extents;
   cairo_text_extents_t buffer_extents;
   char* ghost_chars[] = {"8", "88", "888", "8888", "88888", "888888"};
     
   switch (width) {
-  case 6:
-  case 5:
-  case 4:
-  case 3:
-  case 2:
-  case 1:
+  case 6:  case 5:  case 4:  case 3:  case 2:  case 1:
     cairo_text_extents (cr, ghost_chars[width - 1], &ghost_extents);
     cairo_text_extents (cr, buffer, &buffer_extents);
     break;
@@ -66,31 +61,82 @@ show_text_right_justified (cairo_t* cr,
   double left_margin = right_margin - field_width;
   double buffer_left_margin = right_margin - buffer_extents.x_advance;
   
-  if (add_box) {
-    set_rgba (cr, color, 0.9);
-    rounded_rectangle(cr,
-		      left_margin - BOX_WIDTH_MARGIN,
-		      y - field_height - BOX_HEIGHT_MARGIN,
-		      field_height + (2 * BOX_HEIGHT_MARGIN),
-		      field_width + (2 * BOX_WIDTH_MARGIN),
-		      5.0);
-
-    cairo_stroke (cr);
-  }
-
-  if (burn_in) {
-    set_rgba (cr, color, 0.14);
-    cairo_move_to (cr,left_margin, y);
-
-    cairo_show_text (cr, ghost_chars[width - 1]);
-  }
-  
-  set_rgba (cr, color, 0.9);
   cairo_move_to (cr, buffer_left_margin, y);
   cairo_show_text (cr, buffer);
 
+  return (right_margin);
+}
+
+int
+show_text_burn_in (cairo_t* cr,
+		   int x,
+		   int y,
+		   char* buffer,
+		   int width) {
+
+  cairo_text_extents_t ghost_extents;
+  cairo_text_extents_t buffer_extents;
+  char* ghost_chars[] = {"8", "88", "888", "8888", "88888", "888888"};
+    
+  switch (width) {
+  case 6: case 5: case 4: case 3: case 2: case 1:
+    cairo_text_extents (cr, ghost_chars[width - 1], &ghost_extents);
+    cairo_text_extents (cr, buffer, &buffer_extents);
+    break;
+  
+  default:
+    fprintf (stderr, "unsupported width %d\n", width);
+    return (-1);
+  }
+
+  double field_width = (buffer_extents.width < ghost_extents.width) ?  ghost_extents.x_advance : buffer_extents.x_advance;
+  double right_margin = x + (field_width / 2.0);
+  double left_margin = right_margin - field_width;
+  
+  cairo_move_to (cr, left_margin, y);
+  cairo_show_text (cr, ghost_chars[width - 1]);
+
   return (0);
 }
+
+int
+show_text_box (cairo_t* cr,
+	       int x,
+	       int y,
+	       char* buffer,
+	       int width) {
+
+  cairo_text_extents_t ghost_extents;
+  cairo_text_extents_t buffer_extents;
+  char* ghost_chars[] = {"8", "88", "888", "8888", "88888", "888888"};
+    
+  switch (width) {
+  case 6:  case 5:  case 4:  case 3:  case 2:  case 1:
+    cairo_text_extents (cr, ghost_chars[width - 1], &ghost_extents);
+    cairo_text_extents (cr, buffer, &buffer_extents);
+    break;
+  
+  default:
+    fprintf (stderr, "unsupported width %d\n", width);
+    return (-1);
+  }
+
+  double field_width = (buffer_extents.width < ghost_extents.width) ?  ghost_extents.x_advance : buffer_extents.x_advance;
+  double field_height = ghost_extents.height;  
+  double right_margin = x + (field_width / 2.0);
+  double left_margin = right_margin - field_width;
+  double buffer_left_margin = right_margin - buffer_extents.x_advance;
+  
+  rounded_rectangle(cr,
+		    left_margin - BOX_WIDTH_MARGIN,
+		    y - field_height - BOX_HEIGHT_MARGIN,
+		    field_height + (2 * BOX_HEIGHT_MARGIN),
+		    field_width + (2 * BOX_WIDTH_MARGIN),
+		    5.0);
+  cairo_stroke (cr);
+  return (0);
+}
+
 
 void
 rounded_rectangle (cairo_t* cr,

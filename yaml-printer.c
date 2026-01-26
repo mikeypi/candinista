@@ -15,7 +15,8 @@ static void print_double_array (const char *label,
                                const double *v,
                                size_t count)
 {
-    printf ("    %s (%zu): [", label, count);
+  //    printf ("    %s:[", label);
+  printf ("%s: [", label);
     for (size_t i = 0; i < count; i++) {
         printf ("%g", v[i]);
         if (i + 1 < count)
@@ -28,22 +29,30 @@ static void print_double_array (const char *label,
 
 static void dump_sensor (const Sensor* s, size_t index)
 {
-    printf ("#  Sensor[%zu]\n", index);
-    printf ("\t-name: \"%s\"\n", sensor_get_name (s));
-    printf ("\tcan_id: 0x%x\n", sensor_get_can_id (s));
-    printf ("\tcan_data_offset: %d\n", sensor_get_can_data_offset (s));
-    printf ("\tcan_data_width: %d\n", sensor_get_can_data_width (s));
+  //    printf ("#  Sensor[%zu]\n", index);
+    printf ("  - name: \"%s\"\n", sensor_get_name (s));
+
     if (0 != sensor_get_n_values (s)) {
-      print_double_array ("\tx_values:", sensor_get_x_values (s), sensor_get_n_values (s));
-      print_double_array ("\ty_values:", sensor_get_y_values (s), sensor_get_n_values (s));
-      printf ("#\tn_values: %d\n", sensor_get_n_values (s));
+      print_double_array ("    x_values", sensor_get_x_values (s), sensor_get_n_values (s));
+      print_double_array ("    y_values", sensor_get_y_values (s), sensor_get_n_values (s));
+      //      printf ("#    n_values: %d\n", sensor_get_n_values (s));
     }
-    printf ("\tx_index: %d\n", sensor_get_x_index (s));
-    printf ("\ty_index: %d\n", sensor_get_y_index (s));
-    printf ("\tz_index: %d\n", sensor_get_z_index (s));
-    printf ("\toffset: %f\n", sensor_get_offset (s));
-    printf ("\tscale: %f\n", sensor_get_scale (s));
-    printf ("\tid: %d\n", sensor_get_id (s));
+    printf ("    can_id: 0x%x\n", sensor_get_can_id (s));
+    printf ("    can_data_offset: %d\n", sensor_get_can_data_offset (s));
+    printf ("    can_data_width: %d\n", sensor_get_can_data_width (s));
+
+    printf ("    x_index: %d\n", sensor_get_x_index (s));
+    printf ("    y_index: %d\n", sensor_get_y_index (s));
+    printf ("    z_index: %d\n", sensor_get_z_index (s));
+
+    if (0 != sensor_get_offset (s)) {
+      printf ("    offset: %f\n", sensor_get_offset (s));
+    }
+    if (0 != sensor_get_scale (s)) {
+      printf ("    scale: %f\n", sensor_get_scale (s));
+    }
+
+    printf ("    id: %d\n", sensor_get_id (s));
     printf ("\n");
 }
 
@@ -65,33 +74,39 @@ str_from_type_enum (const unit_type t) {
 
 void dump_panel (const Panel* g, size_t index)
 {
-    printf ("#  panel[%zu]\n", index);
+  //    printf ("#  panel[%zu]\n", index);
 
     if (!g) {
-        printf ("#    <null panel>\n\n");
+      //        printf ("#    <null panel>\n\n");
         return;
     }
 
-    printf ("\t-type: \"%s\"\n", str_from_type_enum (g -> type));
-    if (NULL != panel_get_label (g)) printf ("\tlabel: \"%s\"\n", panel_get_label (g));
-    printf ("\tx_index: %d\n", g -> x_index);
-    printf ("\ty_index: %d\n", g -> y_index);
-    printf ("\tz_index: %d\n", g -> z_index);
-    printf ("\tborder: %d\n", g -> border);
-    printf ("\tforeground_color: 0x%x\n", g -> foreground_color);
-    printf ("\tbackground_color: 0x%x\n", g -> background_color);
-    printf ("\thigh_warn_color: 0x%x\n", g -> high_warn_color);
-    printf ("\tlow_warn_color: 0x%x\n", g -> low_warn_color);
-    printf ("\ttimeout: %d\n", g -> timeout);
+    char* t =  panel_get_label (g);
+    printf ("  - type: %s\n", str_from_type_enum (g -> type));
+    if ((NULL != t) && ('\0' != t[0])) printf ("    label: \"%s\"\n", t);
+    printf ("    x_index: %d\n", g -> x_index);
+    printf ("    y_index: %d\n", g -> y_index);
+    printf ("    z_index: %d\n", g -> z_index);
+    printf ("    border: %d\n", g -> border);
+    printf ("    foreground_color: 0x%x\n", g -> foreground_color);
+    printf ("    background_color: 0x%x\n", g -> background_color);
+    printf ("    high_warn_color: 0x%x\n", g -> high_warn_color);
+    printf ("    low_warn_color: 0x%x\n", g -> low_warn_color);
+    printf ("    timeout: %d\n", g -> timeout);
+    printf ("    id: %d\n", g -> id);
 
     if ((UNKNOWN_PANEL != g -> type) && (INFO_PANEL != g -> type)) {
-      printf ("\tid: %d\n", g -> id);
-      printf ("\tmin : %.3f\n", panel_get_min (g));
-      printf ("\tmax : %.3f\n", panel_get_max (g));
-      printf ("\tlow_warn : %.3f\n", panel_get_low_warn (g));
-      printf ("\thigh_warn: %.3f\n", panel_get_high_warn (g));
-      printf ("\tunits: \"%s\"\n", str_from_unit_enum (panel_get_units (g)));
-      printf ("\toutput_format: \"%s\"\n", panel_get_output_format (g));
+      printf ("    min_value: %.3f\n", panel_get_min (g));
+      printf ("    max_value: %.3f\n", panel_get_max (g));
+      printf ("    low_warn : %.3f\n", panel_get_low_warn (g));
+      printf ("    high_warn: %.3f\n", panel_get_high_warn (g));
+      printf ("    output_format: \"%s\"\n", panel_get_output_format (g));
+      printf ("    units: \"%s\"\n", str_from_unit_enum (panel_get_units (g)));
+    }
+
+    if (TPMS_PANEL == g -> type) {
+        printf ("    pressure_units: \"%s\"\n", str_from_unit_enum (panel_get_pressure_units (g)));
+        printf ("    temperature_units: \"%s\"\n", str_from_unit_enum (panel_get_temperature_units (g)));
     }
     
     printf ("\n");

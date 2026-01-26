@@ -9,11 +9,6 @@ typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 #define BLACK_RGB 0x0/255.0, 0x0/255.0, 0x0/255.0
 #define GRAY_RGB 0x33/255.0, 0x33/255.0, 0x33/255.0
 
-//#define WARN_RGBA RED_RGB, 0.9
-//#define FOREGROUND_RGBA BLACK_RGB, 0.75
-//#define BACKGROUND_RGBA ORANGE_RGB, 1.0
-//#define BURN_IN_RGBA BLACK_RGB, 0.07
-
 #define HIGH_WARN_RGBA RED_RGB, 0.9
 #define LOW_WARN_RGBA BLUE_RGB, 0.9
 #define FOREGROUND_RGBA ORANGE_RGB, 0.9
@@ -42,25 +37,23 @@ typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 #define XBLACK_RGB  0x000000
 #define XGRAY_RGB   0x333333
 
-
-
-//extern cairo_info_panel* new_cairo_info_panel ();
 extern void draw_cairo_info_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 
-//extern cairo_gauge_panel* new_cairo_gauge_panel ();
 extern gboolean update_cairo_gauge_panel_value (gpointer);
 extern void draw_cairo_gauge_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 
-//extern cairo_bargraph_panel* new_cairo_bargraph_panel ();
 extern gboolean update_cairo_bargraph_panel_value (gpointer);
 extern void draw_cairo_bargraph_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 
 extern void set_rgba_for_burn_in (cairo_t*, warning_level);
 extern void set_rgba_for_foreground (cairo_t*, warning_level);
 extern void set_rgba_for_background (cairo_t*);
-extern void show_text_unjustified (cairo_t*,  int, int, char*);
-extern void show_text_left_justified (cairo_t*, int, int, char*);
-extern int show_text_right_justified (cairo_t*, int, int, char*, int, unsigned int, bool, bool);
+extern double show_text_unjustified (cairo_t*,  int, int, char*);
+extern double show_text_left_justified (cairo_t*, int, int, char*);
+extern double show_text_right_justified (cairo_t*, int, int, char*, int);
+extern int show_text_burn_in (cairo_t* cr, int x, int y, char* buffer, int width);
+extern int show_text_box (cairo_t* cr, int x, int y, char* buffer, int width);
+
 extern void rounded_rectangle(cairo_t*, double, double, double, double, double);
 
 extern void set_rgba (cairo_t* cr, unsigned int color, double alpha);

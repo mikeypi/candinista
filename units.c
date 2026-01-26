@@ -26,9 +26,14 @@ enum_from_unit_str (const char* temp) {
   }
 
   buffer[i] = '\0';
-
-  if ((0 == strcmp (buffer, "celsius")) || (0 == strcmp (buffer, "c"))) { return (CELSIUS); }
-  if ((0 == strcmp (buffer, "fahrenheit")) || (0 == strcmp (buffer, "f"))) { return (FAHRENHEIT); }
+  if ((0 == strcmp (buffer, "celsius"))
+      || (0 == strcmp (buffer, "c"))
+      || (0 == strcmp (buffer, "°c"))
+      ) { return (CELSIUS); }
+  if ((0 == strcmp (buffer, "fahrenheit"))
+      || (0 == strcmp (buffer, "f"))
+      || (0 == strcmp (buffer, "°f"))
+      ) { return (FAHRENHEIT); }
   if (0 == strcmp (buffer, "bar"))  {  return (BAR); }
   if (0 == strcmp (buffer, "kpa"))  {  return (KPA); }
   if (0 == strcmp (buffer, "psi"))  {  return (PSI); }

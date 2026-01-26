@@ -193,47 +193,40 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   case 2:
   case 3:
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 10);
-    show_text_right_justified (cr,
-			       width / 2.0,
-			       160 + YOFFSET, 
-			       buffer,
-			       3,
-			       foreground_color,
-			       true,
-			       true);
+    show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
+    set_rgba (cr, foreground_color, 0.14);
+    show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
+    set_rgba (cr, foreground_color, 0.9);
+    show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
     break;
     
   case 4:
+    int z = (NULL == strchr (buffer, '.')) ? 4 :3;
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
-    show_text_right_justified (cr,
-			       width / 2.0,
-			       160 + YOFFSET, 
-			       buffer,
-			       (NULL == strchr (buffer, '.')) ? 4 : 3,
-			       foreground_color,
-			       true,
-			       true);
+    show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, z);
+    set_rgba (cr, foreground_color, 0.14);
+    show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, z);
+    set_rgba (cr, foreground_color, 0.9);
+    show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, z);
     break;
 			       
   default:
     cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE - 20);
 
     if (NULL != strchr (buffer, '.')) {
-      buffer[strlen (buffer) - 1] = '\0';
+      buffer[w - 1] = '\0';
     }
 
     if (NULL != strchr (buffer, '.')) {
-      buffer[strlen (buffer) - 1] = '\0';
+      buffer[w - 2] = '\0';
     }
-    
-    show_text_right_justified (cr,
-			       width / 2.0,
-			       160 + YOFFSET, 
-			       buffer,
-			       strlen (buffer),
-			       foreground_color,
-			       true,
-			       true);
+
+    w = strlen (buffer);
+    show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, w);
+    set_rgba (cr, foreground_color, 0.14);
+    show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, w);
+    set_rgba (cr, foreground_color, 0.9);
+    show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, w);
     break;
   }
 }
@@ -273,6 +266,16 @@ static const struct PanelVTable radial_vtable = {
 
 Panel* create_radial_gauge_panel (int x_index, int y_index, int z_index, double max, double min) {
   RadialPanel *lg = g_new0 (typeof (*lg), 1);
+
+  if ((0 == max) && (0 == min)) {
+    fprintf (stderr, "error: max and min not specified for radial gauge\n");
+    max = 10;
+    min = 0;
+  }
+
+  if (min > max) {
+    fprintf (stderr, "error: min greater than max for radial gauge\n");
+  }
 
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_radial_gauge_panel;
   lg -> base.vtable = &radial_vtable;

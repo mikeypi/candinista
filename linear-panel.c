@@ -130,28 +130,21 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 			  CAIRO_FONT_WEIGHT_NORMAL
 			  );
 
+  cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
   sprintf (buffer, rp -> output_format, value);
-
+    
   if (3 < strlen (buffer)) {
-    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
-    show_text_right_justified (cr,
-			       width / 2.0,
-			       160 + YOFFSET - 10, 
-			       buffer,
-			       4,
-			       foreground_color,
-			       true,
-			       true);
+    show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
+    set_rgba (cr, foreground_color, 0.14);
+    show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
+    set_rgba (cr, foreground_color, 0.9);
+    show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
   } else {
-    cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
-    show_text_right_justified (cr,
-			       width / 2.0,
-			       160 + YOFFSET - 10, 
-			       buffer,
-			       3,
-			       foreground_color,
-			       true,
-			       true);
+    show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
+    set_rgba (cr, foreground_color, 0.14);
+    show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
+    set_rgba (cr, foreground_color, 0.9);
+    show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
   }
 }
 
@@ -192,6 +185,16 @@ static const struct PanelVTable linear_vtable = {
 Panel* create_linear_gauge_panel (int x_index, int y_index, int z_index, double max, double min) {
   LinearPanel *lg = g_new0 (typeof (*lg), 1);
   
+  if ((0 == max) && (0 == min)) {
+    fprintf (stderr, "error: max and min not specified for radial gauge\n");
+    max = 10;
+    min = 0;
+  }
+
+  if (min > max) {
+    fprintf (stderr, "error: min greater than max for radial gauge\n");
+  }
+
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;
   lg -> base.x_index = x_index;

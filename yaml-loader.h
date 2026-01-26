@@ -7,9 +7,9 @@
 typedef struct {
   Sensor** sensors;
   int sensor_count;
-  d3_array* sensor_array;
+  d2_vp_array* sensor_array;
   
-  d2_array* active_z_index;
+  d2_int_array* active_z_index;
 
   Panel** panels;
   int panel_count;

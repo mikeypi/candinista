@@ -39,6 +39,8 @@ double panel_get_max (const Panel* g)                      { return (g -> vtable
 double panel_get_low_warn (const Panel* g)                 { return (g -> vtable -> get_low_warn (g)); }
 double panel_get_high_warn (const Panel* g)                { return (g -> vtable -> get_high_warn (g)); }
 unit_type panel_get_units (const Panel* g)                 { return (g -> vtable -> get_units (g)); }
+unit_type panel_get_pressure_units (const Panel* g)        { return (g -> vtable -> get_pressure_units (g)); }
+unit_type panel_get_temperature_units (const Panel* g)     { return (g -> vtable -> get_temperature_units (g)); }
 char* panel_get_label (const Panel* g)                     { return (g -> vtable -> get_label (g)); }
 char* panel_get_output_format (const Panel* g)             { return (g -> vtable -> get_output_format (g)); }
 

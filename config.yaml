@@ -1,321 +1,384 @@
 sensors:
   - name: "bosch pst-ft-2 (temperature)"
     x_values: [45303, 26108, 15458, 9395, 5895, 3791, 2499, 2056, 1706, 1174, 833.8, 595.4, 435.6, 322.5, 243.1, 186.6, 144.2, 112.7, 89.28]
-    y_values: [-40, -30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]			 
+    y_values: [-40, -30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
     can_id: 0xb003
     can_data_offset: 0
     can_data_width: 2
-    y_index: 0
     x_index: 0
+    y_index: 0
+    z_index: 0
     id: 0
 
   - name: "delphi 25036751 (temperature)"
-    x_values: [52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1,
-    279, 329, 389, 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373,
-    5572, 7153, 9256, 12073, 15873, 21044, 28146, 37994, 51791, 71332, 99326]
-    y_values: [145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
-    65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
+    x_values: [52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1, 279, 329, 389, 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373, 5572, 7153, 9256, 12073, 15873, 21044, 28146, 37994, 51791, 71332, 99326]
+    y_values: [145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
     can_id: 0xb003
     can_data_offset: 2
     can_data_width: 2
-    y_index: 0
     x_index: 1
+    y_index: 0
+    z_index: 0
     id: 1
-    
+
   - name: "aem 30-2011 (temperature)"
     x_values: [100000, 29000, 9800, 3700, 1500, 500, 180]
     y_values: [-40, -20, 0, 20, 40, 70, 100]
     can_id: 0xb003
     can_data_offset: 4
     can_data_width: 2
-    y_index: 0
     x_index: 2
+    y_index: 0
+    z_index: 0
     id: 2
-    
+
   - name: "bosch pst-ft (pressure)"
     x_values: [0, 500, 4500]
     y_values: [-1.25, 0, 10]
     can_id: 0xb000
     can_data_offset: 0
     can_data_width: 2
-    y_index: 1
     x_index: 0
+    y_index: 1
+    z_index: 0
     id: 3
-    
+
   - name: "bosch pst-ft (pressure)"
     x_values: [0, 500, 4500]
     y_values: [-1.25, 0, 10]
     can_id: 0xb000
     can_data_offset: 2
     can_data_width: 2
-    y_index: 1
     x_index: 1
+    y_index: 1
+    z_index: 0
     id: 4
 
   - name: "TPMS multiplexor channel"
     can_id: 0x77e
     can_data_offset: 0
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
+    z_index: 0
     id: 5
 
   - name: "TMPS pressure channel"
     can_id: 0x77e
     can_data_offset: 1
     can_data_width: 2
-    scale: 0.001
-    y_index: 1
     x_index: 2
+    y_index: 1
+    z_index: 0
+    scale: 0.001000
     id: 5
 
   - name: "TMPS temperature channel"
     can_id: 0x77e
     can_data_offset: 3
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
+    z_index: 0
     id: 5
 
   - name: "TMPS voltage channel"
     can_id: 0x77e
     can_data_offset: 4
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
+    z_index: 0
     id: 5
 
-##############################################################################################
   - name: "Haltech (and others) TPMS"
     can_id: 0x777
     can_data_offset: 4
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
+    z_index: 0
     id: 5
-##############################################################################################
 
-  - name: "delphi 15326386 (temperature)"
-    x_values: [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469,
-    559, 671, 809, 980, 1195, 1465, 1806, 2240, 2795, 3511, 4441, 5658, 7263, 9399, 12261,
-    16120, 21371, 28582, 38583, 52594, 72437, 100865]
-    y_values: [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
-    65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
-
-  - name: "bosch pst-ft (temperature)"
-    x_values: [71.9, 89.9, 113.3, 144.5, 186.6, 244, 323.4, 434.9, 594, 824, 1167, 1683, 2480,
-    3740, 5784, 9195, 15067, 25524, 44864]
-    y_values: [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
-
-  - name: "bosch 261230119 (pressure)"
-    x_values: [0.096428571, 0.4, 1.614285714, 3.132142857, 4.65, 6.167857143]
-    y_values: [0, 20, 100, 200, 300, 400]
-
-  - name: "bosch ntc-m12 (temperature)"
-    x_values: [89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896, 9397, 15462, 26114, 45313]
-    y_values: [130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
-
-  - name: "bosch ntc-m12-l (temperature)"
-    x_values: [71, 89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896, 9397, 15462, 26114, 45313]
-    y_values: [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
 
 panels:
-
   - type: radial_temperature
     label: "Water"
-    y_index: 0
     x_index: 0
-    max_value: 120
-    min_value: 0
-    low_warn: -27
-    high_warn: 105
-    border: 1
-    offset: 1
-    units: "FAHRENHEIT"
-    id: 0
-
-  - type: radial_temperature
-    label: "Water"
     y_index: 0
-    x_index: 0
-    z_index: 1
-    max_value: 120
-    min_value: 0
-    low_warn: -27
-    high_warn: 105
-    border: 1
-    units: "CELSIUS"
-    id: 0
-##############################################################################################    
-  - type: radial_temperature
-    label: "Intake"
-    y_index: 0
-    x_index: 1
-    z_index: 1
-    max_value: 65
-    min_value: -40
-    low_warn: 0
-    high_warn: 70
-    border: 1
-    offset: 3
-    units: "CELSIUS"
-    id: 1
-
-  - type: radial_temperature
-    label: "Intake"
-    y_index: 0
-    x_index: 1
     z_index: 0
-    max_value: 130
-    min_value: 0
-    low_warn: -10
-    high_warn: 110
     border: 1
-    offset: 3
-    units: "FAHRENHEIT"
-    id: 1
-##############################################################################################
-  - type: linear_temperature
-    label: "Oil"
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 0
+    min_value: 0.000
+    max_value: 120.000
+    low_warn : -27.000
+    high_warn: 105.000
+    units: "°F"
+    output_format: "%.0f"
+
+  - type: radial_temperature
+    label: "Water"
+    x_index: 0
     y_index: 0
-    x_index: 2
-    max_value: 220
-    min_value: -1
-    low_warn: 60
-    high_warn: 180
+    z_index: 1
     border: 1
-    offset: -5
-    units: "FAHRENHEIT"
-    id: 2
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 0
+    min_value: 0.000
+    max_value: 120.000
+    low_warn : -27.000
+    high_warn: 105.000
+    units: "°C"
+    output_format: "%.0f"
+
+  - type: radial_temperature
+    label: "Intake"
+    x_index: 1
+    y_index: 0
+    z_index: 1
+    border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 1
+    min_value: -40.000
+    max_value: 65.000
+    low_warn : 0.000
+    high_warn: 70.000
+    units: "°C"
+    output_format: "%.0f"
+
+  - type: radial_temperature
+    label: "Intake"
+    x_index: 1
+    y_index: 0
+    z_index: 0
+    border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 1
+    min_value: 0.000
+    max_value: 130.000
+    low_warn : -10.000
+    high_warn: 110.000
+    units: "°F"
+    output_format: "%.0f"
 
   - type: linear_temperature
     label: "Oil"
-    y_index: 0
     x_index: 2
-    z_index: 1
-    max_value: 105
-    min_value: -1
-    low_warn: 16
-    high_warn: 82
+    y_index: 0
+    z_index: 0
     border: 1
-    offset: -5
-    units: "CELSIUS"
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
     id: 2
+    min_value: -1.000
+    max_value: 220.000
+    low_warn : 60.000
+    high_warn: 180.000
+    units: "°F"
+    output_format: "%.0f"
+
+  - type: linear_temperature
+    label: "Oil"
+    x_index: 2
+    y_index: 0
+    z_index: 1
+    border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 2
+    min_value: -1.000
+    max_value: 105.000
+    low_warn : 16.000
+    high_warn: 82.000
+    units: "°C"
+    output_format: "%.0f"
 
   - type: radial_temperature
     label: "Oil"
-    y_index: 0
     x_index: 2
+    y_index: 0
     z_index: 2
-    max_value: 220
-    min_value: -1
-    low_warn: 60
-    high_warn: 180
     border: 1
-    offset: -5
-    units: "FAHRENHEIT"
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
     id: 2
-##############################################################################################    
+    min_value: -1.000
+    max_value: 220.000
+    low_warn : 60.000
+    high_warn: 180.000
+    units: "°F"
+    output_format: "%.0f"
+
   - type: radial_pressure
     label: "Oil"
-    y_index: 1
     x_index: 0
+    y_index: 1
     z_index: 0
-    max_value: 8
-    min_value: 0
-    high_warn: 5.5
-    low_warn: 3
     border: 1
-    units: "bar"
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
     id: 3
+    min_value: 0.000
+    max_value: 8.000
+    low_warn : 3.000
+    high_warn: 5.500
+    units: "bar"
+    output_format: "%.0f"
 
   - type: radial_pressure
     label: "Oil"
-    y_index: 1
     x_index: 0
-    z_index: 1
-    max_value: 250
-    min_value: 0
-    high_warn: 180
-    low_warn: 40
-    border: 1
-    units: "psi"
-    id: 3
-##############################################################################################
-  - type: radial_pressure
-    label: "MAP"
     y_index: 1
-    x_index: 1
-    max_value: 4.0
-    min_value: 1.0
-    low_warn: 1.5
-    high_warn: 3.5
+    z_index: 1
     border: 1
-    units: "bar"
-    id: 4
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 3
+    min_value: 0.000
+    max_value: 250.000
+    low_warn : 40.000
+    high_warn: 180.000
+    units: "psi"
+    output_format: "%.0f"
 
   - type: radial_pressure
     label: "MAP"
-    y_index: 1
     x_index: 1
-    z_index: 1
-    max_value: 100
-    min_value: -101
-    low_warn: -1000
-    high_warn: 1000
+    y_index: 1
+    z_index: 0
     border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 4
+    min_value: 1.000
+    max_value: 4.000
+    low_warn : 1.500
+    high_warn: 3.500
+    units: "bar"
+    output_format: "%.0f"
+
+  - type: radial_pressure
+    label: "MAP"
+    x_index: 1
+    y_index: 1
+    z_index: 1
+    border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 4
+    min_value: -101.000
+    max_value: 100.000
+    low_warn : -1000.000
+    high_warn: 1000.000
     units: "kPa"
     output_format: "%.1f"
-    id: 4
 
   - type: radial_pressure
     label: "MAP"
-    y_index: 1
     x_index: 1
+    y_index: 1
     z_index: 2
-    max_value: 4.0
-    min_value: 1.0
-    low_warn: 1.5
-    high_warn: 3.5
     border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 0
+    id: 4
+    min_value: 1.000
+    max_value: 4.000
+    low_warn : 1.500
+    high_warn: 3.500
     units: "bar"
     output_format: "%.2f"
-    id: 4
-##############################################################################################
-  - type: tpms
-    y_index: 1
-    x_index: 2
-    z_index: 0
-    high_warn: 150
-    low_warn: 30
-    border: 1
-    pressure_units: "bar"
-    temperature_units: "CELSIUS"
-    timeout: 1500
-    id: 5
 
   - type: tpms
-    y_index: 1
     x_index: 2
-    z_index: 1
-    high_warn: 150
-    low_warn: 30
+    y_index: 1
+    z_index: 0
     border: 1
-    pressure_units: "psi"
-    temperature units: "FAHRENHEIT"
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
     timeout: 1500
     id: 5
+    min_value: 0.000
+    max_value: 0.000
+    low_warn : 30.000
+    high_warn: 150.000
+    units: "°F"
+    output_format: "%.0f"
+    pressure_units: "bar"
+    temperature_units: "°C"
+
+  - type: tpms
+    x_index: 2
+    y_index: 1
+    z_index: 1
+    border: 1
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
+    timeout: 1500
+    id: 5
+    min_value: 0.000
+    max_value: 0.000
+    low_warn : 30.000
+    high_warn: 150.000
+    units: "°F"
+    output_format: "%.0f"
+    pressure_units: "psi"
+    temperature_units: "°F"
 
   - type: info
-    label: "RPM"
-    y_index: 1
     x_index: 2
+    y_index: 1
     z_index: 2
-    max_value: 8000
-    min_value: 500
-    high_warn: 7000
-    low_warn: 1000
     border: 1
-    units: "none"
+    foreground_color: 0xffa600
+    background_color: 0x0
+    high_warn_color: 0xff0808
+    low_warn_color: 0xe0e0e0
     timeout: 1500
     id: 5
+    

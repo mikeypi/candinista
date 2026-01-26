@@ -12,6 +12,8 @@ struct PanelVTable {
   double (*get_high_warn) (const Panel*);
   double (*get_low_warn) (const Panel*);
   unit_type (*get_units) (const Panel*);
+  unit_type (*get_pressure_units) (const Panel*);
+  unit_type (*get_temperature_units) (const Panel*);
   char* (*get_label) (const Panel*);
   char* (*get_output_format) (const Panel*);
 
@@ -31,6 +33,8 @@ struct Panel {
   double (*get_high_warn) (const Panel*);
   double (*get_low_warn) (const Panel*);
   unit_type (*get_units) (const Panel* g);
+  unit_type (*get_pressure_units) (const Panel* g);
+  unit_type (*get_temperature_units) (const Panel* g);
   char* (*get_label) (const Panel*);
   char* (*get_output_format) (const Panel*);
 
@@ -95,6 +99,8 @@ int panel_get_low_warn_color(const Panel* g);
 int panel_get_high_warn_color(const Panel* g);
 panel_type panel_get_type (const Panel* g);
 unit_type panel_get_units (const Panel* g);
+unit_type panel_get_pressure_units (const Panel* g);
+unit_type panel_get_temperature_units (const Panel* g);
 
 char* panel_get_label (const Panel* g);
 char* panel_get_output_format (const Panel* g);
