@@ -252,9 +252,9 @@ static void set_value (Panel* g, double value, int sensor_count, int can_id) { R
 static void set_output_format (Panel* g, char* format) { RadialPanel* rp = (RadialPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable radial_vtable = {
-  .draw = (void (*)(const struct Panel*, void *))draw_radial_gauge_panel,
-  .print = (void (*)(const struct Panel*))print_radial_gauge_panel,
-  .set_minmax = (void (*) (Panel*, double, double))set_minmax,
+  .draw = (void (*)(const struct Panel*, void *)) draw_radial_gauge_panel,
+  .print = (void (*)(const struct Panel*)) print_radial_gauge_panel,
+  .set_minmax = (void (*) (Panel*, double, double)) set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_label = (void (*) (Panel*, char*)) set_label,

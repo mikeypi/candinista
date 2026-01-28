@@ -14,7 +14,6 @@
 #include "panel.h"
 #include "cairo-misc.h"
 
-
 typedef struct
 {
   double min;
@@ -25,7 +24,6 @@ typedef struct
   double width;
   int illuminated;
 } bargraph_segment;
-
 
 /* concrete type */
 typedef struct {
@@ -46,7 +44,6 @@ typedef struct {
   int bargraph_segment_count;
   bargraph_segment* bargraph_segments;
 } LinearPanel;
-
 
 void draw_linear_gauge_panel (GtkDrawingArea* area,
 				cairo_t* cr,

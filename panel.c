@@ -57,14 +57,6 @@ void panel_print (const Panel* g)
 }      
 
 Panel* panel_init_base (PanelParameters* p, Panel* lg) {
-  if ((0 == p -> max) && (0 == p-> min)) {
-    fprintf (stderr, "error: max and min not specified for radial gauge\n");
-  }
-
-  if (p -> min > p -> max) {
-    fprintf (stderr, "error: min greater than max for radial gauge\n");
-  }
-
   lg -> x_index = p -> x_index;
   lg -> y_index = p -> y_index;
   lg -> z_index = p -> z_index;

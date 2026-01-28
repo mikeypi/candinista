@@ -9,7 +9,6 @@
 #include "d3-array.h"
 #include "yaml-loader.h"
 
-
 struct Sensor {
   char  *name;
   int can_id;
@@ -36,7 +35,7 @@ Sensor* sensor_create (SensorParameters* st) {
   s -> y_values = st -> y_values;
   s -> n_values = st -> n_values;
   s -> scale = isnan (st -> scale) ? 1 : st -> scale;
-  s -> offset = isnan (st -> offset) ? 1 : st -> offset;
+  s -> offset = isnan (st -> offset) ? 0 : st -> offset;
   s -> x_index = st -> x_index;
   s -> y_index = st -> y_index;
   s -> id = st -> id;
@@ -92,7 +91,6 @@ void sensor_print (const Sensor* s)
     printf ("    id: %d\n", s -> id);
 }
 
-
 const char *sensor_get_name (const Sensor *s)                         { return s -> name; }
 int sensor_get_can_id (const Sensor *s)                               { return s -> can_id; }
 int sensor_get_can_data_offset (const Sensor *s)                      { return s -> can_data_offset; }
@@ -109,9 +107,4 @@ double sensor_get_offset (const Sensor *s)                            { return s
 double sensor_get_scale (const Sensor *s)                             { return s -> scale; }
 int sensor_get_id (const Sensor *s)                                   { return s -> id; }
 
-//void sensor_set_x_values (Sensor *s, double *v, int n)                { s -> x_values = v; s -> n_values = n; };
-//void sensor_set_y_values (Sensor *s, double *v, int n)                { s -> y_values = v; s -> n_values = n; };
-//void sensor_set_offset (Sensor *s, double offset)                     { s -> offset = offset; }
-//void sensor_set_scale (Sensor *s, double scale)                       { s -> scale = scale; }
-//void sensor_set_id (Sensor *s, int id)                                { s -> id = id; }
 

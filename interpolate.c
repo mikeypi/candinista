@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -44,7 +43,6 @@ comp1 (const void * elem1, const void * elem2)
     return 0;
 }
 
-
 static int
 comp2 (const void * elem1, const void * elem2) 
 {
@@ -79,7 +77,6 @@ interpolation_array_sort (double* x_values, double* y_values, int number_of_inte
     qsort (y_values, number_of_interpolation_points, sizeof(double), comp1);
   }
 }
-
 
 /*
  * This is harder than it looks. It's possible that the value being interpolated is either equal to
@@ -141,35 +138,3 @@ linear_interpolate (double knownx, double* x_values, double* y_values, int numbe
 
   return (result);
 }
-
-
-#ifdef DEBUG
-//double x_values[] = {5000, 10000, 15000, 20000, 25000, 27500, 80000};
-//double y_values[] = {2500, 5000, 7500, 10000, 12500, 13750, 40000};
-
-double x_values[] = {0, 27500};
-double y_values[] = {0, 0.7*27500};
-
-int
-main (int argc, char** argv) {
-  int i;
-  int n_values = sizeof (x_values)/sizeof (double);
-  interpolation_array_sort (x_values, y_values, n_values);
-  for (i = 0; i < n_values; i++) {
-    double d = linear_interpolate (x_values[i], x_values, y_values, n_values);
-    fprintf (stderr, "interpolated %f, expected %f, got %f\n", x_values[i], y_values[i], d);
-  }
-
-  fprintf (stderr, "\n");
-  
-  for (i = 0; i < n_values - 1; i++) {
-    double d = linear_interpolate ((x_values[i] + x_values[i+1])/2.0,
-				   x_values, y_values, n_values);
-
-    fprintf (stderr, "interpolated %f, expected %f, got %f\n",
-	     (x_values[i] + x_values[i+1])/2.0,
-	     (y_values[i] + y_values[i+1])/2.0,
-	     d);
-  }
-}
-#endif
