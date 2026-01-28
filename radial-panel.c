@@ -151,7 +151,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 			  CAIRO_FONT_WEIGHT_NORMAL);
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
-  sprintf (buffer, "%s", str_from_unit_enum (panel_get_units (&rp -> base)));
+  sprintf (buffer, "%s", str_from_unit_enum (rp -> units));
   show_text_left_justified (cr, 238 + XOFFSET, 85 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
@@ -231,66 +231,60 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   }
 }
 
-static double get_min (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> min); }
-static double get_max (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> max); }
-static double get_high_warn (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> high_warn); }
-static double get_low_warn (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> low_warn); }
-static unit_type get_units (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> units); }
-static char* get_label (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> label); }
-static char* get_output_format (const Panel* g) { RadialPanel* rp = (RadialPanel*) g; return (rp -> output_format); }
+static void print_radial_gauge_panel (const Panel* g)
+{
+  RadialPanel* rp = (RadialPanel*) g;
+
+  printf ("    label: \"%s\"\n", rp -> label);
+  printf ("    min_value: %.3f\n", rp -> min);
+  printf ("    max_value: %.3f\n", rp -> max);
+  printf ("    low_warn : %.3f\n", rp -> low_warn);
+  printf ("    high_warn: %.3f\n", rp -> high_warn);
+  printf ("    output_format: \"%s\"\n", rp -> output_format);
+  printf ("    units: \"%s\"\n", str_from_unit_enum (rp -> units));
+}
 
 static void set_minmax (Panel* g, double min, double max) { RadialPanel* rp = (RadialPanel*) g; rp -> min = min; rp -> max = max; }
 static void set_warn (Panel* g, double low, double high) { RadialPanel* rp = (RadialPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
 static void set_units (Panel* g, unit_type ut)  { RadialPanel* rp = (RadialPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { RadialPanel* rp = (RadialPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value, int sensor_count) { RadialPanel* rp = (RadialPanel*) g; rp -> value = value; }
+static void set_value (Panel* g, double value, int sensor_count, int can_id) { RadialPanel* rp = (RadialPanel*) g; rp -> value = value; }
 static void set_output_format (Panel* g, char* format) { RadialPanel* rp = (RadialPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable radial_vtable = {
-  .draw = (void (*)(const struct Panel*, void *))draw_radial_gauge_panel,  
-  .get_min = (double (*)(const struct Panel*))get_min,
-  .get_max = (double (*)(const struct Panel*))get_max,
-  .get_high_warn = (double (*)(const struct Panel*))get_high_warn,
-  .get_low_warn = (double (*)(const struct Panel*))get_low_warn,
-  .get_units = (unit_type (*)(const struct Panel*))get_units,    
-  .get_label = (char* (*)(const struct Panel*))get_label,
-  .get_output_format = (char* (*)(const struct Panel*))get_output_format,
-
+  .draw = (void (*)(const struct Panel*, void *))draw_radial_gauge_panel,
+  .print = (void (*)(const struct Panel*))print_radial_gauge_panel,
   .set_minmax = (void (*) (Panel*, double, double))set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_label = (void (*) (Panel*, char*)) set_label,
-  .set_value = (void (*) (Panel*, double, int)) set_value,
+  .set_value = (void (*) (Panel*, double, int, int)) set_value,
   .set_output_format = (void (*) (Panel*, char*)) set_output_format
 };
 
-Panel* create_radial_gauge_panel (int x_index, int y_index, int z_index, double max, double min) {
+Panel* create_radial_gauge_panel (PanelParameters* p) {
   RadialPanel *lg = g_new0 (typeof (*lg), 1);
 
-  if ((0 == max) && (0 == min)) {
+  if ((0 == p -> max) && (0 == p-> min)) {
     fprintf (stderr, "error: max and min not specified for radial gauge\n");
-    max = 10;
-    min = 0;
   }
 
-  if (min > max) {
+  if (p -> min > p -> max) {
     fprintf (stderr, "error: min greater than max for radial gauge\n");
   }
 
+  lg = (RadialPanel*) panel_init_base (p, (Panel*) lg);
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_radial_gauge_panel;
   lg -> base.vtable = &radial_vtable;
-  lg -> base.x_index = x_index;
-  lg -> base.y_index = y_index;
-  lg -> base.z_index = z_index;
-
-  lg -> base.background_color = XBLACK_RGB;
-  lg -> base.foreground_color = XORANGE_RGB;
-  lg -> base.high_warn_color = XRED_RGB;
-  lg -> base.low_warn_color = XBLUE_RGB;
-    
+  
   lg -> output_format = "%.0f";
-  lg -> max = max;
-  lg -> min = min;
+  lg -> max = p -> max;
+  lg -> min = p -> min;
+  lg -> low_warn = p -> low_warn;
+  lg -> high_warn = p -> high_warn;
+  lg -> units = p -> units;
+  strcpy (lg -> label, p -> label);
+    
   lg -> radius = DEFAULT_RADIUS;
   lg -> start_angle = DEFAULT_START_ANGLE;
   lg -> end_angle = DEFAULT_END_ANGLE;

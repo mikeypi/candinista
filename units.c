@@ -4,7 +4,6 @@
 
 #include "units.h"
 
-
 char*
 str_from_unit_enum (const unit_type unit) {
   switch (unit) {

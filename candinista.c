@@ -62,8 +62,7 @@
 #include "gtk-glue.h"
 #include "datalogging.h"
 
-
-Configuration cfg;
+Configuration* cfg;
 
 
 /*
@@ -84,14 +83,9 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 						     &bytes_read, NULL)) {
     return FALSE;
   }
-
-  /* Maybe you don't have to stack sensors at all. This looks like it will traverse all of the values in a canframe and do sensor
-     processing. So extra sensors just have to suppress outout--not be called in a specific sequence. Maybe add some triggering information
-     to the config file that suppresses updates for some of the sensor inputs that are grouped to a single panel
-  */
   
-  while (i < cfg.sensor_count) {
-    Sensor* s = cfg.sensors[i];
+  while (i < cfg -> sensor_count) {
+    Sensor* s = cfg -> sensors[i];
     if (sensor_get_can_id (s) != (frame.can_id & 0x7fffffff)) {
       i++;
       continue;
@@ -99,12 +93,15 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
     int x_index = sensor_get_x_index (s);
     int y_index = sensor_get_y_index (s);
-    int z_index = get_active_z (&cfg, x_index, y_index);
+    int z_index = get_active_z (cfg, x_index, y_index);
 
-    Panel* p = cfg_get_panel (&cfg,
-			      x_index,
-			      y_index,
-			      z_index);
+    Panel* p = cfg_get_panel (cfg, x_index, y_index, z_index);
+
+    if (sensor_get_id (s) != panel_get_id (p)) {
+      i++;
+      continue;
+    }
+    
     /*
      * retrieve the individual data values from the can frame. This handles up to 4 bytes. 
      * would need to be expanded for larger data sizes
@@ -126,7 +123,8 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     case 4:
       x = (x << 8) ^ frame.data[offset + 1];
       x = (x << 8) ^ frame.data[offset + 2];
-      x = (x << 8) ^ frame.data[offset + 3];      
+      x = (x << 8) ^ frame.data[offset + 3];
+      break;
     default:
       fprintf (stderr, "Unsupported CAN BUS field width %d\n", sensor_get_can_data_width (s));
       break;
@@ -148,12 +146,8 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     }
 
     temp += sensor_get_offset (s);
-    
-    panel_set_value (p, temp, matching_sensor_count++);
 
-    if (sensor_get_id (s) != panel_get_id (p)) {
-      fprintf (stderr, "id mismatch %d != %d\n", sensor_get_id (s), panel_get_id (p));
-    } 
+    panel_set_value (p, temp, matching_sensor_count++, frame.can_id);
       
     if (0 != data_logging) {
       log_data (&frame);
@@ -185,14 +179,14 @@ on_pressed(GtkGestureClick *gesture,
 
   int x_index = panel_get_x_index (ctx -> cg);
   int y_index = panel_get_y_index (ctx -> cg);
-  int active_z = get_active_z (&cfg, x_index, y_index);
+  int active_z = get_active_z (cfg, x_index, y_index);
 
   Panel* p = NULL;
   
-  for (int i = 1; i < cfg.panel_z_dimension; i++) {
-    int j = (active_z + i) % cfg.panel_z_dimension;
-    if (NULL != (p = cfg_get_panel (&cfg, x_index, y_index, j))) {
-      set_active_z (&cfg, x_index, y_index, j);
+  for (int i = 1; i < cfg -> panel_z_dimension; i++) {
+    int j = (active_z + i) % cfg -> panel_z_dimension;
+    if (NULL != (p = cfg_get_panel (cfg, x_index, y_index, j))) {
+      set_active_z (cfg, x_index, y_index, j);
       break;
     }
   }
@@ -249,14 +243,14 @@ activate (GtkApplication* app,
   gtk_window_set_child (GTK_WINDOW (window), GTK_WIDGET(grid));
   gtk_grid_set_column_homogeneous (grid, TRUE);
 
-  for (int i = 0; i < get_y_dimension_from_d3_array (cfg.panel_array); i++) {
-    for (int j = 0; j < get_x_dimension_from_d3_array (cfg.panel_array); j++) {
+  for (int i = 0; i < get_y_dimension_from_d3_array (cfg -> panel_array); i++) {
+    for (int j = 0; j < get_x_dimension_from_d3_array (cfg -> panel_array); j++) {
       GtkDrawingArea *drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
 
       gtk_widget_set_hexpand (GTK_WIDGET(drawing_area), TRUE);
       gtk_widget_set_vexpand (GTK_WIDGET(drawing_area), TRUE);
 
-      p = cfg_get_panel (&cfg, j, i, 0);
+      p = cfg_get_panel (cfg, j, i, 0);
       assert (NULL != p);
 	
       struct {
@@ -331,7 +325,7 @@ main (int argc, char** argv) {
   get_environment_variables ();
 
   cfg = configuration_load_yaml ("/home/joe/candinista/config.yaml");
-  build_tables (&cfg);
+  build_tables (cfg);
 
   while (-1 != (option = getopt (argc, argv, "dp"))) {
     switch (option) {
@@ -340,7 +334,7 @@ main (int argc, char** argv) {
       break;
       
     case 'p':
-      configuration_print (&cfg);
+      configuration_print (cfg);
       exit (0);
       break;
 
@@ -374,9 +368,8 @@ main (int argc, char** argv) {
   argc = 1;
   status = g_application_run (G_APPLICATION (app), argc, argv);
 
-  
   g_object_unref (app);
-  configuration_free (&cfg);
+  configuration_free (cfg);
   
   return status;
 }

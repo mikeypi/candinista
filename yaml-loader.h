@@ -22,7 +22,7 @@ typedef struct {
   int sensor_z_dimension;
 } Configuration;
 
-Configuration configuration_load_yaml (const char *path);
+Configuration* configuration_load_yaml (const char *path);
 void build_tables (Configuration* cfg);
 void configuration_free (Configuration*);
 

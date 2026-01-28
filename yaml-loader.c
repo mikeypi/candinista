@@ -12,7 +12,8 @@
 #include "candinista.h"
 #include "yaml-loader.h"
 #include "cairo-misc.h"
-
+#include "sensor.h"
+#include "panel.h"
 
 static unit_type
 enum_from_type_str (const char* temp) {
@@ -36,79 +37,9 @@ enum_from_type_str (const char* temp) {
   return (UNKNOWN_PANEL);
 }
 
-/*
- * These are sort of fake. They can't be the real structures because the details of these structures are (or can be)
- * hidden in their implementations.
- */
-typedef struct {
-  char name[64];
-  int can_id;
-  int can_data_offset;
-  int can_data_width;
-  double* x_values;
-  double* y_values;
-  size_t n_values;
-  double scale;
-  double offset;
-  int x_index;
-  int y_index;
-  int z_index;
-  int id;
-} SensorTmp;
-
-
-typedef struct {
-  double min;
-  double max;
-  double low_warn;
-  double high_warn;
-  unit_type units;
-  unit_type pressure_units;
-  unit_type temperature_units; 
-  char label[64];
-  int border;
-  int x_index;
-  int y_index;
-  int z_index;
-  int timeout;
-  int id;
-  int foreground_color;
-  int background_color;
-  int high_warn_color;
-  int low_warn_color;
-  char output_format[64];
-  panel_type type;
-} PanelTmp;
-
-
-void print_yaml_event_type (const yaml_event_t *event)
-{
-  const char *name = "UNKNOWN";
-
-  switch (event -> type) {
-  case YAML_NO_EVENT:             name = "YAML_NO_EVENT"; break;
-  case YAML_STREAM_START_EVENT:   name = "YAML_STREAM_START_EVENT"; break;
-  case YAML_STREAM_END_EVENT:     name = "YAML_STREAM_END_EVENT"; break;
-  case YAML_DOCUMENT_START_EVENT: name = "YAML_DOCUMENT_START_EVENT"; break;
-  case YAML_DOCUMENT_END_EVENT:   name = "YAML_DOCUMENT_END_EVENT"; break;
-  case YAML_ALIAS_EVENT:          name = "YAML_ALIAS_EVENT"; break;
-  case YAML_SCALAR_EVENT:         name = "YAML_SCALAR_EVENT"; break;
-  case YAML_SEQUENCE_START_EVENT: name = "YAML_SEQUENCE_START_EVENT"; break;
-  case YAML_SEQUENCE_END_EVENT:   name = "YAML_SEQUENCE_END_EVENT"; break;
-  case YAML_MAPPING_START_EVENT:  name = "YAML_MAPPING_START_EVENT"; break;
-  case YAML_MAPPING_END_EVENT:    name = "YAML_MAPPING_END_EVENT"; break;
-  default:
-    break;
-  }
-
-  printf ("YAML event: %s\n", name);
-}
-
-
 static double scalar_double (yaml_event_t *event) {
   return atof ( (char *)event -> data.scalar.value);
 }
-
 
 static void load_double_array (yaml_parser_t *parser,
 			       yaml_event_t* last_event,
@@ -140,11 +71,15 @@ static void load_double_array (yaml_parser_t *parser,
 }
 
 
-Configuration configuration_load_yaml (const char *path) {
-  Configuration d = {0};
-  FILE *f = fopen (path, "r");
-  if (!f) return d;
+Configuration* configuration_load_yaml (const char *path) {
+  Configuration* d = (Configuration*) calloc (sizeof (Configuration), 1);
 
+  FILE *f = fopen (path, "r");
+  if (!f) {
+    free (d);
+    return (NULL);
+  }
+  
   yaml_parser_t parser;
   yaml_event_t event;
 
@@ -154,14 +89,12 @@ Configuration configuration_load_yaml (const char *path) {
   char key[32] = {0};
   int in_sensors = 0;
   int in_panels = 0;
-  SensorTmp st = {0};
-  PanelTmp gt = {0};
+  SensorParameters st = {0};
+  PanelParameters gt = {0};
 
-  gt.background_color = -1;
-  gt.foreground_color = -1;
-  gt.high_warn_color = -1;
-  gt.low_warn_color = -1;
-
+  gt.background_color = gt.foreground_color = gt.high_warn_color = gt.low_warn_color = 1;
+  st.scale = st.offset = NAN;
+  
   while (yaml_parser_parse (&parser, &event)) {
     if (event.type == YAML_SCALAR_EVENT) {
       const char *v = (const char *)event.data.scalar.value;
@@ -177,7 +110,6 @@ Configuration configuration_load_yaml (const char *path) {
 	  else if (!strcmp (key, "y_values"))  { load_double_array (&parser, &event, &st.y_values, &st.n_values);}
 	  else if (!strcmp (key, "x_index")) st.x_index = atoi (v);
 	  else if (!strcmp (key, "y_index")) st.y_index = atoi (v);
-	  else if (!strcmp (key, "z_index")) st.z_index = atoi (v);
 	  else if (!strcmp (key, "can_id")) st.can_id = strtol(v, NULL, 16);
 	  else if (!strcmp (key, "scale")) st.scale = atof (v);
 	  else if (!strcmp (key, "offset")) st.offset = atof (v);
@@ -211,19 +143,14 @@ Configuration configuration_load_yaml (const char *path) {
 
     if (event.type == YAML_MAPPING_END_EVENT) {
       if (in_sensors && st.name[0] && (0 != st.can_id)) {
-	Sensor *s = sensor_create (st.x_index, st.y_index, st.name, st.can_id, st.can_data_offset, st.can_data_width);
 	interpolation_array_sort (st.x_values, st.y_values, st.n_values);
-	sensor_set_x_values (s, st.x_values, st.n_values);
-	sensor_set_y_values (s, st.y_values, st.n_values);
-	sensor_set_id (s, st.id);
-	sensor_set_offset (s, st.offset);
-	sensor_set_scale (s, st.scale);
-	if (st.x_index > d.x_dimension) d.x_dimension = st.x_index;
-	if (st.y_index > d.y_dimension) d.y_dimension = st.y_index;
-	if (st.z_index > d.sensor_z_dimension) d.sensor_z_dimension = st.z_index;
-	d.sensors = realloc (d.sensors, sizeof *d.sensors * (d.sensor_count + 1));
-	d.sensors[d.sensor_count++] = s;
+	Sensor *s = sensor_create (&st);
+	if (st.x_index > d -> x_dimension) d -> x_dimension = st.x_index;
+	if (st.y_index > d -> y_dimension) d -> y_dimension = st.y_index;
+	d -> sensors = realloc (d -> sensors, sizeof *d -> sensors * (d -> sensor_count + 1));
+	d -> sensors[d -> sensor_count++] = s;
 	memset (&st, 0, sizeof st);
+	st.scale = st.offset = NAN;
       }
 
       if (in_panels && gt.type != UNKNOWN_PANEL) {
@@ -231,83 +158,36 @@ Configuration configuration_load_yaml (const char *path) {
 	switch (gt.type) {
 	case RADIAL_PRESSURE_PANEL:
 	case RADIAL_TEMPERATURE_PANEL:
-	  g = create_radial_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min);
-	  panel_set_warn (g, gt.low_warn, gt.high_warn);
-	  panel_set_label (g, gt.label);
-	  panel_set_border (g, gt.border);
-	  panel_set_units (g, gt.units);
-	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
-	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
-	  if (-1 != gt.low_warn_color) { panel_set_low_warn_color (g, gt.low_warn_color); }
-	  if (-1 != gt.high_warn_color) { panel_set_high_warn_color (g, gt.high_warn_color); }
-	  panel_set_timeout (g, gt.timeout);
-	  panel_set_id (g, gt.id);
-	  panel_set_type (g, gt.type);
-	  if ('\0' != gt.output_format[0]) { panel_set_output_format (g, gt.output_format); }
+	  g = create_radial_gauge_panel (&gt);
 	  break;
 	  
 	case LINEAR_PRESSURE_PANEL:
 	case LINEAR_TEMPERATURE_PANEL:
-	  g = create_linear_gauge_panel (gt.x_index, gt.y_index, gt.z_index, gt.max, gt.min);
-	  panel_set_warn (g, gt.low_warn, gt.high_warn);
-	  panel_set_label (g, gt.label);
-	  panel_set_border (g, gt.border);
-	  panel_set_units (g, gt.units);
-	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
-	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
-	  if (-1 != gt.low_warn_color) { panel_set_low_warn_color (g, gt.low_warn_color); }
-	  if (-1 != gt.high_warn_color) { panel_set_high_warn_color (g, gt.high_warn_color); }
-	  panel_set_timeout (g, gt.timeout);
-	  panel_set_id (g, gt.id);
-	  panel_set_type (g, gt.type);
-	  if ('\0' != gt.output_format[0]) { panel_set_output_format (g, gt.output_format); }
+	  g = create_linear_gauge_panel (&gt);
 	  break;
 	  
         case INFO_PANEL:
-	  g = create_info_panel (gt.x_index, gt.y_index, gt.z_index);
-	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
-	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
-	  panel_set_border (g, gt.border);
-	  panel_set_timeout (g, gt.timeout);
-	  panel_set_id (g, gt.id);
-	  panel_set_type (g, gt.type);
+	  g = create_info_panel (&gt);
 	  break;
 	  
         case TPMS_PANEL:
-	  g = create_tpms_panel (gt.x_index, gt.y_index, gt.z_index);
-	  panel_set_warn (g, gt.low_warn, gt.high_warn);
-	  panel_set_units (g, gt.pressure_units);
-	  panel_set_units (g, gt.temperature_units);
-	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
-	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
-	  panel_set_border (g, gt.border);
-	  panel_set_timeout (g, gt.timeout);
-	  panel_set_id (g, gt.id);
-	  panel_set_type (g, gt.type);
+	  g = create_tpms_panel (&gt);
 	  break;
 	  
 	case GPS_PANEL:
-	  g = create_info_panel (gt.x_index, gt.y_index, gt.z_index);
-	  if (-1 != gt.foreground_color) { panel_set_foreground_color (g, gt.foreground_color); }
-	  if (-1 != gt.background_color) { panel_set_background_color (g, gt.background_color); }
-	  panel_set_border (g, gt.border);
-	  panel_set_timeout (g, gt.timeout);
-	  panel_set_id (g, gt.id);
-	  panel_set_type (g, gt.type);
+	  g = create_gps_panel (&gt);
 	  break;
 	}
 	
-	if (gt.x_index > d.x_dimension) d.x_dimension = gt.x_index;
-	if (gt.y_index > d.y_dimension) d.y_dimension = gt.y_index;
-	if (gt.z_index > d.panel_z_dimension) d.panel_z_dimension = gt.z_index;
-	d.panels = realloc (d.panels, sizeof *d.panels * (d.panel_count + 1));
-	d.panels[d.panel_count++] = g;
+	if (gt.x_index > d -> x_dimension) d -> x_dimension = gt.x_index;
+	if (gt.y_index > d -> y_dimension) d -> y_dimension = gt.y_index;
+	if (gt.z_index > d -> panel_z_dimension) d -> panel_z_dimension = gt.z_index;
+	d -> panels = realloc (d -> panels, sizeof *d -> panels * (d -> panel_count + 1));
+	d -> panels[d -> panel_count++] = g;
 	memset (&gt, 0, sizeof gt);
 
-	gt.background_color = -1;
-	gt.foreground_color = -1;
-	gt.high_warn_color = -1;
-	gt.low_warn_color = -1;
+	/* The color 0x1 cannot be used. Sorry. */
+	gt.background_color = gt.foreground_color = gt.high_warn_color = gt.low_warn_color = 1;
 	gt.output_format[0] = '\0';
 	gt.type = UNKNOWN_PANEL;
       }
@@ -360,8 +240,6 @@ void build_tables (Configuration* cfg) {
 
   cfg -> active_z_index = new_d2_int_array (cfg -> x_dimension, cfg -> y_dimension);
 }
-
-
 
 Panel* cfg_get_panel (Configuration* cfg, int i, int j, int k) {
   return (get_item_in_d3_array (cfg -> panel_array, i, j, k));

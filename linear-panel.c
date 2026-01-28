@@ -148,66 +148,50 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   }
 }
 
-
-static double get_min (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> min); }
-static double get_max (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> max); }
-static double get_high_warn (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> high_warn); }
-static double get_low_warn (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> low_warn); }
-static unit_type get_units (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> units); }
-static char* get_label (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> label); }
-static char* get_output_format (const Panel* g) { LinearPanel* rp = (LinearPanel*) g; return (rp -> output_format); }
+void print_linear_panel (const Panel* g)
+{
+}
 
 static void set_minmax (Panel* g, double min, double max) { LinearPanel* rp = (LinearPanel*) g; rp -> min = min; rp -> max = max; }
 static void set_warn (Panel* g, double low, double high) { LinearPanel* rp = (LinearPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
 static void set_units (Panel* g, unit_type ut)  { LinearPanel* rp = (LinearPanel*) g; rp -> units = ut; }
 static void set_label (Panel* g, char* label) { LinearPanel* rp = (LinearPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value, int sensor_count) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
+static void set_value (Panel* g, double value, int sensor_count, int can_id) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
 static void set_output_format (Panel* g, char* format) { LinearPanel* rp = (LinearPanel*) g; rp -> output_format = strdup (format); }
 
 static const struct PanelVTable linear_vtable = {
   .draw = (void (*)(const struct Panel*, void *))draw_linear_gauge_panel,  
-  .get_min = (double (*)(const struct Panel*))get_min,
-  .get_max = (double (*)(const struct Panel*))get_max,
-  .get_high_warn = (double (*)(const struct Panel*))get_high_warn,
-  .get_low_warn = (double (*)(const struct Panel*))get_low_warn,
-  .get_units = (unit_type (*)(const struct Panel*))get_units,    
-  .get_label = (char* (*)(const struct Panel*))get_label,
-  .get_output_format = (char* (*)(const struct Panel*))get_output_format,
-  
+  .print = (void (*) (const Panel*)) print_linear_panel,
   .set_minmax = (void (*) (Panel*, double, double))set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_label = (void (*) (Panel*, char*)) set_label,
-  .set_value = (void (*) (Panel*, double, int)) set_value,
+  .set_value = (void (*) (Panel*, double, int, int)) set_value,
   .set_output_format = (void (*) (Panel*, char*)) set_output_format  
 };
 
-Panel* create_linear_gauge_panel (int x_index, int y_index, int z_index, double max, double min) {
+Panel* create_linear_gauge_panel (PanelParameters* p) {
   LinearPanel *lg = g_new0 (typeof (*lg), 1);
   
-  if ((0 == max) && (0 == min)) {
-    fprintf (stderr, "error: max and min not specified for radial gauge\n");
-    max = 10;
-    min = 0;
+  if ((0 == p-> max) && (0 == p -> min)) {
+    fprintf (stderr, "error: max and min not specified for linear gauge\n");
   }
 
-  if (min > max) {
-    fprintf (stderr, "error: min greater than max for radial gauge\n");
+  if (p -> min > p -> max) {
+    fprintf (stderr, "error: min greater than max for linear gauge\n");
   }
 
+  lg = (LinearPanel*) panel_init_base (p, (Panel*) lg);
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;
-  lg -> base.x_index = x_index;
-  lg -> base.y_index = y_index;
-  lg -> base.z_index = z_index;
-  lg -> max = max;
-  lg -> min = min;
-  lg -> output_format = "%.0f";
   
-  lg -> base.background_color = XBLACK_RGB;
-  lg -> base.foreground_color = XORANGE_RGB;
-  lg -> base.high_warn_color = XRED_RGB;
-  lg -> base.low_warn_color = XBLUE_RGB;
+  lg -> output_format = "%.0f";
+  lg -> max = p -> max;
+  lg -> min = p -> min;
+  lg -> low_warn = p -> low_warn;
+  lg -> high_warn = p -> high_warn;
+  lg -> units = p -> units;
+  strcpy (lg -> label, p -> label);
   
   lg -> bargraph_origin_x = DEFAULT_BARGRAPH_ORIGIN_X;
   lg -> bargraph_origin_y = DEFAULT_BARGRAPH_ORIGIN_Y;
@@ -228,7 +212,7 @@ Panel* create_linear_gauge_panel (int x_index, int y_index, int z_index, double 
     y = sqrt (pow (total_x / lg -> bargraph_width, 2) + 1) - 1;
     lg -> bargraph_segments[i].height = (y + 0.1) * lg -> bargraph_height;
     lg -> bargraph_segments[i].max =
-      (max - min) * ((double) i / (double) lg -> bargraph_segment_count) + min;
+      (p -> max - p -> min) * ((double) i / (double) lg -> bargraph_segment_count) + p -> min;
     total_x += delta_x;
 
   }

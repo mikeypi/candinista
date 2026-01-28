@@ -37,6 +37,7 @@ info-panel.c
 tpms-panel.c
 units.c
 d3-array.c
+gps-panel.c
 )
 
 target_link_libraries(candinista

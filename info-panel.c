@@ -90,32 +90,27 @@ void draw_info_panel (GtkDrawingArea* area,
 }
 
 
-static void set_value (Panel* g, double value, int sensor_offfset) {}
-static char* get_label (const Panel* g) { InfoPanel* rp = (InfoPanel*) g; return (NULL); }
+void print_info_panel (const Panel* g)
+{
+}
 
+static void set_value (Panel* g, double value, int sensor_offfset, int can_id) {}
 
 static const struct PanelVTable info_vtable = {
   .draw = (void (*)(const struct Panel *, void *))draw_info_panel,
-  .set_value = (void (*) (Panel*, double, int)) set_value,
-  .get_label = (char* (*)(const struct Panel*))get_label
+  .print = (void (*) (const Panel*)) print_info_panel,
+  .set_value = (void (*) (Panel*, double, int, int)) set_value,
 };
 
 
-Panel* create_info_panel (int x_index, int y_index, int z_index ) {
+Panel* create_info_panel (PanelParameters* p) {
 
   InfoPanel *lg = calloc (1, sizeof *lg);
   
+  lg = (InfoPanel*) panel_init_base (p, (Panel*) lg);
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_info_panel;
   lg -> base.vtable = &info_vtable;
-  lg -> base.x_index = x_index;
-  lg -> base.y_index = y_index;
-  lg -> base.z_index = z_index;
-
-  lg -> base.background_color = XBLACK_RGB;
-  lg -> base.foreground_color = XORANGE_RGB;
-  lg -> base.high_warn_color = XRED_RGB;
-  lg -> base.low_warn_color = XBLUE_RGB;
-
+  
   return (Panel*) lg;
 }
 

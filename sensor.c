@@ -1,7 +1,14 @@
 #include <stdio.h>
-#include "sensor.h"
 #include <stdlib.h>
 #include <string.h>
+#include <gtk/gtk.h>
+#include <math.h>
+
+#include "units.h"
+#include "sensor.h"
+#include "d3-array.h"
+#include "yaml-loader.h"
+
 
 struct Sensor {
   char  *name;
@@ -19,15 +26,20 @@ struct Sensor {
   int id;
 };
 
-Sensor *sensor_create (int x_index, int y_index, const char *name, int can_id, int offset, int width) {
+Sensor* sensor_create (SensorParameters* st) {
   Sensor *s = calloc (1, sizeof *s);
-  s -> x_index = x_index;
-  s -> y_index = y_index;
-  s -> name  = strdup (name);
-  s -> can_id = can_id;
-  s -> can_data_offset = offset;
-  s -> can_data_width = width;
-  
+  s -> name  = strdup (st -> name);
+  s -> can_id = st -> can_id;
+  s -> can_data_offset = st -> can_data_offset;
+  s -> can_data_width = st -> can_data_width;
+  s -> x_values = st -> x_values;
+  s -> y_values = st -> y_values;
+  s -> n_values = st -> n_values;
+  if (NAN != st -> scale) {  s -> scale = st -> scale; }
+  if (NAN != st -> offset) { s -> offset = st -> offset; }
+  s -> x_index = st -> x_index;
+  s -> y_index = st -> y_index;
+  s -> id = st -> id;
   return s;
 }
 
@@ -38,6 +50,48 @@ void sensor_destroy (Sensor *s) {
   free (s -> y_values);
   free (s);
 }
+
+static void print_double_array (const char *label,
+                               const double *v,
+                               size_t count)
+{
+  printf ("%s: [", label);
+  for (size_t i = 0; i < count; i++) {
+    printf ("%g", v[i]);
+    if (i + 1 < count)
+      printf (", ");
+  }
+
+  printf ("]\n");
+}
+
+void sensor_print (const Sensor* s)
+{
+    printf ("  - name: \"%s\"\n", s -> name);
+
+    if (0 != s -> n_values) {
+      print_double_array ("    x_values", s -> x_values, s -> n_values);
+      print_double_array ("    y_values", s -> y_values, s -> n_values);
+    }
+
+    printf ("    can_id: 0x%x\n", s -> can_id);
+    printf ("    can_data_offset: %d\n", s -> can_data_offset);
+    printf ("    can_data_width: %d\n", s -> can_data_width);
+
+    printf ("    x_index: %d\n", s -> x_index);
+    printf ("    y_index: %d\n", s -> y_index);
+    printf ("    z_index: %d\n", s -> z_index);
+
+    if (!isnan (s -> offset) && (0 != s -> offset)) {
+      printf ("    offset: %f\n", s -> offset);
+    }
+    if (!isnan (s -> scale) && (0 != s -> scale)) {
+      printf ("    scale: %f\n", s -> scale);
+    }
+
+    printf ("    id: %d\n", s -> id);
+}
+
 
 const char *sensor_get_name (const Sensor *s)                         { return s -> name; }
 int sensor_get_can_id (const Sensor *s)                               { return s -> can_id; }
@@ -55,9 +109,9 @@ double sensor_get_offset (const Sensor *s)                            { return s
 double sensor_get_scale (const Sensor *s)                             { return s -> scale; }
 int sensor_get_id (const Sensor *s)                                   { return s -> id; }
 
-void sensor_set_x_values (Sensor *s, double *v, int n)                { s -> x_values = v; s -> n_values = n; };
-void sensor_set_y_values (Sensor *s, double *v, int n)                { s -> y_values = v; s -> n_values = n; };
-void sensor_set_offset (Sensor *s, double offset)                     { s -> offset = offset; }
-void sensor_set_scale (Sensor *s, double scale)                       { s -> scale = scale; }
-void sensor_set_id (Sensor *s, int id)                                { s -> id = id; }
+//void sensor_set_x_values (Sensor *s, double *v, int n)                { s -> x_values = v; s -> n_values = n; };
+//void sensor_set_y_values (Sensor *s, double *v, int n)                { s -> y_values = v; s -> n_values = n; };
+//void sensor_set_offset (Sensor *s, double offset)                     { s -> offset = offset; }
+//void sensor_set_scale (Sensor *s, double scale)                       { s -> scale = scale; }
+//void sensor_set_id (Sensor *s, int id)                                { s -> id = id; }
 
