@@ -28,8 +28,8 @@ gtk_draw_gauge_panel_cb (GtkDrawingArea* area,
 {
   Panel* p = user_data;
 
-  g_return_if_fail(p != NULL);
-  g_return_if_fail(p->draw != NULL);
+  g_return_if_fail (p != NULL);
+  g_return_if_fail (p -> draw != NULL);
 
   p -> draw (area, cr, width, height, p);
 }

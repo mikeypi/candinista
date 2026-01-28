@@ -35,8 +35,8 @@ Sensor* sensor_create (SensorParameters* st) {
   s -> x_values = st -> x_values;
   s -> y_values = st -> y_values;
   s -> n_values = st -> n_values;
-  if (NAN != st -> scale) {  s -> scale = st -> scale; }
-  if (NAN != st -> offset) { s -> offset = st -> offset; }
+  s -> scale = isnan (st -> scale) ? 1 : st -> scale;
+  s -> offset = isnan (st -> offset) ? 1 : st -> offset;
   s -> x_index = st -> x_index;
   s -> y_index = st -> y_index;
   s -> id = st -> id;
