@@ -21,8 +21,7 @@ typedef struct Sensor Sensor;
 
 Sensor* sensor_create (SensorParameters* st);
 void    sensor_destroy (Sensor*);
-void sensor_print (const Sensor* s);
-
+void sensor_print (FILE* fp, const Sensor* s);
 const char* sensor_get_name (const Sensor*);
 int  sensor_get_can_id (const Sensor*);
 int  sensor_get_can_data_offset (const Sensor*);

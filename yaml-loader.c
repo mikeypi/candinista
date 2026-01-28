@@ -10,10 +10,10 @@
 #include "units.h"
 #include "d3-array.h"
 #include "candinista.h"
-#include "yaml-loader.h"
 #include "cairo-misc.h"
 #include "sensor.h"
 #include "panel.h"
+#include "yaml-loader.h"
 
 static unit_type
 enum_from_type_str (const char* temp) {

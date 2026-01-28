@@ -145,7 +145,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   }
 }
 
-void print_linear_panel (const Panel* g)
+void print_linear_panel (FILE* fp, const Panel* g)
 {
 }
 
@@ -158,7 +158,7 @@ static void set_output_format (Panel* g, char* format) { LinearPanel* rp = (Line
 
 static const struct PanelVTable linear_vtable = {
   .draw = (void (*)(const struct Panel*, void *))draw_linear_gauge_panel,  
-  .print = (void (*) (const Panel*)) print_linear_panel,
+  .print = (void (*) (FILE*, const Panel*)) print_linear_panel,
   .set_minmax = (void (*) (Panel*, double, double))set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
@@ -216,4 +216,3 @@ Panel* create_linear_gauge_panel (PanelParameters* p) {
 
   return (Panel*) lg;
 }
-

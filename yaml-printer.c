@@ -5,28 +5,36 @@
 #include "d3-array.h"
 #include "units.h"
 #include "candinista.h"
-#include "yaml-loader.h"
-#include "yaml-printer.h"
 #include "sensor.h"
 #include "panel.h"
+#include "yaml-loader.h"
+#include "yaml-printer.h"
+
     
-
-void configuration_print (const Configuration* d)
+void sensor_print_config (FILE* fp, Configuration* cfg )
 {
-    if (!d) {
-        printf ("Configuration: (null)\n");
-        return;
+    for (size_t i = 0; i < cfg -> sensor_count; i++) {
+      sensor_print (fp, cfg -> sensors[i]);
+      fprintf (fp, "\n");
     }
+}
 
-    printf ("sensors:\n");
-    for (size_t i = 0; i < d -> sensor_count; i++) {
-        sensor_print (d -> sensors[i]);
-	printf ("\n");
-    }
+void configuration_print (FILE* fp, const Configuration* d)
+{
+  if (!d) {
+    fprintf (fp, "Configuration: (null)\n");
+    return;
+  }
 
-    printf ("\npanels:\n");
-    for (size_t i = 0; i < d -> panel_count; i++) {
-        panel_print (d -> panels[i]);
-	printf ("\n");
-    }
+  fprintf (fp, "sensors:\n");
+  for (size_t i = 0; i < d -> sensor_count; i++) {
+    sensor_print (fp, d -> sensors[i]);
+    fprintf (fp, "\n");
+  }
+
+  fprintf (fp, "\npanels:\n");
+  for (size_t i = 0; i < d -> panel_count; i++) {
+    panel_print (fp, d -> panels[i]);
+    fprintf (fp, "\n");
+  }
 }

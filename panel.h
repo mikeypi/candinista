@@ -38,13 +38,13 @@ struct PanelVTable {
   void (*set_label) (Panel* g, char* label);
   void (*set_value) (Panel* g, double value, int sensor_count, int can_id);
   void (*set_output_format) (Panel* g, char* value);
-  void (*print) (const Panel* g);
+  void (*print) (FILE* fp, const Panel* g);
 };
 
 struct Panel {
   const struct PanelVTable *vtable;
   void (*draw)(void* area, cairo_t* cr, int height, int width, void* p);
-  void (*print) (const Panel* g);
+  void (*print) (FILE* fp, const Panel* g);
   void (*set_minmax) (Panel* g, double min, double max);
   void (*set_warn) (Panel* g, double low, double high);
   void (*set_units) (Panel* g, unit_type ut);
@@ -75,7 +75,7 @@ void   panel_destroy (Panel* g);
 
 /* state */
 void   panel_set_value (Panel* g, double value, int sensor_count, int can_id);
-void   panel_print (const Panel* g);
+void   panel_print (FILE* fp, const Panel* g);
 
 int panel_get_y_index (const Panel* g);
 int panel_get_x_index (const Panel* g);

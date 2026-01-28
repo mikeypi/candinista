@@ -36,8 +36,15 @@
 #include <sys/time.h>
 #include <sys/param.h>
 #include <linux/can.h>
+#include <gtk/gtk.h>
 
+#include "units.h"
+#include "sensor.h"
+#include "panel.h"
+#include "d3-array.h"
 #include "candinista.h"
+#include "yaml-loader.h"
+#include "yaml-printer.h"
 
 int data_logging = 0;
 
@@ -109,7 +116,7 @@ log_data (struct can_frame* p1) {
       return;
     }
 
-    // print_config (fp);
+    sensor_print_config (fp, cfg);
     gettimeofday (&file_start_time, NULL);
     fprintf (fp, "File Start at: %ld:%ld\n\n", file_start_time.tv_sec, file_start_time.tv_usec);
     current_time = file_start_time;

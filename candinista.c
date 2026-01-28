@@ -55,15 +55,14 @@
 #include "candinista.h"
 #include "cairo-misc.h"
 #include "units.h"
-#include "yaml-loader.h"
-#include "yaml-printer.h"
 #include "sensor.h"
 #include "panel.h"
+#include "yaml-loader.h"
+#include "yaml-printer.h"
 #include "gtk-glue.h"
 #include "datalogging.h"
 
 Configuration* cfg;
-
 
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
@@ -334,7 +333,7 @@ main (int argc, char** argv) {
       break;
       
     case 'p':
-      configuration_print (cfg);
+      configuration_print (stdout, cfg);
       exit (0);
       break;
 

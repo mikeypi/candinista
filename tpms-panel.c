@@ -180,7 +180,7 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
   }
 }
 
-void print_tpms_panel (const Panel* g)
+void print_tpms_panel (FILE* fp, const Panel* g)
 {
 }
 
@@ -208,7 +208,7 @@ static void set_label (Panel* g, char* label) { TPMSPanel* rp = (TPMSPanel*) g; 
 
 static const struct PanelVTable linear_vtable = {
   .draw = (void (*)(const struct Panel*, void *))draw_tpms_panel,  
-  .print = (void (*) (const Panel*)) print_tpms_panel,
+  .print = (void (*) (FILE* fp, const Panel*)) print_tpms_panel,
   .set_minmax = (void (*) (Panel*, double, double))set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
   .set_units = (void (*) (Panel*, unit_type)) set_units,

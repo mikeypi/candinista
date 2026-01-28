@@ -1,9 +1,6 @@
 #ifndef YAMLLOADER_H
 #define YAMLLOADER_H
 
-#include "sensor.h"
-#include "panel.h"
-
 typedef struct {
   Sensor** sensors;
   int sensor_count;
@@ -23,6 +20,7 @@ typedef struct {
 } Configuration;
 
 Configuration* configuration_load_yaml (const char *path);
+
 void build_tables (Configuration* cfg);
 void configuration_free (Configuration*);
 
@@ -34,4 +32,6 @@ void cfg_set_sensor (Configuration* cfg, Sensor* s, int x_index, int y_index, in
 
 int get_active_z (Configuration* cfg, int x_index, int y_index);
 void set_active_z (Configuration* cfg, int x_index, int y_index, int value);
+
+extern Configuration* cfg;
 #endif

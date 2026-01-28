@@ -265,7 +265,7 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
   fprintf (stderr, "Bad can_id = %x / sensor_offset = %d\n", can_id, sensor_offset);  
 }
 
-void print_gps_panel (const Panel* g)
+void print_gps_panel (FILE* fp, const Panel* g)
 {
 }
 
@@ -286,7 +286,7 @@ static void set_units (Panel* g, unit_type ut)  {
 
 static const struct PanelVTable gps_vtable = {
   .draw = (void (*)(const struct Panel*, void *)) draw_gps_panel,  
-  .print = (void (*) (const Panel*)) print_gps_panel,
+  .print = (void (*) (FILE* fp, const Panel*)) print_gps_panel,
   .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
 };

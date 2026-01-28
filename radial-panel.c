@@ -231,17 +231,17 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
   }
 }
 
-static void print_radial_gauge_panel (const Panel* g)
+static void print_radial_gauge_panel (FILE* fp, const Panel* g)
 {
   RadialPanel* rp = (RadialPanel*) g;
 
-  printf ("    label: \"%s\"\n", rp -> label);
-  printf ("    min_value: %.3f\n", rp -> min);
-  printf ("    max_value: %.3f\n", rp -> max);
-  printf ("    low_warn : %.3f\n", rp -> low_warn);
-  printf ("    high_warn: %.3f\n", rp -> high_warn);
-  printf ("    output_format: \"%s\"\n", rp -> output_format);
-  printf ("    units: \"%s\"\n", str_from_unit_enum (rp -> units));
+  fprintf (fp, "    label: \"%s\"\n", rp -> label);
+  fprintf (fp, "    min_value: %.3f\n", rp -> min);
+  fprintf (fp, "    max_value: %.3f\n", rp -> max);
+  fprintf (fp, "    low_warn : %.3f\n", rp -> low_warn);
+  fprintf (fp, "    high_warn: %.3f\n", rp -> high_warn);
+  fprintf (fp, "    output_format: \"%s\"\n", rp -> output_format);
+  fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> units));
 }
 
 static void set_minmax (Panel* g, double min, double max) { RadialPanel* rp = (RadialPanel*) g; rp -> min = min; rp -> max = max; }
@@ -253,7 +253,7 @@ static void set_output_format (Panel* g, char* format) { RadialPanel* rp = (Radi
 
 static const struct PanelVTable radial_vtable = {
   .draw = (void (*)(const struct Panel*, void *)) draw_radial_gauge_panel,
-  .print = (void (*)(const struct Panel*)) print_radial_gauge_panel,
+  .print = (void (*)(FILE*, const struct Panel*)) print_radial_gauge_panel,
   .set_minmax = (void (*) (Panel*, double, double)) set_minmax,
   .set_warn = (void (*) (Panel*, double, double)) set_warn,
   .set_units = (void (*) (Panel*, unit_type)) set_units,

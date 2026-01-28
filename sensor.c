@@ -6,6 +6,7 @@
 
 #include "units.h"
 #include "sensor.h"
+#include "panel.h"
 #include "d3-array.h"
 #include "yaml-loader.h"
 
@@ -50,45 +51,45 @@ void sensor_destroy (Sensor *s) {
   free (s);
 }
 
-static void print_double_array (const char *label,
+static void print_double_array (FILE* fp, const char *label,
                                const double *v,
                                size_t count)
 {
-  printf ("%s: [", label);
+  fprintf (fp, "%s: [", label);
   for (size_t i = 0; i < count; i++) {
-    printf ("%g", v[i]);
+    fprintf (fp, "%g", v[i]);
     if (i + 1 < count)
-      printf (", ");
+      fprintf (fp, ", ");
   }
 
   printf ("]\n");
 }
 
-void sensor_print (const Sensor* s)
+void sensor_print (FILE* fp, const Sensor* s)
 {
-    printf ("  - name: \"%s\"\n", s -> name);
+    fprintf (fp, "  - name: \"%s\"\n", s -> name);
 
     if (0 != s -> n_values) {
-      print_double_array ("    x_values", s -> x_values, s -> n_values);
-      print_double_array ("    y_values", s -> y_values, s -> n_values);
+      print_double_array (fp, "    x_values", s -> x_values, s -> n_values);
+      print_double_array (fp, "    y_values", s -> y_values, s -> n_values);
     }
 
-    printf ("    can_id: 0x%x\n", s -> can_id);
-    printf ("    can_data_offset: %d\n", s -> can_data_offset);
-    printf ("    can_data_width: %d\n", s -> can_data_width);
+    fprintf (fp, "    can_id: 0x%x\n", s -> can_id);
+    fprintf (fp, "    can_data_offset: %d\n", s -> can_data_offset);
+    fprintf (fp, "    can_data_width: %d\n", s -> can_data_width);
 
-    printf ("    x_index: %d\n", s -> x_index);
-    printf ("    y_index: %d\n", s -> y_index);
-    printf ("    z_index: %d\n", s -> z_index);
+    fprintf (fp, "    x_index: %d\n", s -> x_index);
+    fprintf (fp, "    y_index: %d\n", s -> y_index);
+    fprintf (fp, "    z_index: %d\n", s -> z_index);
 
     if (!isnan (s -> offset) && (0 != s -> offset)) {
-      printf ("    offset: %f\n", s -> offset);
+      fprintf (fp, "    offset: %f\n", s -> offset);
     }
     if (!isnan (s -> scale) && (0 != s -> scale)) {
-      printf ("    scale: %f\n", s -> scale);
+      fprintf (fp, "    scale: %f\n", s -> scale);
     }
 
-    printf ("    id: %d\n", s -> id);
+    fprintf (fp, "    id: %d\n", s -> id);
 }
 
 const char *sensor_get_name (const Sensor *s)                         { return s -> name; }

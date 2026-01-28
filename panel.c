@@ -38,22 +38,22 @@ printable_form_of_panel_type_enum (const unit_type t) {
   }
 }
 
-void panel_print (const Panel* g)
+void panel_print (FILE* fp, const Panel* g)
 {
-    printf ("  - type: %s\n",
+    fprintf (fp, "  - type: %s\n",
 	    printable_form_of_panel_type_enum (g -> type));
 
-    printf ("    x_index: %d\n", g -> x_index);
-    printf ("    y_index: %d\n", g -> y_index);
-    printf ("    z_index: %d\n", g -> z_index);
-    printf ("    border: %d\n", g -> border);
-    printf ("    foreground_color: 0x%x\n", g -> foreground_color);
-    printf ("    background_color: 0x%x\n", g -> background_color);
-    printf ("    high_warn_color: 0x%x\n", g -> high_warn_color);
-    printf ("    low_warn_color: 0x%x\n", g -> low_warn_color);
-    printf ("    timeout: %d\n", g -> timeout);
-    printf ("    id: %d\n", g -> id);
-    g -> vtable -> print (g);
+    fprintf (fp, "    x_index: %d\n", g -> x_index);
+    fprintf (fp, "    y_index: %d\n", g -> y_index);
+    fprintf (fp, "    z_index: %d\n", g -> z_index);
+    fprintf (fp, "    border: %d\n", g -> border);
+    fprintf (fp, "    foreground_color: 0x%x\n", g -> foreground_color);
+    fprintf (fp, "    background_color: 0x%x\n", g -> background_color);
+    fprintf (fp, "    high_warn_color: 0x%x\n", g -> high_warn_color);
+    fprintf (fp, "    low_warn_color: 0x%x\n", g -> low_warn_color);
+    fprintf (fp, "    timeout: %d\n", g -> timeout);
+    fprintf (fp, "    id: %d\n", g -> id);
+    g -> vtable -> print (fp, g);
 }      
 
 Panel* panel_init_base (PanelParameters* p, Panel* lg) {

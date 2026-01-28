@@ -90,7 +90,7 @@ void draw_info_panel (GtkDrawingArea* area,
 }
 
 
-void print_info_panel (const Panel* g)
+void print_info_panel (FILE* fp, const Panel* g)
 {
 }
 
@@ -98,7 +98,7 @@ static void set_value (Panel* g, double value, int sensor_offfset, int can_id) {
 
 static const struct PanelVTable info_vtable = {
   .draw = (void (*)(const struct Panel *, void *))draw_info_panel,
-  .print = (void (*) (const Panel*)) print_info_panel,
+  .print = (void (*) (FILE*, const Panel*)) print_info_panel,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
 };
 
