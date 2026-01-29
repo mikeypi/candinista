@@ -1,6 +1,5 @@
 # project name and enable C++ support
 project(candinista LANGUAGES C)
-#option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 
 cmake_minimum_required(VERSION 3.25)
 
@@ -9,7 +8,6 @@ pkg_check_modules(GTK REQUIRED IMPORTED_TARGET "gtk4")
 pkg_check_modules(YAML REQUIRED IMPORTED_TARGET "yaml-0.1")
 
 include_directories(${GTK_INCLUDE_DIRS})
-
 
 # we define the executable
 add_executable(candinista "")
@@ -44,21 +42,6 @@ target_link_libraries(candinista
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR})
 set(BIN ${CMAKE_CURRENT_BINARY_DIR})
-
-#if (ENABLE_ASAN)
-#    message(STATUS "AddressSanitizer enabled for candinista")
-#
-#    target_compile_options(candinista PRIVATE
-#        -fsanitize=address
-#        -g
-#        -O1
-#        -fno-omit-frame-pointer
-#    )
-#
-#    target_link_options(candinista PRIVATE
-#        -fsanitize=address
-#    )
-#endif()
 
 add_executable(microsleep "")
 #  and its sources
