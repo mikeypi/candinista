@@ -6,12 +6,9 @@ cmake_minimum_required(VERSION 3.25)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED IMPORTED_TARGET "gtk4")
-pkg_check_modules(JSON REQUIRED IMPORTED_TARGET "json-c")
 pkg_check_modules(YAML REQUIRED IMPORTED_TARGET "yaml-0.1")
-find_program(M4_EXECUTABLE m4 REQUIRED)
-find_program(BP_EXECUTABLE blueprint-compiler REQUIRED)
 
-include_directories(${GTK_INCLUDE_DIRS} ${JSON_INCLUDE_DIRS})
+include_directories(${GTK_INCLUDE_DIRS})
 
 
 # we define the executable
@@ -42,7 +39,6 @@ gps-panel.c
 
 target_link_libraries(candinista
     PkgConfig::GTK
-    PkgConfig::JSON
     PkgConfig::YAML
     m
 )
