@@ -74,31 +74,31 @@ void draw_gps_panel (GtkDrawingArea* area,
 
   const double delta_y = 36;
 
-  xx = 45;
+  xx = 50;
   yy = 43;
   
   sprintf (abuf, "%.1f", rp -> lattitude);
-  show_text_right_justified (cr, xx, yy, abuf, 4);
+  show_text_right_justified (cr, xx, yy, abuf, 5);
   yy += delta_y;
   
   sprintf (abuf, "%.1f", rp -> longitude);
-  show_text_right_justified (cr, xx, yy, abuf, 4);
+  show_text_right_justified (cr, xx, yy, abuf, 5);
   yy += delta_y;
   
   sprintf (abuf, "%.1f", rp -> speed);
-  show_text_right_justified (cr, xx, yy, abuf, 4);
+  show_text_right_justified (cr, xx, yy, abuf, 5);
   yy += delta_y;
   
   sprintf (abuf, "%.1f", rp -> heading_motion);
-  show_text_right_justified (cr, xx, yy, abuf, 4);
+  show_text_right_justified (cr, xx, yy, abuf, 5);
   yy += delta_y;
   
   sprintf (abuf, "%.1f", rp -> vehicle_motion);
-  show_text_right_justified (cr, xx, yy, abuf, 4);
+  show_text_right_justified (cr, xx, yy, abuf, 5);
   yy += delta_y;
 
   sprintf (abuf, "%.1f", rp -> altitude);
-  show_text_right_justified (cr, xx, yy, abuf, 4);
+  show_text_right_justified (cr, xx, yy, abuf, 5);
 
   yy += delta_y;
   sprintf (abuf, "%02i-%02i-%d  %02i:%02i:%02i", rp -> utc_day, rp -> utc_month, rp -> utc_year,
@@ -135,7 +135,7 @@ void draw_gps_panel (GtkDrawingArea* area,
 
   char* labels[] = {"lat", "long", "speed", "h-motion", "v-motion", "alt", "x-accel", "y-accel", "z-accel", "sat count", "gps"};
 
-  xx = 85;
+  xx = 100;
   yy = 43;
 
   show_text_unjustified (cr, xx, yy, labels[0]);

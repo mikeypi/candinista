@@ -21,7 +21,7 @@ panel_type panel_get_type (const Panel *g)        { return (g -> type); }
 void panel_destroy (Panel* g) { free (g); }
 
 /* vtable functions (implemented in the various panel files) */
-void panel_draw (Panel* g, void* cr)                       { g -> vtable -> draw (g, cr); }
+void panel_draw (Panel* g, void* cr)                                   { g -> vtable -> draw (g, cr); }
 void panel_set_value (Panel* g, double value, int offset, int can_id)  { g -> vtable -> set_value (g, value, offset, can_id); }
 
 static char*
@@ -61,11 +61,11 @@ Panel* panel_init_base (PanelParameters* p, Panel* lg) {
   lg -> y_index = p -> y_index;
   lg -> z_index = p -> z_index;
 
-  lg -> background_color = (1 == p -> background_color) ? XBLACK_RGB : p -> background_color;
-  lg -> foreground_color = (1 == p -> foreground_color) ? XORANGE_RGB : p -> foreground_color;
-  lg -> high_warn_color = (1 == p -> high_warn_color) ? XRED_RGB : p -> high_warn_color;
-  lg -> low_warn_color = (1 == p -> low_warn_color) ? XBLUE_RGB : p -> low_warn_color;
-
+  lg -> background_color = (1 == p -> background_color) ? DEFAULT_BACKGROUND_RGB : p -> background_color;
+  lg -> foreground_color = (1 == p -> foreground_color) ? DEFAULT_FOREGROUND_RGB : p -> foreground_color;
+  lg -> high_warn_color = (1 == p -> high_warn_color) ? DEFAULT_HIGH_WARN_RGB : p -> high_warn_color;
+  lg -> low_warn_color = (1 == p -> low_warn_color) ? DEFAULT_LOW_WARN_RGB : p -> low_warn_color;
+  
   lg -> type = p -> type;
   lg -> id = p -> id;
   lg -> border = p -> border;

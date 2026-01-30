@@ -106,14 +106,15 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
      * would need to be expanded for larger data sizes
      */
     int offset = sensor_get_can_data_offset (s);
-
-    unsigned int x = frame.data[offset];
+    int x = frame.data[offset];
     
     switch (sensor_get_can_data_width (s)) {
     case 1:
       break;
     case 2:
       x = (x << 8) ^ frame.data[offset + 1];
+      x = (x << 16);
+      x = (x >> 16);
       break;
     case 3:
       x = (x << 8) ^ frame.data[offset + 1];
@@ -127,7 +128,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     default:
       fprintf (stderr, "Unsupported CAN BUS field width %d\n", sensor_get_can_data_width (s));
       break;
-    }
+      }
 
     temp = x;
 
@@ -323,7 +324,11 @@ main (int argc, char** argv) {
 
   get_environment_variables ();
 
-  cfg = configuration_load_yaml ("/home/joe/candinista/config.yaml");
+  if (NULL == (cfg = configuration_load_yaml (config_file_name))) {
+    fprintf (stderr, "unable to open config file %s\n", config_file_name);
+    exit (-1);
+  }
+  
   build_tables (cfg);
 
   while (-1 != (option = getopt (argc, argv, "dp"))) {

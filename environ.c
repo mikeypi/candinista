@@ -39,47 +39,46 @@
 
 char* log_file_directory_name = LOG_FILE_DIRECTORY_NAME;
 char* can_socket_name = CAN_SOCKET_NAME;
-char* ui_file_name = UI_FILE_NAME;
-char* css_file_name = CSS_FILE_NAME;
 char* config_file_name = CONFIG_FILE_NAME;
-char* candinista_working_directory = NULL;
+char* working_directory = NULL;
 int remote_display = 0;
 
 void
 get_environment_variables () {
   char* t1;
 
-  t1 = getenv ("CANDINISTA_LOG_FILE_DIRECTORY_NAME");
+  t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
   if (NULL != t1) {
-    log_file_directory_name = t1;
+    working_directory = strdup (t1);
+  } else {
+    working_directory = "./";
+  }
+
+  t1 = getenv (LOG_FILE_DIRECTORY_NAME);
+  if (NULL != t1) {
+    char* t2 = (char*) malloc (strlen (t1) + strlen (working_directory) + 2);
+    sprintf (t2, "%s/%s", working_directory, t1);
+    log_file_directory_name = t2;
+  } else {
+    char* t2 = (char*) malloc (strlen (LOG_FILE_DIRECTORY_NAME) + strlen (working_directory) + 2);
+    sprintf (t2, "%s/%s", working_directory, LOG_FILE_DIRECTORY_NAME);
+    log_file_directory_name = t2;
+  }
+
+  t1 = getenv (CONFIG_FILE_NAME);
+  if (NULL != t1) {
+    char* t2 = (char*) malloc (strlen (t1) + strlen (working_directory) + 2);
+    sprintf (t2, "%s/%s", working_directory, t1);
+    config_file_name = t2;
+  } else {
+    char* t2 = (char*) malloc (strlen (CONFIG_FILE_NAME) + strlen (working_directory) + 2);
+    sprintf (t2, "%s/%s", working_directory, CONFIG_FILE_NAME);
+    config_file_name = t2;
   }
 
   t1 = getenv ("CANDINISTA_CAN_SOCKET_NAME");
   if (NULL != t1) {
     can_socket_name = t1;
-  }
-
-  t1 = getenv ("CANDINISTA_UI_FILE_NAME");
-  if (NULL != t1) {
-    ui_file_name = t1;
-  }
-
-  t1 = getenv ("CANDINISTA_CSS_FILE_NAME");
-  if (NULL != t1) {
-    css_file_name = t1;
-  }
-
-  t1 = getenv ("CANDINISTA_WORKING_DIRECTORY");
-  if (NULL != t1) {
-    if (0 != chdir (t1)) {
-      char temp[PATH_MAX];
-      fprintf (stderr, "Unable to change working directory from: %s to: %s\n", getcwd (temp, sizeof(temp)), t1);
-    }
-  }
-
-  t1 = getenv ("CANDINISTA_CONFIG_FILE_NAME");
-  if (NULL != t1) {
-    config_file_name = t1;
   }
 
   t1 = getenv ("DISPLAY");

@@ -50,21 +50,10 @@ extern char* log_file_directory_name;
 #define CAN_SOCKET_NAME "can0"
 extern char* can_socket_name;
 
-#define UI_FILE_NAME "candinista.ui"
-extern char* ui_file_name;
-
-#define CSS_FILE_NAME "styles.css"
-extern char* css_file_name;
-
-#define CONFIG_FILE_NAME "config.json"
+#define CONFIG_FILE_NAME "config.yaml"
 extern char* config_file_name;
 
 extern int remote_display;
 
 extern void get_environment_variables ();
-
-extern void read_config_from_json (void);
-extern void print_config (FILE*);
-
-#define DISPALY_UPDATE_INTERVAL 2
 #endif

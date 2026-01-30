@@ -3,19 +3,16 @@
 
 typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 
-#define RED_RGB 255/255.0, 8/255.0, 8/255.0
-#define BLUE_RGB 224/255.0, 224/255.0, 224/255.0
-#define ORANGE_RGB 0xff/255.0, 0xa6/255.0, 0x0/255.0
-#define BLACK_RGB 0x0/255.0, 0x0/255.0, 0x0/255.0
-#define GRAY_RGB 0x33/255.0, 0x33/255.0, 0x33/255.0
+#define XRED_RGB    0xff0808
+#define XBLUE_RGB   0xe0e0e0
+#define XORANGE_RGB 0xffa600
+#define XBLACK_RGB  0x000000
+#define XGRAY_RGB   0x333333
 
-#define HIGH_WARN_RGBA RED_RGB, 0.9
-#define LOW_WARN_RGBA BLUE_RGB, 0.9
-#define FOREGROUND_RGBA ORANGE_RGB, 0.9
-#define BACKGROUND_RGBA BLACK_RGB, 1.0
-#define BURN_IN_RGBA ORANGE_RGB, 0.14
-#define HIGH_WARN_BURN_IN_RGBA RED_RGB, 0.14
-#define LOW_WARN_BURN_IN_RGBA BLUE_RGB, 0.14
+#define DEFAULT_HIGH_WARN_RGB XRED_RGB
+#define DEFAULT_LOW_WARN_RGB XBLUE_RGB
+#define DEFAULT_FOREGROUND_RGB XORANGE_RGB
+#define DEFAULT_BACKGROUND_RGB XBLACK_RGB
 
 #define DEFAULT_START_ANGLE (4 * M_PI / 4)
 #define DEFAULT_END_ANGLE (9 * M_PI / 4)
@@ -30,12 +27,6 @@ typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 #define DEFAULT_BARGRAPH_WIDTH 300
 #define DEFAULT_BARGRAPH_HEIGHT 160
 #define DEFAULT_BARGRPAH_SEGMENT_COUNT 16
-
-#define XRED_RGB    0xff0808
-#define XBLUE_RGB   0xe0e0e0
-#define XORANGE_RGB 0xffa600
-#define XBLACK_RGB  0x000000
-#define XGRAY_RGB   0x333333
 
 extern void draw_cairo_info_panel (GtkDrawingArea*, cairo_t*, int, int, gpointer);
 
