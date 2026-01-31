@@ -56,4 +56,6 @@ extern char* config_file_name;
 extern int remote_display;
 
 extern void get_environment_variables ();
+
+extern int raw_output;
 #endif

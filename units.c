@@ -3,6 +3,7 @@
 #include <ctype.h>
 
 #include "units.h"
+#include "candinista.h"
 
 char*
 str_from_unit_enum (const unit_type unit) {
@@ -44,7 +45,10 @@ enum_from_unit_str (const char* temp) {
 
 double
 convert_units (const double temp, unit_type to) {
- switch (to) {
+  if (0 != raw_output) {
+    return (temp);
+  }
+  switch (to) {
   case FAHRENHEIT:
     return ((temp * 9.0 / 5.0) + 32.0);
 

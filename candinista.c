@@ -63,6 +63,7 @@
 #include "datalogging.h"
 
 Configuration* cfg;
+int raw_output = 0;
 
 /*
  * Called when there is can data ready to be read. Read it from the frame, interpolate and convert if required
@@ -132,20 +133,22 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
     temp = x;
 
-    if (0 != sensor_get_n_values (s)) {
-      /* apply interpolation */
-      temp = linear_interpolate (temp,
-				 sensor_get_x_values (s),
-				 sensor_get_y_values (s),
-				 sensor_get_n_values (s));
-    }
+    if (0 == raw_output) {
+      if (0 != sensor_get_n_values (s)) {
+	/* apply interpolation */
+	temp = linear_interpolate (temp,
+				   sensor_get_x_values (s),
+				   sensor_get_y_values (s),
+				   sensor_get_n_values (s));
+      }
 
-    double scale = sensor_get_scale (s);
-    if (0 != scale) {
-      temp *= scale;
-    }
+      double scale = sensor_get_scale (s);
+      if (0 != scale) {
+	temp *= scale;
+      }
 
-    temp += sensor_get_offset (s);
+      temp += sensor_get_offset (s);
+    }
 
     panel_set_value (p, temp, matching_sensor_count++, frame.can_id);
       
@@ -331,7 +334,7 @@ main (int argc, char** argv) {
   
   build_tables (cfg);
 
-  while (-1 != (option = getopt (argc, argv, "dp"))) {
+  while (-1 != (option = getopt (argc, argv, "dpr"))) {
     switch (option) {
     case 'd':
       data_logging = 1;
@@ -342,13 +345,18 @@ main (int argc, char** argv) {
       exit (0);
       break;
 
+    case 'r':
+      raw_output = 1;
+      break;
+
     default:
       fprintf (stderr, "unknown option %c\n", option);
       fprintf (stderr,
 	       "Usage: %s options device_name.\n"
 	       "Options:\n"
-	       "\t -n: disable datalogging\n"
-	       "\t -p: print json database\n",
+	       "\t -d: enable datalogging\n"
+	       "\t -p: print yaml database\n",
+	       "\t -r: print raw sensor values\n",
 	       argv[0]);
 
       exit (-1);
