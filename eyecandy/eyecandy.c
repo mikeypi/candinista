@@ -61,6 +61,8 @@
 
 Configuration* cfg;
 
+int raw_output = 0;
+
 int
 main (int argc, char** argv) {
   GtkApplication *app;
@@ -68,8 +70,12 @@ main (int argc, char** argv) {
   int status;
   int option;
 
-  get_environment_variables ();
+  (void) app;
+  (void) input_channel;
+  (void) status;
 
+  get_environment_variables ();
+  
   if (NULL == (cfg = configuration_load_yaml (config_file_name))) {
     fprintf (stderr, "unable to open config file %s\n", config_file_name);
     exit (-1);
