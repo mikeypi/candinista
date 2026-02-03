@@ -3,17 +3,6 @@
 
 typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 
-#define XRED_RGB    0xff0808
-#define XBLUE_RGB   0xe0e0e0
-#define XORANGE_RGB 0xffa600
-#define XBLACK_RGB  0x000000
-#define XGRAY_RGB   0x333333
-
-#define DEFAULT_HIGH_WARN_RGB XRED_RGB
-#define DEFAULT_LOW_WARN_RGB XBLUE_RGB
-#define DEFAULT_FOREGROUND_RGB XORANGE_RGB
-#define DEFAULT_BACKGROUND_RGB XBLACK_RGB
-
 #define DEFAULT_START_ANGLE (4 * M_PI / 4)
 #define DEFAULT_END_ANGLE (9 * M_PI / 4)
 #define DEFAULT_SEGMENT_COUNT (20)

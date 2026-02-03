@@ -40,8 +40,6 @@ void draw_tpms_sub_panel (cairo_t* cr,
 			  TPMSPanel* rp,
 			  double x,
 			  double y,
-			  double height,
-			  double width,
 			  int panel_number,
 			  bool top,
 			  bool right) {
@@ -120,11 +118,10 @@ void draw_tpms_panel (GtkDrawingArea* area,
 		      int height,
 		      gpointer user_data)
 {
+  (void) area;
   TPMSPanel* rp = user_data;
   assert (NULL != rp);
 
-  double value = convert_units (rp -> value, rp -> units);
-  int foreground_color = get_active_foreground_color (&rp -> base, value, rp -> high_warn, rp -> low_warn);
   int background_color = rp -> base.background_color;
   
   double x;
@@ -150,16 +147,16 @@ void draw_tpms_panel (GtkDrawingArea* area,
   cairo_stroke (cr);
 
   x = 5.0; y = 5.0;
-  draw_tpms_sub_panel (cr, rp, x, y, (height - 20) / 2.0, (width - 20) / 2.0, 0, true, false);
+  draw_tpms_sub_panel (cr, rp, x, y, 0, true, false);
   x = width / 2.0 + 5.0;
   set_rgba (cr, rp -> base.foreground_color, 0.9);
-  draw_tpms_sub_panel (cr, rp, x, y, (height - 20) / 2.0, (width - 20) / 2.0, 1, true, true);
+  draw_tpms_sub_panel (cr, rp, x, y, 1, true, true);
   x = 5.0; y = height / 2.0 + 5.0;
   set_rgba (cr, rp -> base.foreground_color, 0.9);
-  draw_tpms_sub_panel (cr, rp, x, y, (height - 20) / 2.0, (width - 20) / 2.0, 2, false, false);
+  draw_tpms_sub_panel (cr, rp, x, y, 2, false, false);
   x = width / 2.0 + 5.0;
   set_rgba (cr, rp -> base.foreground_color, 0.9);
-  draw_tpms_sub_panel (cr, rp, x, y, (height - 20) / 2.0, (width - 20) / 2.0, 3, false, true);
+  draw_tpms_sub_panel (cr, rp, x, y, 3, false, true);
   set_rgba (cr, rp -> base.foreground_color, 0.9);
   cairo_stroke (cr);
 }
@@ -174,7 +171,7 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
     rp -> multiplexor %= 4;
     break;
   case 1: rp -> pressure[rp -> multiplexor] = value; break; 
-  case 2: rp -> temperature[rp -> multiplexor] = value;
+  case 2: rp -> temperature[rp -> multiplexor] = value; break;
   case 3: rp -> voltage[rp -> multiplexor] = value; break;
   case 4: rp -> sign[rp -> multiplexor] = value; break;
   }
@@ -182,39 +179,14 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
 
 void print_tpms_panel (FILE* fp, const Panel* g)
 {
+  (void) fp;
+  (void) g;
 }
-
-static void set_minmax (Panel* g, double min, double max) { TPMSPanel* rp = (TPMSPanel*) g; rp -> min = min; rp -> max = max; }
-static void set_warn (Panel* g, double low, double high) { TPMSPanel* rp = (TPMSPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
-
-static void set_units (Panel* g, unit_type ut)  {
-  TPMSPanel* rp = (TPMSPanel*) g;
-  switch (ut) {
-  case CELSIUS: 
-  case FAHRENHEIT:
-    rp -> temperature_units = ut;
-    break;
-  case BAR:
-  case PSI:
-  case KPA:
-  default: 
-    rp -> pressure_units = ut;
-  }
-}
-
-static char* get_output_format (const Panel* g) {TPMSPanel* rp = (TPMSPanel*) g; return (rp -> output_format); }
-static void set_output_format (Panel* g, char* format) { TPMSPanel* rp = (TPMSPanel*) g; rp -> output_format = strdup (format); }
-static void set_label (Panel* g, char* label) { TPMSPanel* rp = (TPMSPanel*) g; strcpy (rp -> label, label); }
 
 static const struct PanelVTable linear_vtable = {
-  .draw = (void (*)(const struct Panel*, void *))draw_tpms_panel,  
+  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_tpms_panel,
   .print = (void (*) (FILE* fp, const Panel*)) print_tpms_panel,
-  .set_minmax = (void (*) (Panel*, double, double))set_minmax,
-  .set_warn = (void (*) (Panel*, double, double)) set_warn,
-  .set_units = (void (*) (Panel*, unit_type)) set_units,
-  .set_label = (void (*) (Panel*, char*)) set_label,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
-  .set_output_format = (void (*) (Panel*, char*)) set_output_format  
 };
 
 Panel* create_tpms_panel (PanelParameters* p) {

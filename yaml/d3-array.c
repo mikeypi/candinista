@@ -5,13 +5,13 @@
 
 
 d3_array* new_d3_array (int x_dimension, int y_dimension, int z_dimension ) {
-  d3_array* new = calloc (sizeof (d3_array), 1);
+  d3_array* new = calloc (1, sizeof (d3_array));
   
   new -> x_dimension = x_dimension;
   new -> y_dimension = y_dimension;
   new -> z_dimension = z_dimension;
   
-  new -> items = calloc (sizeof (void*), x_dimension * y_dimension * z_dimension);
+  new -> items = calloc (x_dimension * y_dimension * z_dimension, sizeof (void*));
   return (new);
 }
 
@@ -52,12 +52,12 @@ int get_z_dimension_from_d3_array  (d3_array* d3) {
 }
 
 d2_vp_array* new_d2_vp_array (int x_dimension, int y_dimension) {
-  d2_vp_array* new = calloc (sizeof (d2_vp_array), 1);
+  d2_vp_array* new = calloc (1, sizeof (d2_vp_array));
   
   new -> x_dimension = x_dimension;
   new -> y_dimension = y_dimension;
   
-  new -> items = calloc (sizeof (void*), x_dimension * y_dimension);
+  new -> items = calloc (x_dimension * y_dimension, sizeof (void*));
   return (new);
 }
 
@@ -79,12 +79,12 @@ int get_x_dimension_from_d2_vp_array  (d2_vp_array* d2) {
 }
 
 d2_int_array* new_d2_int_array (int x_dimension, int y_dimension) {
-  d2_int_array* new = calloc (sizeof (d2_vp_array), 1);
+  d2_int_array* new = calloc (1, sizeof (d2_vp_array));
   
   new -> x_dimension = x_dimension;
   new -> y_dimension = y_dimension;
   
-  new -> items = calloc (sizeof (void*), x_dimension * y_dimension);
+  new -> items = calloc (x_dimension * y_dimension, sizeof (void*));
   return (new);
 }
 

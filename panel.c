@@ -7,9 +7,8 @@
 #include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
-#include "cairo-misc.h"
 
-
+# if 0
 /* base functions (work for all panel types) */
 int panel_get_x_index (const Panel* g)            { return (g -> x_index); }
 int panel_get_y_index (const Panel* g)            { return (g -> y_index); }
@@ -19,21 +18,22 @@ int panel_get_id (const Panel* g)                 { return (g -> id); }
 panel_type panel_get_type (const Panel *g)        { return (g -> type); }
 
 void panel_destroy (Panel* g) { free (g); }
-
+#endif
 /* vtable functions (implemented in the various panel files) */
-void panel_draw (Panel* g, void* cr)                                   { g -> vtable -> draw (g, cr); }
+void panel_draw (Panel* g, void* cr)                                   { g -> vtable -> draw (g, cr, 0, 0, NULL); }
 void panel_set_value (Panel* g, double value, int offset, int can_id)  { g -> vtable -> set_value (g, value, offset, can_id); }
 
 static char*
-printable_form_of_panel_type_enum (const unit_type t) {
+printable_form_of_panel_type_enum (const panel_type t) {
   switch (t) {
   case RADIAL_PRESSURE_PANEL: return ("radial_pressure");
-  case LINEAR_PRESSURE_PANEL: return ("linear_pressure");
   case RADIAL_TEMPERATURE_PANEL: return ("radial_temperature");
+  case LINEAR_PRESSURE_PANEL: return ("linear_pressure");
   case LINEAR_TEMPERATURE_PANEL: return ("linear_temperature");
   case INFO_PANEL: return ("info");
   case TPMS_PANEL: return ("tpms");
   case GPS_PANEL: return ("gps");
+  case UNKNOWN_PANEL: 
   default: return ("unknown panel type");
   }
 }

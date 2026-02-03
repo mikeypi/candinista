@@ -13,7 +13,7 @@
     
 void sensor_print_config (FILE* fp, Configuration* cfg )
 {
-    for (size_t i = 0; i < cfg -> sensor_count; i++) {
+  for (size_t i = 0; i < cfg -> sensor_count; i++) {
       sensor_print (fp, cfg -> sensors[i]);
       fprintf (fp, "\n");
     }

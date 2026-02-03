@@ -51,6 +51,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 				int height,
 				gpointer user_data)
 {
+  (void) area;
   LinearPanel* rp = user_data;
   char buffer[80];
   int i;
@@ -145,26 +146,23 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   }
 }
 
-void print_linear_panel (FILE* fp, const Panel* g)
-{
+void print_linear_panel (FILE* fp, const Panel* g) {
+  (void) fp;
+  (void) g;
 }
 
-static void set_minmax (Panel* g, double min, double max) { LinearPanel* rp = (LinearPanel*) g; rp -> min = min; rp -> max = max; }
-static void set_warn (Panel* g, double low, double high) { LinearPanel* rp = (LinearPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
-static void set_units (Panel* g, unit_type ut)  { LinearPanel* rp = (LinearPanel*) g; rp -> units = ut; }
-static void set_label (Panel* g, char* label) { LinearPanel* rp = (LinearPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value, int sensor_count, int can_id) { LinearPanel* rp = (LinearPanel*) g; rp -> value = value; }
-static void set_output_format (Panel* g, char* format) { LinearPanel* rp = (LinearPanel*) g; rp -> output_format = strdup (format); }
+static void set_value (Panel* g, double value, int sensor_count, int can_id) {
+  (void) sensor_count;
+  (void) can_id;
+
+  LinearPanel* rp = (LinearPanel*) g;
+  rp -> value = value;
+}
 
 static const struct PanelVTable linear_vtable = {
-  .draw = (void (*)(const struct Panel*, void *))draw_linear_gauge_panel,  
+  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_linear_gauge_panel,
   .print = (void (*) (FILE*, const Panel*)) print_linear_panel,
-  .set_minmax = (void (*) (Panel*, double, double))set_minmax,
-  .set_warn = (void (*) (Panel*, double, double)) set_warn,
-  .set_units = (void (*) (Panel*, unit_type)) set_units,
-  .set_label = (void (*) (Panel*, char*)) set_label,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
-  .set_output_format = (void (*) (Panel*, char*)) set_output_format  
 };
 
 Panel* create_linear_gauge_panel (PanelParameters* p) {

@@ -51,6 +51,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 			 int height,
 			 gpointer user_data)
 {
+  (void) area;
   RadialPanel* rp = user_data;
   
   char buffer[80];
@@ -244,22 +245,17 @@ static void print_radial_gauge_panel (FILE* fp, const Panel* g)
   fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> units));
 }
 
-static void set_minmax (Panel* g, double min, double max) { RadialPanel* rp = (RadialPanel*) g; rp -> min = min; rp -> max = max; }
-static void set_warn (Panel* g, double low, double high) { RadialPanel* rp = (RadialPanel*) g; rp -> low_warn = low; rp -> high_warn = high; }
-static void set_units (Panel* g, unit_type ut)  { RadialPanel* rp = (RadialPanel*) g; rp -> units = ut; }
-static void set_label (Panel* g, char* label) { RadialPanel* rp = (RadialPanel*) g; strcpy (rp -> label, label); }
-static void set_value (Panel* g, double value, int sensor_count, int can_id) { RadialPanel* rp = (RadialPanel*) g; rp -> value = value; }
-static void set_output_format (Panel* g, char* format) { RadialPanel* rp = (RadialPanel*) g; rp -> output_format = strdup (format); }
+static void set_value (Panel* g, double value, int sensor_count, int can_id) {
+  (void) sensor_count;
+  (void) can_id;
+  RadialPanel* rp = (RadialPanel*) g;
+  rp -> value = value;
+}
 
 static const struct PanelVTable radial_vtable = {
-  .draw = (void (*)(const struct Panel*, void *)) draw_radial_gauge_panel,
+  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_radial_gauge_panel,
   .print = (void (*)(FILE*, const struct Panel*)) print_radial_gauge_panel,
-  .set_minmax = (void (*) (Panel*, double, double)) set_minmax,
-  .set_warn = (void (*) (Panel*, double, double)) set_warn,
-  .set_units = (void (*) (Panel*, unit_type)) set_units,
-  .set_label = (void (*) (Panel*, char*)) set_label,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
-  .set_output_format = (void (*) (Panel*, char*)) set_output_format
 };
 
 Panel* create_radial_gauge_panel (PanelParameters* p) {

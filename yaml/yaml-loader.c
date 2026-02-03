@@ -15,10 +15,10 @@
 #include "panel.h"
 #include "yaml-loader.h"
 
-static unit_type
+static panel_type
 enum_from_type_str (const char* temp) {
   char buffer[80];
-  int i;
+  size_t i;
   for (i = 0; i < strlen (temp); i++) {
     buffer[i] = tolower (temp[i]);
   }
@@ -38,7 +38,7 @@ enum_from_type_str (const char* temp) {
 }
 
 static double scalar_double (yaml_event_t *event) {
-  return atof ( (char *)event -> data.scalar.value);
+  return atof ((char *)event -> data.scalar.value);
 }
 
 static void load_double_array (yaml_parser_t *parser,
@@ -72,7 +72,7 @@ static void load_double_array (yaml_parser_t *parser,
 
 
 Configuration* configuration_load_yaml (const char *path) {
-  Configuration* d = (Configuration*) calloc (sizeof (Configuration), 1);
+  Configuration* d = (Configuration*) calloc (1, sizeof (Configuration));
 
   FILE *f = fopen (path, "r");
   if (!f) {
@@ -176,6 +176,10 @@ Configuration* configuration_load_yaml (const char *path) {
 	  
 	case GPS_PANEL:
 	  g = create_gps_panel (&gt);
+	  break;
+
+	default:
+	  fprintf (stderr, "unknown panel type\n");
 	  break;
 	}
 	

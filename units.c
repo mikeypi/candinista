@@ -20,7 +20,7 @@ str_from_unit_enum (const unit_type unit) {
 unit_type
 enum_from_unit_str (const char* temp) {
   char buffer[80];
-  int i;
+  size_t i;
   for (i = 0; i < strlen (temp); i++) {
     buffer[i] = tolower (temp[i]);
   }

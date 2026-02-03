@@ -28,6 +28,7 @@ void draw_info_panel (GtkDrawingArea* area,
 				int height,
 				gpointer user_data)
 {
+  (void) area;
   InfoPanel* rp = user_data;
   char buffer[80];
 
@@ -89,19 +90,23 @@ void draw_info_panel (GtkDrawingArea* area,
   show_text_unjustified (cr, 20 + XOFFSET, 51 + YOFFSET, buffer);
 }
 
-
-void print_info_panel (FILE* fp, const Panel* g)
-{
+void print_info_panel (FILE* fp, const Panel* g) {
+  (void) fp;
+  (void) g;
 }
 
-static void set_value (Panel* g, double value, int sensor_offfset, int can_id) {}
+static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
+  (void) g;
+  (void) value;
+  (void) sensor_offset;
+  (void) can_id;
+}
 
 static const struct PanelVTable info_vtable = {
-  .draw = (void (*)(const struct Panel *, void *))draw_info_panel,
+  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_info_panel,
   .print = (void (*) (FILE*, const Panel*)) print_info_panel,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
 };
-
 
 Panel* create_info_panel (PanelParameters* p) {
 

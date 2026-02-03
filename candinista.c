@@ -53,7 +53,6 @@
 
 #include "d3-array.h"
 #include "candinista.h"
-#include "cairo-misc.h"
 #include "units.h"
 #include "sensor.h"
 #include "panel.h"
@@ -72,7 +71,10 @@ int raw_output = 0;
 static gboolean
 can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer data)
 {
-  int i = 0;
+  (void) condition;
+  (void) data;
+  
+  size_t i = 0;
   int matching_sensor_count = 0;
   double temp;
   struct can_frame frame;
@@ -86,7 +88,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   
   while (i < cfg -> sensor_count) {
     Sensor* s = cfg -> sensors[i];
-    if (sensor_get_can_id (s) != (frame.can_id & 0x7fffffff)) {
+    if ((unsigned int) sensor_get_can_id (s) != (frame.can_id & 0x7fffffff)) {
       i++;
       continue;
     }
@@ -173,6 +175,11 @@ on_pressed(GtkGestureClick *gesture,
            double           y,
            gpointer         user_data)
 {
+  (void) gesture;
+  (void) n_press;
+  (void) x;
+  (void) y;
+  
   typedef struct {
     GtkDrawingArea* drawing_area;
     Panel* cg;
@@ -206,6 +213,8 @@ on_pressed(GtkGestureClick *gesture,
 static void
 on_drawing_area_destroy (GtkWidget *widget, gpointer user_data)
 {
+  (void) widget;
+  
   struct {
     GtkDrawingArea* drawing_area;
     Panel* cg;
@@ -227,6 +236,8 @@ on_drawing_area_destroy (GtkWidget *widget, gpointer user_data)
 static void
 activate (GtkApplication* app,
           gpointer        user_data) {
+
+  (void) user_data;
   GtkWidget* window;
   Panel* p;
 
@@ -350,14 +361,12 @@ main (int argc, char** argv) {
       break;
 
     default:
-      fprintf (stderr, "unknown option %c\n", option);
       fprintf (stderr,
 	       "Usage: %s options device_name.\n"
 	       "Options:\n"
 	       "\t -d: enable datalogging\n"
-	       "\t -p: print yaml database\n",
-	       "\t -r: print raw sensor values\n",
-	       argv[0]);
+	       "\t -p: print yaml database\n"
+	       "\t -r: print raw sensor values\n", argv[0]);
 
       exit (-1);
     }

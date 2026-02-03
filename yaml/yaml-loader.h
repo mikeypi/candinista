@@ -3,13 +3,13 @@
 
 typedef struct {
   Sensor** sensors;
-  int sensor_count;
+  size_t sensor_count;
   d2_vp_array* sensor_array;
   
   d2_int_array* active_z_index;
 
   Panel** panels;
-  int panel_count;
+  size_t panel_count;
   d3_array* panel_array;
   
   int x_dimension;

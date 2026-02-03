@@ -46,17 +46,17 @@ void draw_gps_panel (GtkDrawingArea* area,
 		      int height,
 		      gpointer user_data)
 {
+  (void) area;
+  
   GPSPanel* rp = user_data;
   assert (NULL != rp);
 
-  int foreground_color = rp -> base.foreground_color;
   int background_color = rp -> base.background_color;
   
   double xx;
   double yy;
   char abuf[80];
-  char bbuf[80];
-
+  
   set_rgba (cr, background_color, 1.0);
   cairo_paint (cr);
 
@@ -267,27 +267,13 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
 
 void print_gps_panel (FILE* fp, const Panel* g)
 {
-}
-
-static void set_units (Panel* g, unit_type ut)  {
-  GPSPanel* rp = (GPSPanel*) g;
-  switch (ut) {
-  case CELSIUS: 
-  case FAHRENHEIT:
-    rp -> temperature_units = ut;
-    break;
-  case BAR:
-  case PSI:
-  case KPA:
-  default: 
-    rp -> pressure_units = ut;
-  }
+  (void) fp;
+  (void) g;
 }
 
 static const struct PanelVTable gps_vtable = {
-  .draw = (void (*)(const struct Panel*, void *)) draw_gps_panel,  
+  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_gps_panel,
   .print = (void (*) (FILE* fp, const Panel*)) print_gps_panel,
-  .set_units = (void (*) (Panel*, unit_type)) set_units,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
 };
 

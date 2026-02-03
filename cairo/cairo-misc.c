@@ -56,9 +56,7 @@ show_text_right_justified (cairo_t* cr,
   }
 
   double field_width = (buffer_extents.width < ghost_extents.width) ?  ghost_extents.x_advance : buffer_extents.x_advance;
-  double field_height = ghost_extents.height;  
   double right_margin = x + (field_width / 2.0);
-  double left_margin = right_margin - field_width;
   double buffer_left_margin = right_margin - buffer_extents.x_advance;
   
   cairo_move_to (cr, buffer_left_margin, y);
@@ -125,7 +123,6 @@ show_text_box (cairo_t* cr,
   double field_height = ghost_extents.height;  
   double right_margin = x + (field_width / 2.0);
   double left_margin = right_margin - field_width;
-  double buffer_left_margin = right_margin - buffer_extents.x_advance;
   
   rounded_rectangle(cr,
 		    left_margin - BOX_WIDTH_MARGIN,
