@@ -88,7 +88,7 @@ sensors:
     id: 6
 
 ##############################################################################################
-  - name: "ECUMasters TPMS Lattiude"
+  - name: "ECUMaster GPS Lattiude"
     can_id: 0x400
     can_data_offset: 0
     can_data_width: 4
@@ -98,7 +98,7 @@ sensors:
     offset: 0.0
     id: 7
 
-  - name: "ECUMasters TPMS Longitude"
+  - name: "ECUMaster GPS Longitude"
     can_id: 0x400
     can_data_offset: 4
     can_data_width: 4
@@ -108,7 +108,7 @@ sensors:
     offset: 0.0
     id: 7
 
-  - name: "ECUMasters TPMS Speed"
+  - name: "ECUMaster GPS Speed"
     can_id: 0x401
     can_data_offset: 0
     can_data_width: 2
@@ -117,7 +117,7 @@ sensors:
     scale: 0.036
     id: 7
 
-  - name: "ECUMasters TPMS Altitude"
+  - name: "ECUMaster GPS Altitude"
     can_id: 0x401
     can_data_offset: 2
     can_data_width: 2
@@ -141,7 +141,7 @@ sensors:
     x_index: 2
     id: 7
 
-  - name: "ECUMasters TPMS Heading Motion"
+  - name: "ECUMaster GPS Heading Motion"
     can_id: 0x402
     can_data_offset: 0
     can_data_width: 2
@@ -149,7 +149,7 @@ sensors:
     x_index: 2
     id: 7
 
-  - name: "ECUMasters TPMS Vehicle Motion"
+  - name: "ECUMaster GPS Vehicle Motion"
     can_id: 0x402
     can_data_offset: 2
     can_data_width: 2
@@ -157,7 +157,7 @@ sensors:
     x_index: 2
     id: 7
 
-  - name: "ECUMasters TPMS X Acceleration"
+  - name: "ECUMaster GPS X Acceleration"
     can_id: 0x403
     can_data_offset: 2
     can_data_width: 2
@@ -166,7 +166,7 @@ sensors:
     scale: 0.01
     id: 7
 
-  - name: "ECUMasters TPMS Y Acceleration"
+  - name: "ECUMaster GPS Y Acceleration"
     can_id: 0x403
     can_data_offset: 4
     can_data_width: 2
@@ -175,7 +175,7 @@ sensors:
     scale: 0.01
     id: 7
 
-  - name: "ECUMasters TPMS Y Acceleration"
+  - name: "ECUMaster GPS Y Acceleration"
     can_id: 0x403
     can_data_offset: 6
     can_data_width: 2

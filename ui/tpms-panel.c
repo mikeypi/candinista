@@ -165,8 +165,8 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
     rp -> multiplexor = (int) value;
     rp -> multiplexor %= 4;
     break;
-  case 1: rp -> pressure[rp -> multiplexor] = value; break; 
-  case 2: rp -> temperature[rp -> multiplexor] = value; break;
+  case 1: rp -> pressure[rp -> multiplexor] = convert_units (value, rp -> pressure_units); break;
+  case 2: rp -> temperature[rp -> multiplexor] = convert_units (value, rp -> temperature_units); break;
   case 3: rp -> voltage[rp -> multiplexor] = value; break;
   case 4: rp -> sign[rp -> multiplexor] = value; break;
   }
@@ -192,6 +192,8 @@ Panel* create_tpms_panel (PanelParameters* p) {
   lg -> base.vtable = &linear_vtable;
 
   lg -> output_format = "%.0f";
+  lg -> pressure_units = p -> pressure_units;
+  lg -> temperature_units = p -> temperature_units;
 
   return (Panel*) lg;
 }
