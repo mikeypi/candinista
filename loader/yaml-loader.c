@@ -70,7 +70,6 @@ static void load_double_array (yaml_parser_t *parser,
   }
 }
 
-
 Configuration* configuration_load_yaml (const char *path) {
   Configuration* d = (Configuration*) calloc (1, sizeof (Configuration));
 
@@ -185,7 +184,7 @@ Configuration* configuration_load_yaml (const char *path) {
 	
 	if (gt.x_index > d -> x_dimension) d -> x_dimension = gt.x_index;
 	if (gt.y_index > d -> y_dimension) d -> y_dimension = gt.y_index;
-	if (gt.z_index > d -> panel_z_dimension) d -> panel_z_dimension = gt.z_index;
+	if (gt.z_index > d -> z_dimension) d -> z_dimension = gt.z_index;
 	d -> panels = realloc (d -> panels, sizeof *d -> panels * (d -> panel_count + 1));
 	d -> panels[d -> panel_count++] = g;
 	memset (&gt, 0, sizeof gt);
@@ -211,17 +210,16 @@ Configuration* configuration_load_yaml (const char *path) {
   return d;
 }
 
-void build_tables (Configuration* cfg) {
+void cfg_build_tables (Configuration* cfg) {
   int i;
   int j;
   int k;
   
   cfg -> x_dimension += 1;
   cfg -> y_dimension += 1;
-  cfg -> panel_z_dimension += 1;
-  cfg -> sensor_z_dimension += 1;
+  cfg -> z_dimension += 1;
 
-  cfg -> panel_array = new_d3_array (cfg -> x_dimension, cfg -> y_dimension, cfg -> panel_z_dimension);
+  cfg -> panel_array = new_d3_array (cfg -> x_dimension, cfg -> y_dimension, cfg -> z_dimension);
 
   Panel** p = cfg -> panels;
   while (p < cfg -> panels + cfg -> panel_count) {
@@ -232,37 +230,43 @@ void build_tables (Configuration* cfg) {
     p++;
   }
 
-  cfg -> sensor_array = new_d2_vp_array (cfg -> x_dimension, cfg -> y_dimension);
+  cfg -> sensor_array = new_d3_array (cfg -> x_dimension, cfg -> y_dimension, 1);
 
   Sensor** s = cfg -> sensors;
   while (s < cfg -> sensors + cfg -> sensor_count) {
     i = sensor_get_x_index (*s);
     j = sensor_get_y_index (*s);
-    set_item_in_d2_vp_array (cfg -> sensor_array, *s, i, j);
+    set_item_in_d3_array (cfg -> sensor_array, *s, i, j, 1);
     s++;
   }
 
-  cfg -> active_z_index = new_d2_int_array (cfg -> x_dimension, cfg -> y_dimension);
+  cfg -> active_z_index = new_d3_array (cfg -> x_dimension, cfg -> y_dimension, 1);
+  for (i = 0; i < cfg -> x_dimension; i++) {
+    for (j = 0; j < cfg -> y_dimension; j++) {
+      item* ip = (item*) calloc (1, sizeof (item));
+      set_item_in_d3_array (cfg -> active_z_index, ip, i, j, 0);
+    }
+  }
 }
 
-Panel* cfg_get_panel (Configuration* cfg, int i, int j, int k) {
-  return (get_item_in_d3_array (cfg -> panel_array, i, j, k));
+int cfg_get_active_z  (Configuration* cfg, int i, int j) {
+  item* ip = get_item_in_d3_array (cfg -> active_z_index, i, j, 0);
+  return (ip -> i[0]);
 }
 
-int get_active_z  (Configuration* cfg, int i, int j) {
-  return (get_item_in_d2_int_array (cfg -> active_z_index, i, j));
+void cfg_set_active_z (Configuration* cfg, int x_index, int y_index, int value) {
+  item* ip = get_item_in_d3_array (cfg -> active_z_index, x_index, y_index, 0);
+  ip -> i[0] = value;
+  set_item_in_d3_array (cfg -> active_z_index, ip, x_index, y_index, 0);
 }
 
-void set_active_z (Configuration* cfg, int x_index, int y_index, int value) {
-  set_item_in_d2_int_array (cfg -> active_z_index, value, x_index, y_index);
-}
-
-void configuration_free (Configuration *d) {
+void cfg_free (Configuration *d) {
   for (size_t i = 0; i < d -> panel_count; i++)
     panel_destroy (d -> panels[i]);
   for (size_t i = 0; i < d -> sensor_count; i++)
     sensor_destroy (d -> sensors[i]);
   free (d -> panels);
   free (d -> sensors);
+  free (d -> active_z_index);
 }
 

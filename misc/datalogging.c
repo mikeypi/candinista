@@ -79,7 +79,8 @@ static void print_full_record (struct can_frame* p1, struct timeval* file_start_
 }
 
 
-static void print_sparse_record (struct can_frame* p1, struct can_frame* p2, struct timeval* file_start_time, struct timeval* current_time, FILE* fp) {
+static void print_sparse_record (struct can_frame* p1, struct can_frame* p2,
+				 struct timeval* file_start_time, struct timeval* current_time, FILE* fp) {
   int i;
 
   fprintf (fp, "%ld:%ld,,", current_time -> tv_sec - file_start_time -> tv_sec, current_time -> tv_usec);
@@ -154,6 +155,7 @@ log_data (struct can_frame* p1) {
       && (temp.tv_usec - current_time.tv_usec) < 40) {
     return;
   }
+
   current_time = temp;
 
   /* if the current CAN id is not the same as the last CAN id, print the entire record and return */

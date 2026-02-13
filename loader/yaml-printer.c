@@ -11,16 +11,14 @@
 #include "yaml-printer.h"
 
     
-void sensor_print_config (FILE* fp, Configuration* cfg )
-{
+void sensor_print_config (FILE* fp, Configuration* cfg) {
   for (size_t i = 0; i < cfg -> sensor_count; i++) {
-      sensor_print (fp, cfg -> sensors[i]);
-      fprintf (fp, "\n");
-    }
+    sensor_print (fp, cfg -> sensors[i]);
+    fprintf (fp, "\n");
+  }
 }
 
-void configuration_print (FILE* fp, const Configuration* d)
-{
+void configuration_print (FILE* fp, const Configuration* d) {
   if (!d) {
     fprintf (fp, "Configuration: (null)\n");
     return;

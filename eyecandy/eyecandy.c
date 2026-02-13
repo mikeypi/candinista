@@ -237,7 +237,7 @@ make_page_for_panel_info (const Sensor *s) {
   gtk_widget_set_margin_start (GTK_WIDGET (grid), 10);
   gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
 
-  for (int i = 0; i < cfg -> panel_z_dimension; i++) {
+  for (int i = 0; i < cfg -> z_dimension; i++) {
     if (NULL != (p = cfg_get_panel (cfg, x_index, y_index, i))) {
       if ((NULL != p) && (panel_get_id (p) == sensor_id)) {
 	gtk_grid_attach (grid, GTK_WIDGET (make_page_for_panel(p)), i, 0, 1, 1);
@@ -334,8 +334,8 @@ activate (GtkApplication *app, gpointer user_data)
   gtk_box_append (GTK_BOX (box), scroller);
 
   // Pages
-  for (size_t i = 0; i < cfg->sensor_count; i++) {
-    Sensor *s = cfg->sensors[i];
+  for (size_t i = 0; i < cfg -> sensor_count; i++) {
+    Sensor *s = cfg -> sensors[i];
 
     char page_id[32];
     g_snprintf(page_id, sizeof page_id, "sensor-%zu", i);
@@ -353,71 +353,6 @@ activate (GtkApplication *app, gpointer user_data)
   gtk_window_present (GTK_WINDOW (window));
 }
 
-#if 0
-static void
-activate (GtkApplication *app, gpointer user_data) {
-  (void) user_data;
-  GtkWidget *window;
-  GtkWidget *box;
-  GtkWidget *stack;
-  GtkWidget *sidebar;
-
-  window = gtk_application_window_new (app);
-  gtk_window_set_title (GTK_WINDOW (window), "StackSidebar Example");
-  gtk_window_set_default_size (GTK_WINDOW (window), 800, 400);
-  GtkCssProvider *provider = gtk_css_provider_new ();
-  gtk_css_provider_load_from_string (provider,
-				     ".cell { border: 2px solid #888; padding: 20px; border-color: black; border-radius: 0; "
-				     "padding-left: 10px; padding-right: 10px; padding-top: 2px; padding-bottom: 2px; "
-				     "font-size: 12px; color: #ffa600; background-color: #3b3b3b; }"
-				     ".vbox { background-color: #636363; }"
-				     );
-
-  gtk_style_context_add_provider_for_display (
-					      gdk_display_get_default (),
-					      GTK_STYLE_PROVIDER (provider),
-					      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  /* Horizontal container */
-  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_window_set_child (GTK_WINDOW (window), box);
-
-  /* Stack (right side) */
-  stack = gtk_stack_new ();
-  gtk_stack_set_transition_type (GTK_STACK (stack),
-				 GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT);
-  gtk_stack_set_transition_duration (GTK_STACK (stack), 150);
-
-  GtkWidget *scroller = gtk_scrolled_window_new ();
-  gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scroller), stack);
-
-  gtk_box_append (GTK_BOX (box), sidebar);
-  gtk_box_append (GTK_BOX (box), scroller);
-
-  for (size_t i = 0; i < cfg -> sensor_count; i++) {
-    char* page_title = (char*) calloc (20, sizeof (char));
-    Sensor* s = cfg -> sensors[i];
-
-    sprintf (page_title, "sensor-%d", (int) i);
-
-    gtk_stack_add_titled (GTK_STACK (stack),
-			  make_page (s),
-			  page_title,
-			  page_title);
-  }
-    
-  /* Sidebar (left side) */
-  sidebar = gtk_stack_sidebar_new ();
-  gtk_stack_sidebar_set_stack (GTK_STACK_SIDEBAR (sidebar),
-			       GTK_STACK (stack));
-  gtk_widget_set_size_request (sidebar, 150, -1);
-
-  gtk_box_append (GTK_BOX (box), sidebar);
-  gtk_widget_add_css_class (sidebar, "cell");
-  gtk_box_append (GTK_BOX (box), stack);
-  gtk_widget_add_css_class (stack, "cell");
-  gtk_window_present (GTK_WINDOW (window));
-}
-#endif
 int
 main (int argc, char** argv) {
   GtkApplication *app;
@@ -436,7 +371,7 @@ main (int argc, char** argv) {
     exit (-1);
   }
   
-  build_tables (cfg);
+  cfg_build_tables (cfg);
 
   while (-1 != (option = getopt (argc, argv, "p"))) {
     switch (option) {
@@ -458,7 +393,21 @@ main (int argc, char** argv) {
       exit (-1);
     }
   }
+#ifdef LJKLJK
+  for (int i = 0; i < cfg -> x_dimension; i++) {
+      for (int j = 0; j < cfg -> y_dimension; j++) {
+	set_active_z (cfg, i, j, i * j);
+      }
+  }
 
+  for (int i = 0; i < cfg -> x_dimension; i++) {
+      for (int j = 0; j < cfg -> y_dimension; j++) {
+	int k = get_active_z (cfg, i, j);
+	fprintf (stderr, "got %d for %d,%d\n", k, i, j);
+      }
+  }
+
+#endif
   app = gtk_application_new ("com.example.can.dbc.editor", 0);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   int rc = g_application_run (G_APPLICATION (app), argc, argv);

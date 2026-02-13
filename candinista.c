@@ -95,7 +95,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
     int x_index = sensor_get_x_index (s);
     int y_index = sensor_get_y_index (s);
-    int z_index = get_active_z (cfg, x_index, y_index);
+    int z_index = cfg_get_active_z (cfg, x_index, y_index);
 
     Panel* p = cfg_get_panel (cfg, x_index, y_index, z_index);
 
@@ -189,14 +189,14 @@ on_pressed(GtkGestureClick *gesture,
 
   int x_index = panel_get_x_index (ctx -> cg);
   int y_index = panel_get_y_index (ctx -> cg);
-  int active_z = get_active_z (cfg, x_index, y_index);
+  int active_z = cfg_get_active_z (cfg, x_index, y_index);
 
   Panel* p = NULL;
   
-  for (int i = 1; i < cfg -> panel_z_dimension; i++) {
-    int j = (active_z + i) % cfg -> panel_z_dimension;
+  for (int i = 1; i < cfg -> z_dimension; i++) {
+    int j = (active_z + i) % cfg -> z_dimension;
     if (NULL != (p = cfg_get_panel (cfg, x_index, y_index, j))) {
-      set_active_z (cfg, x_index, y_index, j);
+      cfg_set_active_z (cfg, x_index, y_index, j);
       break;
     }
   }
@@ -343,7 +343,7 @@ main (int argc, char** argv) {
     exit (-1);
   }
   
-  build_tables (cfg);
+  cfg_build_tables (cfg);
 
   while (-1 != (option = getopt (argc, argv, "dpr"))) {
     switch (option) {
@@ -390,7 +390,7 @@ main (int argc, char** argv) {
   status = g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
-  configuration_free (cfg);
+  cfg_free (cfg);
   
   return status;
 }

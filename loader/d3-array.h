@@ -1,11 +1,16 @@
 #ifndef D3_ARRAY_H
 #define D3_ARRAY_H
 
+typedef union {
+  void* vp;
+  int i[2];
+} item;
+  
 typedef struct {
   int x_dimension;
   int y_dimension;
   int z_dimension;
-  void** items;
+  item** items;
   int n_items;
 } d3_array;
 
@@ -15,32 +20,5 @@ void  set_item_in_d3_array  (d3_array* d3, void* item, int i, int j, int k);
 static inline int get_x_dimension_from_d3_array  (d3_array* d3) { return (d3 -> x_dimension); }
 static inline int get_y_dimension_from_d3_array  (d3_array* d3) { return (d3 -> y_dimension); }
 static inline int get_z_dimension_from_d3_array  (d3_array* d3) { return (d3 -> z_dimension); }
-
-typedef struct {
-  int x_dimension;
-  int y_dimension;
-  void** items;
-  int n_items;
-} d2_vp_array;
-
-d2_vp_array* new_d2_vp_array (int x_dimension, int y_dimension);
-void* get_item_in_d2_vp_array  (d2_vp_array* d2, int i, int j);
-void  set_item_in_d2_vp_array  (d2_vp_array* d2, void* item, int i, int j);
-static inline int get_x_dimension_from_d2_vp_array  (d2_vp_array* d2) { return (d2 -> x_dimension); }
-static inline int get_y_dimension_from_d2_vp_array  (d2_vp_array* d2) { return (d2 -> y_dimension); }
-
-typedef struct {
-  int x_dimension;
-  int y_dimension;
-  int* items;
-  int n_items;
-} d2_int_array;
-
-d2_int_array* new_d2_int_array (int x_dimension, int y_dimension);
-int get_item_in_d2_int_array  (d2_int_array* d2, int i, int j);
-void  set_item_in_d2_int_array  (d2_int_array* d2, int item, int i, int j);
-static inline int get_x_dimension_from_d2_int_array  (d2_vp_array* d2) { return (d2 -> x_dimension); }
-static inline int get_y_dimension_from_d2_int_array  (d2_vp_array* d2) { return (d2 -> y_dimension); }
-
 #endif
 
