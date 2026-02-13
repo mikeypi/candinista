@@ -70,13 +70,13 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, rp -> base.foreground_color, 0.9);
+    set_rgba (cr, rp -> base.foreground_color, 1.0);
     rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
   cairo_set_line_width (cr, 2.0);
-  set_rgba (cr, foreground_color, 0.9);
+  set_rgba (cr, foreground_color, 1.0);
 
   for (i = 0; i < rp -> bargraph_segment_count; i++) {
     if (value >  rp -> bargraph_segments[i].max) {
@@ -109,7 +109,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 			  );
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
-  set_rgba (cr, foreground_color, 0.9);
+  set_rgba (cr, foreground_color, 1.0);
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
   sprintf (buffer, "%s", str_from_unit_enum (rp -> units));
@@ -138,13 +138,13 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
     show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
     set_rgba (cr, foreground_color, 0.14);
     show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
-    set_rgba (cr, foreground_color, 0.9);
+    set_rgba (cr, foreground_color, 1.0);
     show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
   } else {
     show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
     set_rgba (cr, foreground_color, 0.14);
     show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
-    set_rgba (cr, foreground_color, 0.9);
+    set_rgba (cr, foreground_color, 1.0);
     show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
   }
 }

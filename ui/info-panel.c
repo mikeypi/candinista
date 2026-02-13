@@ -44,12 +44,12 @@ void draw_info_panel (GtkDrawingArea* area,
   
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, foreground_color, 0.9);    
+    set_rgba (cr, foreground_color, 1.0);    
     rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
-  set_rgba (cr, foreground_color, 0.9);
+  set_rgba (cr, foreground_color, 1.0);
   
   /*
    * Draw labels and current value
@@ -62,7 +62,7 @@ void draw_info_panel (GtkDrawingArea* area,
 			  );
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 12);
-  set_rgba (cr, foreground_color, 0.9);
+  set_rgba (cr, foreground_color, 1.0);
 
   time_t timer = time (NULL);
   sprintf (buffer, "%s", ctime (&timer));

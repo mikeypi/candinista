@@ -62,7 +62,7 @@ void draw_gps_panel (GtkDrawingArea* area,
 
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, rp -> base.foreground_color, 0.9);
+    set_rgba (cr, rp -> base.foreground_color, 1.0);
     rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }

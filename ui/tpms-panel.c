@@ -49,7 +49,7 @@ void draw_tpms_sub_panel (cairo_t* cr,
   char bbuf[80];
   
   int foreground_color = get_fg_color ((Panel*)rp, rp -> pressure[panel_number]);
-  set_rgba (cr, foreground_color, 0.9);
+  set_rgba (cr, foreground_color, 1.0);
   
   cairo_select_font_face (cr, "DSEG7Classic", CAIRO_FONT_SLANT_ITALIC, CAIRO_FONT_WEIGHT_NORMAL);
 
@@ -127,12 +127,12 @@ void draw_tpms_panel (GtkDrawingArea* area,
 
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, rp -> base.foreground_color, 0.9);
+    set_rgba (cr, rp -> base.foreground_color, 1.0);
     rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
-  set_rgba (cr, rp -> base.foreground_color, 0.9);
+  set_rgba (cr, rp -> base.foreground_color, 1.0);
   cairo_set_line_width (cr, 2.0);
   cairo_move_to (cr, width / 2, 30);
   cairo_line_to (cr, width / 2, height - 30);
@@ -144,15 +144,15 @@ void draw_tpms_panel (GtkDrawingArea* area,
   x = 5.0; y = 5.0;
   draw_tpms_sub_panel (cr, rp, x, y, 0, true, false);
   x = width / 2.0 + 5.0;
-  set_rgba (cr, rp -> base.foreground_color, 0.9);
+  set_rgba (cr, rp -> base.foreground_color, 1.0);
   draw_tpms_sub_panel (cr, rp, x, y, 1, true, true);
   x = 5.0; y = height / 2.0 + 5.0;
-  set_rgba (cr, rp -> base.foreground_color, 0.9);
+  set_rgba (cr, rp -> base.foreground_color, 1.0);
   draw_tpms_sub_panel (cr, rp, x, y, 2, false, false);
   x = width / 2.0 + 5.0;
-  set_rgba (cr, rp -> base.foreground_color, 0.9);
+  set_rgba (cr, rp -> base.foreground_color, 1.0);
   draw_tpms_sub_panel (cr, rp, x, y, 3, false, true);
-  set_rgba (cr, rp -> base.foreground_color, 0.9);
+  set_rgba (cr, rp -> base.foreground_color, 1.0);
   cairo_stroke (cr);
 }
 

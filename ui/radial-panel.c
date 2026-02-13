@@ -10,6 +10,7 @@
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
+#include "gtk-glue.h"
 
 #define XOFFSET 0
 #define YOFFSET 10
@@ -69,12 +70,12 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
 
   if (0 != rp -> base.border) {
     cairo_set_line_width (cr, 1.0);
-    set_rgba (cr, rp -> base.foreground_color, 0.9);
+    set_rgba (cr, rp -> base.foreground_color, 1.0);
     rounded_rectangle (cr, 5.0, 5.0, height - 10, width - 10, 5.0);
     cairo_stroke (cr);
   }
 
-  set_rgba (cr, foreground_color, 0.9);
+  set_rgba (cr, foreground_color, 1.0);
   
   /* gauge arc */
   cairo_set_line_width (cr, 3.0);
@@ -96,7 +97,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
       set_rgba (cr, foreground_color, 0.14);
     }
     else {
-      set_rgba (cr, foreground_color, 0.9);
+      set_rgba (cr, foreground_color, 1.0);
     }
 
     cairo_arc (cr, width / 2.0, height / 2.0,
@@ -121,7 +122,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
     double x1 = width / 2 + (rp -> radius + ID) * cos (range_end);
     double y1 = height / 2 + (rp -> radius + ID) * sin (range_end);
     
-    set_rgba (cr, foreground_color, 0.9);
+    set_rgba (cr, foreground_color, 1.0);
     
     cairo_new_sub_path(cr);
 
@@ -195,7 +196,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
     show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
     set_rgba (cr, foreground_color, 0.14);
     show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
-    set_rgba (cr, foreground_color, 0.9);
+    set_rgba (cr, foreground_color, 1.0);
     show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, 3);
     break;
     
@@ -205,7 +206,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
     show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, z);
     set_rgba (cr, foreground_color, 0.14);
     show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, z);
-    set_rgba (cr, foreground_color, 0.9);
+    set_rgba (cr, foreground_color, 1.0);
     show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, z);
     break;
 			       
@@ -224,7 +225,7 @@ draw_radial_gauge_panel (GtkDrawingArea* area,
     show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, w);
     set_rgba (cr, foreground_color, 0.14);
     show_text_burn_in (cr, width / 2.0, 160 + YOFFSET, buffer, w);
-    set_rgba (cr, foreground_color, 0.9);
+    set_rgba (cr, foreground_color, 1.0);
     show_text_box (cr, width / 2.0, 160 + YOFFSET, buffer, w);
     break;
   }
@@ -293,5 +294,24 @@ Panel* create_radial_gauge_panel (PanelParameters* p) {
   }
 
   return (Panel*) lg;
+}
+
+GtkWidget*
+make_page_for_radial_panel (const RadialPanel *p, int* row) {
+  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
+  gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
+
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("min")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> min))), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("max")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> max))), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("units")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (str_from_unit_enum (p -> units))), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("label")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> label)), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("output_format")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> output_format)), 1, (*row)++, 1, 1);
+
+  return (GTK_WIDGET (grid));
 }
 

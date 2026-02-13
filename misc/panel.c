@@ -9,8 +9,8 @@
 void panel_draw (Panel* g, void* cr)                                   { g -> vtable -> draw (g, cr, 0, 0, NULL); }
 void panel_set_value (Panel* g, double value, int offset, int can_id)  { g -> vtable -> set_value (g, value, offset, can_id); }
 
-static char*
-printable_form_of_panel_type_enum (const panel_type t) {
+char*
+string_from_panel_type_enum (const panel_type t) {
   switch (t) {
   case RADIAL_PRESSURE_PANEL: return ("radial_pressure");
   case RADIAL_TEMPERATURE_PANEL: return ("radial_temperature");
@@ -27,7 +27,7 @@ printable_form_of_panel_type_enum (const panel_type t) {
 void panel_print (FILE* fp, const Panel* g)
 {
     fprintf (fp, "  - type: %s\n",
-	    printable_form_of_panel_type_enum (g -> type));
+	    string_from_panel_type_enum (g -> type));
 
     fprintf (fp, "    x_index: %d\n", g -> x_index);
     fprintf (fp, "    y_index: %d\n", g -> y_index);

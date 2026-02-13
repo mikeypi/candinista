@@ -1,9 +1,11 @@
 #ifndef PANEL_H
 #define PANEL_H
 
-#define XRED_RGB    0xff0808
+//#define XRED_RGB    0xff0808
+#define XRED_RGB    0xff0000
 #define XBLUE_RGB   0xe0e0e0
 #define XORANGE_RGB 0xffa600
+//#define XORANGE_RGB 0xff5c00
 #define XBLACK_RGB  0x000000
 #define XGRAY_RGB   0x333333
 
@@ -14,6 +16,8 @@
 
 typedef enum panel_type {RADIAL_PRESSURE_PANEL, RADIAL_TEMPERATURE_PANEL, LINEAR_PRESSURE_PANEL,
 			 LINEAR_TEMPERATURE_PANEL, INFO_PANEL, TPMS_PANEL, GPS_PANEL, UNKNOWN_PANEL} panel_type;
+
+char* string_from_panel_type_enum (const panel_type t);
 
 typedef struct Panel Panel;
 
@@ -89,6 +93,4 @@ int get_fg_color (const Panel* g, const double value);
 void   panel_set_value (Panel* g, double value, int sensor_count, int can_id);
 void   panel_print (FILE* fp, const Panel* g);
 void   panel_draw (Panel* g, void* cairo_ctx);
-
-
 #endif
