@@ -88,7 +88,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   
   while (i < cfg -> sensor_count) {
     Sensor* s = cfg -> sensors[i];
-    if ((unsigned int) sensor_get_can_id (s) != (frame.can_id & 0x7fffffff)) {
+      if (((unsigned int) sensor_get_can_id (s) & CAN_SFF_MASK)  != (frame.can_id & CAN_SFF_MASK)) {
       i++;
       continue;
     }
@@ -109,27 +109,33 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
      * would need to be expanded for larger data sizes
      */
     int offset = sensor_get_can_data_offset (s);
+    int width = sensor_get_can_data_width(s);
+
+    if (offset < 0 || width < 1 || width > 4 || offset + width > CAN_MAX_DLEN) {
+      fprintf (stderr, "Unsupported CAN BUS field width %d or offset %d\n", width, offset);
+      continue;
+    }
+    
     int x = frame.data[offset];
     
-    switch (sensor_get_can_data_width (s)) {
+    switch (width) {
     case 1:
       break;
     case 2:
-      x = (x << 8) ^ frame.data[offset + 1];
+      x = (x << 8) | frame.data[offset + 1];
       x = (x << 16);
       x = (x >> 16);
       break;
     case 3:
-      x = (x << 8) ^ frame.data[offset + 1];
-      x = (x << 8) ^ frame.data[offset + 2];
+      x = (x << 8) | frame.data[offset + 1];
+      x = (x << 8) | frame.data[offset + 2];
       break;
     case 4:
-      x = (x << 8) ^ frame.data[offset + 1];
-      x = (x << 8) ^ frame.data[offset + 2];
-      x = (x << 8) ^ frame.data[offset + 3];
+      x = (x << 8) | frame.data[offset + 1];
+      x = (x << 8) | frame.data[offset + 2];
+      x = (x << 8) | frame.data[offset + 3];
       break;
     default:
-      fprintf (stderr, "Unsupported CAN BUS field width %d\n", sensor_get_can_data_width (s));
       break;
       }
 
@@ -154,12 +160,13 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
     panel_set_value (p, temp, matching_sensor_count++, frame.can_id);
       
-    if (0 != data_logging) {
-      log_data (&frame);
-    }
-
     i++;
   }
+
+  if ((0 != data_logging) && (0 != matching_sensor_count)) {
+    log_data (&frame);
+  }
+
 
   return TRUE;
 }
@@ -183,6 +190,7 @@ on_pressed(GtkGestureClick *gesture,
   typedef struct {
     GtkDrawingArea* drawing_area;
     Panel* cg;
+    int timeout_id;
   } cx;
 
   cx* ctx = (cx*) user_data;
@@ -205,7 +213,8 @@ on_pressed(GtkGestureClick *gesture,
     ctx -> cg = p;
     gtk_drawing_area_set_draw_func (ctx -> drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
     int timeout = panel_get_timeout (p);
-    g_timeout_add ((0 == timeout) ? 600 : timeout, gtk_update_gauge_panel_value, ctx);
+    g_source_remove (ctx -> timeout_id);
+    ctx -> timeout_id = g_timeout_add ((0 == timeout) ? DEFAULT_TIMEOUT: timeout, gtk_update_gauge_panel_value, ctx);
   }
 }
 

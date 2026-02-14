@@ -43,7 +43,7 @@ static void print_double_array (FILE* fp, const char *label,
       fprintf (fp, ", ");
   }
 
-  printf ("]\n");
+  fprintf (fp, "]\n");
 }
 
 void sensor_print (FILE* fp, const Sensor* s)
@@ -61,12 +61,11 @@ void sensor_print (FILE* fp, const Sensor* s)
 
     fprintf (fp, "    x_index: %d\n", s -> x_index);
     fprintf (fp, "    y_index: %d\n", s -> y_index);
-    fprintf (fp, "    z_index: %d\n", s -> z_index);
 
     if (!isnan (s -> offset) && (0 != s -> offset)) {
       fprintf (fp, "    offset: %f\n", s -> offset);
     }
-    if (!isnan (s -> scale) && (0 != s -> scale)) {
+    if (!isnan (s -> scale) && (1.0 != s -> scale)) {
       fprintf (fp, "    scale: %f\n", s -> scale);
     }
 

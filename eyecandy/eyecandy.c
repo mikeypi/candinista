@@ -44,6 +44,32 @@ Configuration* cfg;
 int raw_output = 0;
 
 static GtkWidget*
+make_legend (const Sensor *s) {
+  int x_index = sensor_get_x_index (s);
+  int y_index = sensor_get_y_index (s);
+
+  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
+  gtk_widget_set_margin_top (GTK_WIDGET (grid), 10);
+  gtk_widget_set_margin_start (GTK_WIDGET (grid), 10);
+
+  GtkWidget* label = new_label_for_string (s -> name);
+  gtk_grid_attach (grid, GTK_WIDGET (label), 0, 0, 3, 1);
+  gtk_label_set_xalign (GTK_LABEL (label), 0.0); 
+  
+  for (int i = 0; i < cfg -> x_dimension; i++) {
+      for (int j = 0; j < cfg -> y_dimension; j++) {
+	if ((x_index == i) && (y_index == j)) {
+	  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("X")), i, j + 1, 1, 1);
+	} else {
+	  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("O")), i, j + 1, 1, 1);
+	}
+      }
+  }
+
+  return (GTK_WIDGET (grid));
+}
+
+static GtkWidget*
 make_page_for_can_bus_parameters (const Sensor *s) {
   int row;
   int column;
@@ -177,17 +203,26 @@ make_page_for_y_interpolation_values (const Sensor *s) {
 
 
 extern GtkWidget* make_page_for_radial_panel (const Panel *p, int *);
+extern GtkWidget* make_page_for_linear_panel (const Panel *p, int *);
 
 static GtkWidget*
 make_page_for_panel (const Panel *p) {
   int row = 1;
   GtkGrid* grid;
   
-  if ((RADIAL_PRESSURE_PANEL == panel_get_type (p)) || (RADIAL_TEMPERATURE_PANEL == panel_get_type (p))) {
+  switch (panel_get_type (p)) {
+  case RADIAL_PRESSURE_PANEL:
+  case RADIAL_TEMPERATURE_PANEL:
     grid = GTK_GRID (make_page_for_radial_panel ((p), &row));
-  } else {
+    break;
+  case LINEAR_PRESSURE_PANEL:
+  case LINEAR_TEMPERATURE_PANEL:
+    grid = GTK_GRID (make_page_for_linear_panel ((p), &row));
+    break;
+  default:
     grid = GTK_GRID (gtk_grid_new ());
-  }
+    break;
+  }  
 
   g_assert (GTK_IS_GRID (grid));
   gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
@@ -249,23 +284,15 @@ make_page_for_panel_info (const Sensor *s) {
 }
 
 GtkWidget* make_page (const Sensor *s) {
+  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
+  gtk_grid_attach (grid, GTK_WIDGET (make_legend (s)), 0, 0, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (make_page_for_can_bus_parameters (s)), 1, 0, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (make_page_for_sensor_parameters (s)), 2, 0, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (make_page_for_candinista_parameters (s)), 3, 0, 1, 1);
+  
   GtkWidget* vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 20);
   gtk_widget_add_css_class (vbox, "vbox");
-  
-  /* Print the sensor name at the top */
-  GtkWidget* label = gtk_label_new (s -> name);
-  gtk_widget_set_margin_top (label, 10);
-  gtk_widget_set_margin_bottom (label, 10);
-  gtk_widget_set_margin_start (label, 10);
-  gtk_widget_set_margin_end (label, 20);
-
-  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
   gtk_box_append (GTK_BOX (vbox), GTK_WIDGET (grid));
-
-  gtk_grid_attach (grid, GTK_WIDGET (make_page_for_can_bus_parameters (s)), 0, 0, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (make_page_for_sensor_parameters (s)), 1, 0, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (make_page_for_candinista_parameters (s)), 2, 0, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (label), 3, 0, 1, 1);
   
   GtkWidget* iv = GTK_WIDGET (make_page_for_x_interpolation_values (s));
   if (NULL != iv) {
@@ -289,7 +316,7 @@ activate (GtkApplication *app, gpointer user_data)
 
   GtkWidget *window = gtk_application_window_new (app);
   gtk_window_set_title (GTK_WINDOW (window), "StackSidebar Example");
-  gtk_window_set_default_size (GTK_WINDOW (window), 800, 400);
+  gtk_window_set_default_size (GTK_WINDOW (window), 1200, 1000);
 
   // CSS
   GtkCssProvider *provider = gtk_css_provider_new ();
@@ -349,7 +376,6 @@ activate (GtkApplication *app, gpointer user_data)
   // Optional styling
   gtk_widget_add_css_class (sidebar, "cell");
   gtk_widget_add_css_class (scroller, "cell");  // style the viewport container
-
   gtk_window_present (GTK_WINDOW (window));
 }
 
@@ -393,21 +419,24 @@ main (int argc, char** argv) {
       exit (-1);
     }
   }
-#ifdef LJKLJK
-  for (int i = 0; i < cfg -> x_dimension; i++) {
-      for (int j = 0; j < cfg -> y_dimension; j++) {
-	set_active_z (cfg, i, j, i * j);
-      }
-  }
+
+#ifdef NOT_USED
+  //  for (int i = 0; i < cfg -> x_dimension; i++) {
+  //      for (int j = 0; j < cfg -> y_dimension; j++) {
+  //	cfg_set_active_z (cfg, i, j, i * j);
+  //      }
+  //  }
 
   for (int i = 0; i < cfg -> x_dimension; i++) {
       for (int j = 0; j < cfg -> y_dimension; j++) {
-	int k = get_active_z (cfg, i, j);
+	int k = cfg_get_active_z (cfg, i, j);
 	fprintf (stderr, "got %d for %d,%d\n", k, i, j);
       }
   }
 
+  exit (0);
 #endif
+  
   app = gtk_application_new ("com.example.can.dbc.editor", 0);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
   int rc = g_application_run (G_APPLICATION (app), argc, argv);

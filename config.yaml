@@ -1,455 +1,423 @@
 sensors:
   - name: "bosch pst-ft-2 (temperature)"
-    x_values: [45303, 26108, 15458, 9395, 5895, 3791, 2499, 2056, 1706, 1174, 833.8, 595.4, 435.6, 322.5, 243.1, 186.6, 144.2, 112.7, 89.28]
-    y_values: [-40, -30, -20, -10, 0, 10, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]			 
+    x_values: [89.28, 112.7, 144.2, 186.6, 243.1, 322.5, 435.6, 595.4, 833.8, 1174, 1706, 2056, 2499, 3791, 5895, 9395, 15458, 26108, 45303]
+    y_values: [130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 25, 20, 10, 0, -10, -20, -30, -40]
     can_id: 0xb003
     can_data_offset: 0
     can_data_width: 2
-    offset: -3
-    y_index: 0
     x_index: 0
+    y_index: 0
+    offset: -3.000000
     id: 1
-##############################################################################################
+
   - name: "delphi 25036751 (temperature)"
-    x_values: [52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1,
-    279, 329, 389, 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373,
-    5572, 7153, 9256, 12073, 15873, 21044, 28146, 37994, 51791, 71332, 99326]
-    y_values: [145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
-    65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
+    x_values: [52.6, 59.4, 67.3, 76.4, 87, 99.4, 113.9, 131, 151.3, 175.3, 203.9, 238.1, 279, 329, 389, 462, 551, 660, 796, 965, 1177, 1443, 1778, 2205, 2752, 3457, 4373, 5572, 7153, 9256, 12073, 15873, 21044, 28146, 37994, 51791, 71332, 99326]
+    y_values: [145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
     can_id: 0xb003
     can_data_offset: 2
     can_data_width: 2
-    y_index: 0
     x_index: 1
+    y_index: 0
     id: 2
-##############################################################################################    
+
   - name: "aem 30-2011 (temperature)"
-    x_values: [100000, 29000, 9800, 3700, 1500, 500, 180]
-    y_values: [-40, -20, 0, 20, 40, 70, 100]
+    x_values: [180, 500, 1500, 3700, 9800, 29000, 100000]
+    y_values: [100, 70, 40, 20, 0, -20, -40]
     can_id: 0xb003
     can_data_offset: 4
     can_data_width: 2
-    y_index: 0
     x_index: 2
-    offset: -4
+    y_index: 0
+    offset: -4.000000
     id: 3
-##############################################################################################    
+
   - name: "bosch pst-ft (pressure)"
     x_values: [0, 500, 4500]
     y_values: [-1.25, 0, 10]
     can_id: 0xb000
     can_data_offset: 0
     can_data_width: 2
-    y_index: 1
     x_index: 0
+    y_index: 1
     id: 4
-##############################################################################################    
+
   - name: "bosch pst-ft (pressure)"
     x_values: [0, 500, 4500]
     y_values: [-1.25, 0, 10]
     can_id: 0xb000
     can_data_offset: 2
     can_data_width: 2
-    y_index: 1
     x_index: 1
+    y_index: 1
     id: 5
-##############################################################################################
+
   - name: "TPMS multiplexor channel"
     can_id: 0x77e
     can_data_offset: 0
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 6
 
   - name: "TMPS pressure channel"
     can_id: 0x77e
     can_data_offset: 1
     can_data_width: 2
-    scale: 0.001
-    y_index: 1
     x_index: 2
+    y_index: 1
+    scale: 0.001000
     id: 6
 
   - name: "TMPS temperature channel"
     can_id: 0x77e
     can_data_offset: 3
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 6
 
   - name: "TMPS voltage channel"
     can_id: 0x77e
     can_data_offset: 4
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 6
 
-##############################################################################################
   - name: "ECUMaster GPS Lattiude"
     can_id: 0x400
     can_data_offset: 0
     can_data_width: 4
-    y_index: 1
     x_index: 2
-    scale: 0.0000001
-    offset: 0.0
+    y_index: 1
+    scale: 0.000000
     id: 7
 
   - name: "ECUMaster GPS Longitude"
     can_id: 0x400
     can_data_offset: 4
     can_data_width: 4
-    y_index: 1
     x_index: 2
-    scale: 0.0000001
-    offset: 0.0
+    y_index: 1
+    scale: 0.000000
     id: 7
 
   - name: "ECUMaster GPS Speed"
     can_id: 0x401
     can_data_offset: 0
     can_data_width: 2
-    y_index: 1
     x_index: 2
-    scale: 0.036
+    y_index: 1
+    scale: 0.036000
     id: 7
 
   - name: "ECUMaster GPS Altitude"
     can_id: 0x401
     can_data_offset: 2
     can_data_width: 2
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMasters Sat Count"
     can_id: 0x401
     can_data_offset: 5
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMasters GPS Status"
     can_id: 0x401
     can_data_offset: 7
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMaster GPS Heading Motion"
     can_id: 0x402
     can_data_offset: 0
     can_data_width: 2
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMaster GPS Vehicle Motion"
     can_id: 0x402
     can_data_offset: 2
     can_data_width: 2
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMaster GPS X Acceleration"
     can_id: 0x403
     can_data_offset: 2
     can_data_width: 2
-    y_index: 1
     x_index: 2
-    scale: 0.01
+    y_index: 1
+    scale: 0.010000
     id: 7
 
   - name: "ECUMaster GPS Y Acceleration"
     can_id: 0x403
     can_data_offset: 4
     can_data_width: 2
-    y_index: 1
     x_index: 2
-    scale: 0.01
+    y_index: 1
+    scale: 0.010000
     id: 7
 
   - name: "ECUMaster GPS Y Acceleration"
     can_id: 0x403
     can_data_offset: 6
     can_data_width: 2
-    y_index: 1
     x_index: 2
-    scale: 0.01
+    y_index: 1
+    scale: 0.010000
     id: 7
 
   - name: "ECUMasters UTC Year"
     can_id: 0x404
     can_data_offset: 0
     can_data_width: 1
-    y_index: 1
     x_index: 2
-    offset: 2000
+    y_index: 1
+    offset: 2000.000000
     id: 7
 
   - name: "ECUMasters UTC Month"
     can_id: 0x404
     can_data_offset: 1
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMasters UTC Day"
     can_id: 0x404
     can_data_offset: 2
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMasters UTC Hour"
     can_id: 0x404
     can_data_offset: 3
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMasters UTC Minute"
     can_id: 0x404
     can_data_offset: 4
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
 
   - name: "ECUMasters UTC Second"
     can_id: 0x404
     can_data_offset: 5
     can_data_width: 1
-    y_index: 1
     x_index: 2
+    y_index: 1
     id: 7
-##############################################################################################
 
-  - name: "delphi 15326386 (temperature)"
-    x_values: [48, 53, 60, 68, 78, 88, 101, 116, 133, 154, 178, 207, 242, 283, 334, 395, 469,
-    559, 671, 809, 980, 1195, 1465, 1806, 2240, 2795, 3511, 4441, 5658, 7263, 9399, 12261,
-    16120, 21371, 28582, 38583, 52594, 72437, 100865]
-    y_values: [150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70,
-    65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0, -5, -10, -15, -20, -25, -30, -35, -40]
-
-  - name: "bosch pst-ft (temperature)"
-    x_values: [71.9, 89.9, 113.3, 144.5, 186.6, 244, 323.4, 434.9, 594, 824, 1167, 1683, 2480,
-    3740, 5784, 9195, 15067, 25524, 44864]
-    y_values: [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
-
-  - name: "bosch 261230119 (pressure)"
-    x_values: [0.096428571, 0.4, 1.614285714, 3.132142857, 4.65, 6.167857143]
-    y_values: [0, 20, 100, 200, 300, 400]
-
-  - name: "bosch ntc-m12 (temperature)"
-    x_values: [89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896, 9397, 15462, 26114, 45313]
-    y_values: [130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
-
-  - name: "bosch ntc-m12-l (temperature)"
-    x_values: [71, 89, 113, 144, 187, 243, 323, 436, 596, 834, 1175, 1707, 2500, 3792, 5896, 9397, 15462, 26114, 45313]
-    y_values: [140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20, -30, -40]
 
 panels:
-
   - type: radial_temperature
-    label: "Water"
-    y_index: 0
     x_index: 0
-    max_value: 120
-    min_value: 0
-    low_warn: -27
-    high_warn: 105
-    border: 1
-    offset: 1
-    units: "FAHRENHEIT"
-    id: 1
-
-  - type: radial_temperature
-    label: "Water"
     y_index: 0
-    x_index: 0
-    z_index: 1
-    max_value: 120
-    min_value: 0
-    low_warn: -27
-    high_warn: 105
-    border: 1
-    units: "CELSIUS"
-    id: 1
-##############################################################################################    
-  - type: radial_temperature
-    label: "Intake"
-    y_index: 0
-    x_index: 1
-    z_index: 1
-    max_value: 65
-    min_value: -40
-    low_warn: 0
-    high_warn: 70
-    border: 1
-    offset: 3
-    units: "CELSIUS"
-    id: 2
-
-  - type: radial_temperature
-    label: "Intake"
-    y_index: 0
-    x_index: 1
     z_index: 0
-    max_value: 130
-    min_value: 0
-    low_warn: -10
-    high_warn: 110
     border: 1
-    offset: 3
-    units: "FAHRENHEIT"
-    id: 2
-##############################################################################################
-  - type: linear_temperature
-    label: "Oil"
-    y_index: 0
-    x_index: 2
-    max_value: 220
-    min_value: -1
-    low_warn: 60
-    high_warn: 180
-    border: 1
-    offset: -5
-    units: "FAHRENHEIT"
-    id: 3
-
-  - type: linear_temperature
-    label: "Oil"
-    y_index: 0
-    x_index: 2
-    z_index: 1
-    max_value: 105
-    min_value: -1
-    low_warn: 16
-    high_warn: 82
-    border: 1
-    offset: -5
-    units: "CELSIUS"
-    id: 3
+    id: 1
+    label: "Water"
+    min_value: 0.0
+    max_value: 120.0
+    low_warn : -27.0
+    high_warn: 105.0
+    output_format: "%.0f"
+    units: "°F"
 
   - type: radial_temperature
-    label: "Oil"
+    x_index: 0
     y_index: 0
+    z_index: 1
+    border: 1
+    id: 1
+    label: "Water"
+    min_value: 0.0
+    max_value: 120.0
+    low_warn : -27.0
+    high_warn: 105.0
+    output_format: "%.0f"
+    units: "°C"
+
+  - type: radial_temperature
+    x_index: 1
+    y_index: 0
+    z_index: 1
+    border: 1
+    id: 2
+    label: "Intake"
+    min_value: -40.0
+    max_value: 65.0
+    low_warn : 0.0
+    high_warn: 70.0
+    output_format: "%.0f"
+    units: "°C"
+
+  - type: radial_temperature
+    x_index: 1
+    y_index: 0
+    z_index: 0
+    border: 1
+    id: 2
+    label: "Intake"
+    min_value: 0.0
+    max_value: 130.0
+    low_warn : -10.0
+    high_warn: 110.0
+    output_format: "%.0f"
+    units: "°F"
+
+  - type: linear_temperature
     x_index: 2
+    y_index: 0
+    z_index: 0
+    border: 1
+    id: 3
+    label: "Oil"
+    min_value: -1.000
+    max_value: 220.000
+    low_warn : 60.0
+    high_warn: 180.0
+    output_format: "%.0f"
+    units: "°F"
+
+  - type: linear_temperature
+    x_index: 2
+    y_index: 0
+    z_index: 1
+    border: 1
+    id: 3
+    label: "Oil"
+    min_value: -1.000
+    max_value: 105.000
+    low_warn : 16.0
+    high_warn: 82.0
+    output_format: "%.0f"
+    units: "°C"
+
+  - type: radial_temperature
+    x_index: 2
+    y_index: 0
     z_index: 2
-    max_value: 220
-    min_value: -1
-    low_warn: 60
-    high_warn: 180
     border: 1
-    offset: -5
-    units: "FAHRENHEIT"
     id: 3
-##############################################################################################    
-  - type: radial_pressure
     label: "Oil"
-    y_index: 1
+    min_value: -1.0
+    max_value: 220.0
+    low_warn : 60.0
+    high_warn: 180.0
+    output_format: "%.0f"
+    units: "°F"
+
+  - type: radial_pressure
     x_index: 0
+    y_index: 1
     z_index: 0
-    max_value: 8
-    min_value: 0
+    border: 1
+    id: 4
+    label: "Oil"
+    min_value: 0.0
+    max_value: 8.0
+    low_warn : 3.0
     high_warn: 5.5
-    low_warn: 3
-    border: 1
+    output_format: "%.0f"
     units: "bar"
-    id: 4
 
   - type: radial_pressure
-    label: "Oil"
-    y_index: 1
     x_index: 0
+    y_index: 1
     z_index: 1
-    max_value: 250
-    min_value: 0
-    high_warn: 180
-    low_warn: 40
     border: 1
-    units: "psi"
     id: 4
-##############################################################################################
-  - type: radial_pressure
-    label: "MAP"
-    y_index: 1
-    x_index: 1
-    max_value: 4.0
-    min_value: 1.0
-    low_warn: 1.5
-    high_warn: 3.5
-    border: 1
-    units: "bar"
-    id: 5
+    label: "Oil"
+    min_value: 0.0
+    max_value: 250.0
+    low_warn : 40.0
+    high_warn: 180.0
+    output_format: "%.0f"
+    units: "psi"
 
   - type: radial_pressure
-    label: "MAP"
-    y_index: 1
     x_index: 1
-    z_index: 1
-    max_value: 100
-    min_value: -101
-    low_warn: -1000
-    high_warn: 1000
-    border: 1
-    units: "kPa"
-    output_format: "%.1f"
-    id: 5
-
-  - type: radial_pressure
-    label: "MAP"
     y_index: 1
-    x_index: 1
-    z_index: 2
-    max_value: 4.0
-    min_value: 1.0
-    low_warn: 1.5
-    high_warn: 3.5
-    border: 1
-    units: "bar"
-    output_format: "%.2f"
-    id: 5
-##############################################################################################
-  - type: tpms
-    y_index: 1
-    x_index: 2
     z_index: 0
-    high_warn: 150
-    low_warn: 30
     border: 1
-    pressure_units: "bar"
-    temperature_units: "CELSIUS"
+    id: 5
+    label: "MAP"
+    min_value: 1.0
+    max_value: 4.0
+    low_warn : 1.5
+    high_warn: 3.5
+    output_format: "%.0f"
+    units: "bar"
+
+  - type: radial_pressure
+    x_index: 1
+    y_index: 1
+    z_index: 1
+    border: 1
+    id: 5
+    label: "MAP"
+    min_value: -101.0
+    max_value: 100.0
+    low_warn : -1000.0
+    high_warn: 1000.0
+    output_format: "%.0f"
+    units: "kPa"
+
+  - type: radial_pressure
+    x_index: 1
+    y_index: 1
+    z_index: 2
+    border: 1
+    id: 5
+    label: "MAP"
+    min_value: 1.0
+    max_value: 4.0
+    low_warn : 1.5
+    high_warn: 3.5
+    output_format: "%.0f"
+    units: "bar"
+
+  - type: tpms
+    x_index: 2
+    y_index: 1
+    z_index: 0
+    border: 1
     timeout: 1500
     id: 6
 
   - type: tpms
-    y_index: 1
     x_index: 2
+    y_index: 1
     z_index: 1
-    high_warn: 150
-    low_warn: 30
     border: 1
-    pressure_units: "psi"
-    temperature units: "FAHRENHEIT"
     timeout: 1500
     id: 6
 
   - type: gps
-    y_index: 1
     x_index: 2
+    y_index: 1
     z_index: 2
     border: 1
-    units: "none"
     timeout: 1500
     id: 7
+

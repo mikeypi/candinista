@@ -3,6 +3,7 @@
 
 typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 
+#define DEFAULT_OUTPUT_FORMAT "%.0f"
 #define DEFAULT_START_ANGLE (4 * M_PI / 4)
 #define DEFAULT_END_ANGLE (9 * M_PI / 4)
 #define DEFAULT_SEGMENT_COUNT (20)

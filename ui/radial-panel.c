@@ -236,10 +236,10 @@ static void print_radial_gauge_panel (FILE* fp, const Panel* g)
   RadialPanel* rp = (RadialPanel*) g;
 
   fprintf (fp, "    label: \"%s\"\n", rp -> label);
-  fprintf (fp, "    min_value: %.3f\n", rp -> min);
-  fprintf (fp, "    max_value: %.3f\n", rp -> max);
-  fprintf (fp, "    low_warn : %.3f\n", rp -> base.low_warn);
-  fprintf (fp, "    high_warn: %.3f\n", rp -> base.high_warn);
+  fprintf (fp, "    min_value: %.1f\n", rp -> min);
+  fprintf (fp, "    max_value: %.1f\n", rp -> max);
+  fprintf (fp, "    low_warn : %.1f\n", rp -> base.low_warn);
+  fprintf (fp, "    high_warn: %.1f\n", rp -> base.high_warn);
   fprintf (fp, "    output_format: \"%s\"\n", rp -> output_format);
   fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> units));
 }
@@ -272,7 +272,7 @@ Panel* create_radial_gauge_panel (PanelParameters* p) {
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_radial_gauge_panel;
   lg -> base.vtable = &radial_vtable;
   
-  lg -> output_format = "%.0f";
+  lg -> output_format = DEFAULT_OUTPUT_FORMAT;
   lg -> max = p -> max;
   lg -> min = p -> min;
   lg -> units = p -> units;
@@ -308,7 +308,7 @@ make_page_for_radial_panel (const RadialPanel *p, int* row) {
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("units")), 0, *row, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (str_from_unit_enum (p -> units))), 1, (*row)++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("label")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> label)), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string ((void*) p -> label)), 1, (*row)++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("output_format")), 0, *row, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> output_format)), 1, (*row)++, 1, 1);
 

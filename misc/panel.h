@@ -1,11 +1,11 @@
 #ifndef PANEL_H
 #define PANEL_H
 
-//#define XRED_RGB    0xff0808
+#define DEFAULT_TIMEOUT 600
+
 #define XRED_RGB    0xff0000
 #define XBLUE_RGB   0xe0e0e0
 #define XORANGE_RGB 0xffa600
-//#define XORANGE_RGB 0xff5c00
 #define XBLACK_RGB  0x000000
 #define XGRAY_RGB   0x333333
 

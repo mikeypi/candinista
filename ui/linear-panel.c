@@ -13,6 +13,7 @@
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
+#include "gtk-glue.h"
 
 typedef struct
 {
@@ -150,8 +151,16 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 }
 
 void print_linear_panel (FILE* fp, const Panel* g) {
-  (void) fp;
-  (void) g;
+  LinearPanel* rp = (LinearPanel*) g;
+
+  fprintf (fp, "    label: \"%s\"\n", rp -> label);
+  fprintf (fp, "    min_value: %.3f\n", rp -> min);
+  fprintf (fp, "    max_value: %.3f\n", rp -> max);
+  fprintf (fp, "    low_warn : %.1f\n", rp -> base.low_warn);
+  fprintf (fp, "    high_warn: %.1f\n", rp -> base.high_warn);
+  fprintf (fp, "    output_format: \"%s\"\n", rp -> output_format);
+  fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> units));
+
 }
 
 static void set_value (Panel* g, double value, int sensor_count, int can_id) {
@@ -183,7 +192,7 @@ Panel* create_linear_gauge_panel (PanelParameters* p) {
   lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
   lg -> base.vtable = &linear_vtable;
   
-  lg -> output_format = "%.0f";
+  lg -> output_format = DEFAULT_OUTPUT_FORMAT;
   lg -> max = p -> max;
   lg -> min = p -> min;
   lg -> low_warn_color = p -> low_warn_color;
@@ -217,3 +226,23 @@ Panel* create_linear_gauge_panel (PanelParameters* p) {
 
   return (Panel*) lg;
 }
+
+GtkWidget*
+make_page_for_linear_panel (const LinearPanel *p, int* row) {
+  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
+  gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
+
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("min")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> min))), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("max")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> max))), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("units")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (str_from_unit_enum (p -> units))), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("label")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string ((void*) p -> label)), 1, (*row)++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("output_format")), 0, *row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> output_format)), 1, (*row)++, 1, 1);
+
+  return (GTK_WIDGET (grid));
+}
+

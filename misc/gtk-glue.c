@@ -54,12 +54,19 @@ on_activate_for_double (GtkEntry *entry, gpointer user_data) {
 
   errno = 0;
   char* end = NULL;
-  unsigned long v = strtoul (txt, &end, 0);   // base 0 accepts 123 or 0x7B
+  unsigned long v = strtod (txt, &end);   
 
   if (errno == 0 && end != txt && *end == '\0') {
     *s = (double)v;
     g_print ("Committed value = %f\n", *s);
   }
+}
+
+static void
+on_activate_for_string (GtkEntry *entry, gpointer user_data) {
+  (void) user_data;
+  const char* txt = gtk_editable_get_text (GTK_EDITABLE (entry));
+  g_print ("Committed value = %s\n", txt);
 }
 
 GtkWidget*
@@ -118,7 +125,7 @@ new_entry_for_string (gpointer user_data) {
 
   GtkWidget* entry = gtk_entry_new ();
   gtk_editable_set_text (GTK_EDITABLE (entry), s);
-  g_signal_connect (entry, "activate", G_CALLBACK (on_activate_for_int), (gpointer) s);
+  g_signal_connect (entry, "activate", G_CALLBACK (on_activate_for_string), (gpointer) s);
   gtk_entry_set_input_purpose (GTK_ENTRY (entry), GTK_INPUT_PURPOSE_NUMBER);
   gtk_widget_add_css_class (entry, "cell");
   return (entry);

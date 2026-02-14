@@ -31,12 +31,31 @@ void panel_print (FILE* fp, const Panel* g) {
   fprintf (fp, "    x_index: %d\n", g -> x_index);
   fprintf (fp, "    y_index: %d\n", g -> y_index);
   fprintf (fp, "    z_index: %d\n", g -> z_index);
-  fprintf (fp, "    border: %d\n", g -> border);
-  fprintf (fp, "    foreground_color: 0x%x\n", g -> foreground_color);
-  fprintf (fp, "    background_color: 0x%x\n", g -> background_color);
-  fprintf (fp, "    high_warn_color: 0x%x\n", g -> high_warn_color);
-  fprintf (fp, "    low_warn_color: 0x%x\n", g -> low_warn_color);
-  fprintf (fp, "    timeout: %d\n", g -> timeout);
+
+  if (0 != g -> border) {
+    fprintf (fp, "    border: %d\n", g -> border);
+  }
+
+  if (DEFAULT_FOREGROUND_RGB != g -> foreground_color) {
+    fprintf (fp, "    foreground_color: 0x%x\n", g -> foreground_color);
+  }
+
+  if (DEFAULT_BACKGROUND_RGB != g -> background_color) {
+    fprintf (fp, "    background_color: 0x%x\n", g -> background_color);
+  }
+  
+  if (DEFAULT_HIGH_WARN_RGB != g -> high_warn_color) {
+    fprintf (fp, "    high_warn_color: 0x%x\n", g -> high_warn_color);
+  }
+  
+  if (DEFAULT_LOW_WARN_RGB != g -> low_warn_color) {
+    fprintf (fp, "    low_warn_color: 0x%x\n", g -> low_warn_color);
+  }
+  
+  if (0 != g -> timeout) {
+    fprintf (fp, "    timeout: %d\n", g -> timeout);
+  }
+
   fprintf (fp, "    id: %d\n", g -> id);
   g -> vtable -> print (fp, g);
 }      

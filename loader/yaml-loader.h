@@ -24,14 +24,14 @@ void cfg_build_tables (Configuration* cfg);
 void cfg_free (Configuration*);
 
 static inline Panel* cfg_get_panel (Configuration* cfg, int i, int j, int k) {
-  return (get_item_in_d3_array (cfg -> panel_array, i, j, k));
+  return ((Panel*)get_item_in_d3_array (cfg -> panel_array, i, j, k));
 }
 
 Sensor* cfg_get_sensor (Configuration* cfg, int x_index, int y_index, int z);
 void cfg_set_sensor (Configuration* cfg, Sensor* s, int x_index, int y_index, int z_index);
 
-int cfg_get_active_z (Configuration* cfg, int x_index, int y_index);
-void cfg_set_active_z (Configuration* cfg, int x_index, int y_index, int value);
+long cfg_get_active_z (Configuration* cfg, int x_index, int y_index);
+void cfg_set_active_z (Configuration* cfg, int x_index, int y_index, long value);
 
 extern Configuration* cfg;
 #endif
