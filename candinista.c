@@ -74,7 +74,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   (void) condition;
   (void) data;
   
-  size_t i = 0;
+  int i = 0;
   int matching_sensor_count = 0;
   double temp;
   struct can_frame frame;
@@ -166,7 +166,6 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
   if ((0 != data_logging) && (0 != matching_sensor_count)) {
     log_data (&frame);
   }
-
 
   return TRUE;
 }

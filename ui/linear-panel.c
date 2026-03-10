@@ -9,45 +9,12 @@
 #include <assert.h>
 
 #include "units.h"
-#include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
 #include "gtk-glue.h"
-
-typedef struct
-{
-  double min;
-  double max;
-  double start_x;
-  double start_y;
-  double height;
-  double width;
-  int illuminated;
-} bargraph_segment;
-
-/* concrete type */
-typedef struct {
-  Panel base;
-  double value;
-  double min;
-  double max;
-  double low_warn;
-  double high_warn;
-  int high_warn_color;
-  int low_warn_color;
-  unit_type units;
-  char label[64];
-  char* output_format;  
-
-  double bargraph_origin_x;
-  double bargraph_origin_y;
-  double bargraph_width;
-  double bargraph_height;
-  int bargraph_segment_count;
-  bargraph_segment* bargraph_segments;
-} LinearPanel;
-
+#include "candinista.h"
+#include "panel_specs.h"
 
 void draw_linear_gauge_panel (GtkDrawingArea* area,
 				cairo_t* cr,
@@ -226,23 +193,3 @@ Panel* create_linear_gauge_panel (PanelParameters* p) {
 
   return (Panel*) lg;
 }
-
-GtkWidget*
-make_page_for_linear_panel (const LinearPanel *p, int* row) {
-  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
-  gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
-
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("min")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> min))), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("max")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> max))), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("units")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (str_from_unit_enum (p -> units))), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("label")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string ((void*) p -> label)), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("output_format")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> output_format)), 1, (*row)++, 1, 1);
-
-  return (GTK_WIDGET (grid));
-}
-

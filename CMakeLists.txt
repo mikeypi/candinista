@@ -12,26 +12,30 @@ pkg_check_modules(YAML REQUIRED IMPORTED_TARGET yaml-0.1)
 
 
 # -----------------------------
-# Cairo / UI shared library
+# Shared library
 # -----------------------------
 add_library(candinsta_shared STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/loader/yaml-loader.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/loader/yaml-printer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/loader/d3-array.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/info-panel.c
+    # Config / serialization
+    ${CMAKE_CURRENT_SOURCE_DIR}/config/yaml-loader.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/config/yaml-printer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/config/d3-array.c
+
+    # UI / Cairo panel renderers
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/cairo-misc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/gtk-glue.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/info-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/linear-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/gps-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/radial-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/tpms-panel.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/datalogging.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/environ.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/interpolate.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/panel.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/sensor.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/gtk-glue.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc/units.c
-    # add other shared UI/cairo files here if you want
+
+    # Core data model & utilities
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/sensor.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/panel.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/units.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/interpolate.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/datalogging.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/environ.c
 )
 
 target_compile_options(candinsta_shared
@@ -40,8 +44,6 @@ target_compile_options(candinsta_shared
         $<$<C_COMPILER_ID:MSVC>:/W4>
 )
 
-# If info-panel.c includes <gtk/gtk.h>, it MUST get GTK include dirs.
-# Linking to the imported target carries include dirs + compile defs.
 target_link_libraries(candinsta_shared
     PUBLIC
         PkgConfig::GTK
@@ -50,9 +52,10 @@ target_link_libraries(candinsta_shared
 target_include_directories(candinsta_shared
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/ui
-	${CMAKE_CURRENT_SOURCE_DIR}/loader
-	${CMAKE_CURRENT_SOURCE_DIR}/misc
+        ${CMAKE_CURRENT_SOURCE_DIR}/config
+        ${CMAKE_CURRENT_SOURCE_DIR}/core
+        ${CMAKE_CURRENT_SOURCE_DIR}/ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy
 )
 
 # libm only on Unix-like platforms
@@ -84,7 +87,13 @@ target_link_libraries(candinista
 # eyecandy executable
 # -----------------------------
 add_executable(eyecandy
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/eyecandy.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/editor-window.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/panel-editor.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/sensor-editor.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/tree-picker.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/dropdowns.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/panel-routines.c
 )
 
 target_compile_options(eyecandy

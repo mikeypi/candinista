@@ -1,6 +1,3 @@
-#ifndef CANDINISTA_H
-#define CANDINISTA_H
-
 /*
  * Copyright (c) 2024, Joseph Hollinger
  *
@@ -30,30 +27,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define MAX_CAN_FIELDS 8
-#define MAX_LABEL_LENGTH 40
-  
-/* data logging stuff */
-
-extern int data_logging;
-
-/* interpolation stuff */
-extern void interpolation_array_sort (double* x_values, double* y_values, int number_of_interpolation_points);
-extern double linear_interpolate (double knownx, double* x_values, double* y_values, int number_of_interpolation_points);
-/* Initialization stuff */
-
-#define LOG_FILE_DIRECTORY_NAME "datalogs"
-extern char* log_file_directory_name;
-
-#define CAN_SOCKET_NAME "can0"
-extern char* can_socket_name;
-
-#define CONFIG_FILE_NAME "config.yaml"
-extern char* config_file_name;
-
-extern int remote_display;
-
-extern void get_environment_variables ();
-
-extern int raw_output;
-#endif
+extern void callback_for_unit_type_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
+extern void callback_for_yesno_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
+extern void callback_for_panel_type_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
+extern void callback_for_xyz_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
+extern GtkWidget* widget_for_panel_type_dropdown (const Panel *p);
+extern GtkWidget* widget_for_xyz_index_dropdown (Panel* p, const int range, const int index);
+extern GtkWidget* widget_for_yesno_dropdown (Panel* p, const int state);
+extern GtkWidget* widget_for_unit_type_dropdown (Panel* p, const int state);

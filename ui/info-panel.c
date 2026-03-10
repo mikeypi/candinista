@@ -10,17 +10,11 @@
 #include <sys/sysinfo.h>
 
 #include "units.h"
-#include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
-
-
-/* concrete type */
-typedef struct {
-  Panel base;
-} InfoPanel;
-
+#include "candinista.h"
+#include "panel_specs.h"
 
 void draw_info_panel (GtkDrawingArea* area,
 				cairo_t* cr,

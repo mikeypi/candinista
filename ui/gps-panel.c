@@ -9,36 +9,12 @@
 #include <assert.h>
 
 #include "units.h"
-#include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
-
-
-/* concrete type */
-typedef struct {
-  Panel base;
-  double lattitude;
-  double longitude;
-  double speed;
-  double altitude;
-  double heading_motion;
-  double vehicle_motion;
-  double x_acceleration;
-  double y_acceleration;
-  double z_acceleration;
-  int sat_count;
-  int gps_status;
-  int utc_year;
-  int utc_month;
-  int utc_day;
-  int utc_hour;
-  int utc_minute;
-  int utc_second;
-  unit_type pressure_units;
-  unit_type temperature_units;
-} GPSPanel;
-
+#include "gtk-glue.h"
+#include "candinista.h"
+#include "panel_specs.h"
  
 void draw_gps_panel (GtkDrawingArea* area,
 		      cairo_t* cr,
@@ -286,4 +262,3 @@ Panel* create_gps_panel (PanelParameters* p) {
 
   return (Panel*) lg;
 }
-

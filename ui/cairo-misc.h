@@ -1,5 +1,5 @@
 #ifndef CAIROMISC_H
-#define CAIROMISC
+#define CAIROMISC_H
 
 typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 

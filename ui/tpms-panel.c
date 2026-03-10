@@ -9,32 +9,12 @@
 #include <assert.h>
 
 #include "units.h"
-#include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
-
-
-/* concrete type */
-typedef struct {
-  Panel base;
-  int multiplexor;
-  double pressure[4];
-  double temperature[4];
-  double voltage[4];
-  int sign[4];
-  double value;
-  double min;
-  double max;
-  double low_warn;
-  double high_warn;
-  unit_type units;
-  unit_type pressure_units;
-  unit_type temperature_units;
-  char label[64];
-  char* output_format;  
-} TPMSPanel;
-
+#include "gtk-glue.h"
+#include "candinista.h"
+#include "panel_specs.h"
 
 void draw_tpms_sub_panel (cairo_t* cr,
 			  TPMSPanel* rp,
@@ -197,4 +177,3 @@ Panel* create_tpms_panel (PanelParameters* p) {
 
   return (Panel*) lg;
 }
-

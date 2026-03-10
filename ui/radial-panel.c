@@ -6,42 +6,16 @@
 #include <assert.h>
 
 #include "units.h"
-#include "candinista.h"
 #include "sensor.h"
 #include "panel.h"
 #include "cairo-misc.h"
 #include "gtk-glue.h"
+#include "candinista.h"
+#include "panel_specs.h"
 
 #define XOFFSET 0
 #define YOFFSET 10
 
-
-typedef struct
-{
-  double arc_start_angle;
-  double arc_end_angle;
-  int illuminated;
-} arc_segment;
-
-
-typedef struct {
-  Panel base;
-  double value;
-  double min;
-  double max;
-  unit_type units;
-  char label[64];
-  char* output_format;
-  
-  double radius;
-  double start_angle;
-  double end_angle;
-
-  int segment_count;
-  arc_segment* arc_segments;
-  double segment_gap_size;
-} RadialPanel;
- 
 
 void
 draw_radial_gauge_panel (GtkDrawingArea* area,
@@ -294,24 +268,5 @@ Panel* create_radial_gauge_panel (PanelParameters* p) {
   }
 
   return (Panel*) lg;
-}
-
-GtkWidget*
-make_page_for_radial_panel (const RadialPanel *p, int* row) {
-  GtkGrid* grid = GTK_GRID (gtk_grid_new ());
-  gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
-
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("min")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> min))), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("max")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(p -> max))), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("units")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (str_from_unit_enum (p -> units))), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("label")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string ((void*) p -> label)), 1, (*row)++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("output_format")), 0, *row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_string (p -> output_format)), 1, (*row)++, 1, 1);
-
-  return (GTK_WIDGET (grid));
 }
 
