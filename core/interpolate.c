@@ -34,7 +34,7 @@
 #include "candinista.h"
 
 static int
-comp1 (const void * elem1, const void * elem2) 
+comp1 (const void* elem1, const void* elem2) 
 {
     double f = *((double*) elem1);
     double s = *((double*) elem2);
@@ -44,7 +44,7 @@ comp1 (const void * elem1, const void * elem2)
 }
 
 static int
-comp2 (const void * elem1, const void * elem2) 
+comp2 (const void* elem1, const void* elem2) 
 {
     double f = *((double*) elem1);
     double s = *((double*) elem2);
@@ -72,7 +72,7 @@ interpolation_array_sort (double* x_values, double* y_values, int number_of_inte
   qsort (x_values, number_of_interpolation_points, sizeof(double), comp1);
 
   if (y_values[0] < y_values [1]) {
-      qsort (y_values, number_of_interpolation_points, sizeof(double), comp2);
+    qsort (y_values, number_of_interpolation_points, sizeof(double), comp2);
   } else {
     qsort (y_values, number_of_interpolation_points, sizeof(double), comp1);
   }

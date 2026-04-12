@@ -28,9 +28,9 @@ void panel_print (FILE* fp, const Panel* g) {
   fprintf (fp, "  - type: %s\n",
 	   string_from_panel_type_enum (g -> type));
 
-  fprintf (fp, "    x_index: %d\n", g -> x_index);
-  fprintf (fp, "    y_index: %d\n", g -> y_index);
-  fprintf (fp, "    z_index: %d\n", g -> z_index);
+  fprintf (fp, "    row_index: %d\n", g -> row_index);
+  fprintf (fp, "    column_index: %d\n", g -> column_index);
+  fprintf (fp, "    layer_index: %d\n", g -> layer_index);
 
   if (0 != g -> border) {
     fprintf (fp, "    border: %d\n", g -> border);
@@ -61,9 +61,9 @@ void panel_print (FILE* fp, const Panel* g) {
 }      
 
 Panel* panel_init_base (PanelParameters* p, Panel* lg) {
-  lg -> x_index = p -> x_index;
-  lg -> y_index = p -> y_index;
-  lg -> z_index = p -> z_index;
+  lg -> column_index = p -> column_index;
+  lg -> row_index = p -> row_index;
+  lg -> layer_index = p -> layer_index;
   lg -> id = p -> id;
 
   lg -> low_warn = p -> low_warn;
@@ -80,9 +80,9 @@ Panel* panel_init_base (PanelParameters* p, Panel* lg) {
 
   sprintf (lg -> name, "%s-%d-%d-%d-%d\n",
 	   string_from_panel_type_enum (lg -> type),
-	   lg -> x_index,
-	   lg -> y_index,
-	   lg -> z_index,
+	   lg -> column_index,
+	   lg -> row_index,
+	   lg -> layer_index,
 	   lg -> id);
 
   return (lg);

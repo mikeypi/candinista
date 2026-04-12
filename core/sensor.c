@@ -18,8 +18,8 @@ Sensor* sensor_create (SensorParameters* st) {
   s -> n_values = st -> n_values;
   s -> scale = isnan (st -> scale) ? 1 : st -> scale;
   s -> offset = isnan (st -> offset) ? 0 : st -> offset;
-  s -> x_index = st -> x_index;
-  s -> y_index = st -> y_index;
+  s -> column_index = st -> column_index;
+  s -> row_index = st -> row_index;
   s -> id = st -> id;
   return s;
 }
@@ -59,8 +59,8 @@ void sensor_print (FILE* fp, const Sensor* s)
     fprintf (fp, "    can_data_offset: %d\n", s -> can_data_offset);
     fprintf (fp, "    can_data_width: %d\n", s -> can_data_width);
 
-    fprintf (fp, "    x_index: %d\n", s -> x_index);
-    fprintf (fp, "    y_index: %d\n", s -> y_index);
+    fprintf (fp, "    column_index: %d\n", s -> column_index);
+    fprintf (fp, "    row_index: %d\n", s -> row_index);
 
     if (!isnan (s -> offset) && (0 != s -> offset)) {
       fprintf (fp, "    offset: %f\n", s -> offset);

@@ -33,9 +33,9 @@ typedef struct {
   unit_type temperature_units; 
   char label[80];
   int border;
-  int x_index;
-  int y_index;
-  int z_index;
+  int column_index;
+  int row_index;
+  int layer_index;
   int timeout;
   int id;
   int foreground_color;
@@ -58,9 +58,9 @@ struct Panel {
   void (*print) (FILE* fp, const Panel* g);
   char name[80];
   panel_type type;
-  int x_index;
-  int y_index;
-  int z_index;
+  int column_index;
+  int row_index;
+  int layer_index;
   unsigned char border;
   double low_warn;
   double high_warn;
@@ -81,9 +81,9 @@ Panel* create_gps_panel (PanelParameters* p);
 Panel* panel_init_base (PanelParameters* p, Panel* lg);
 
 /* base functions (work for all panel types) */
-static inline int panel_get_x_index (const Panel* g)            { return (g -> x_index); }
-static inline int panel_get_y_index (const Panel* g)            { return (g -> y_index); }
-static inline int panel_get_z_index (const Panel* g)            { return (g -> z_index); }
+static inline int panel_get_column_index (const Panel* g)            { return (g -> column_index); }
+static inline int panel_get_row_index (const Panel* g)            { return (g -> row_index); }
+static inline int panel_get_layer_index (const Panel* g)            { return (g -> layer_index); }
 static inline int panel_get_timeout (const Panel* g)            { return (g -> timeout); }
 static inline int panel_get_id (const Panel* g)                 { return (g -> id); }
 static inline panel_type panel_get_type (const Panel *g)        { return (g -> type); }
