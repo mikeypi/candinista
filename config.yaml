@@ -5,8 +5,8 @@ sensors:
     can_id: 0xb003
     can_data_offset: 0
     can_data_width: 2
-    x_index: 0
-    y_index: 0
+    column_index: 0
+    row_index: 0
     offset: -3.000000
     id: 1
 
@@ -16,8 +16,8 @@ sensors:
     can_id: 0xb003
     can_data_offset: 2
     can_data_width: 2
-    x_index: 1
-    y_index: 0
+    column_index: 1
+    row_index: 0
     id: 2
 
   - name: "aem 30-2011 (temperature)"
@@ -26,8 +26,8 @@ sensors:
     can_id: 0xb003
     can_data_offset: 4
     can_data_width: 2
-    x_index: 2
-    y_index: 0
+    column_index: 2
+    row_index: 0
     offset: -4.000000
     id: 3
 
@@ -37,8 +37,8 @@ sensors:
     can_id: 0xb000
     can_data_offset: 0
     can_data_width: 2
-    x_index: 0
-    y_index: 1
+    column_index: 0
+    row_index: 1
     id: 4
 
   - name: "bosch pst-ft (pressure)"
@@ -47,24 +47,24 @@ sensors:
     can_id: 0xb000
     can_data_offset: 2
     can_data_width: 2
-    x_index: 1
-    y_index: 1
+    column_index: 1
+    row_index: 1
     id: 5
 
   - name: "TPMS multiplexor channel"
     can_id: 0x77e
     can_data_offset: 0
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 6
 
   - name: "TMPS pressure channel"
     can_id: 0x77e
     can_data_offset: 1
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.001000
     id: 6
 
@@ -72,24 +72,24 @@ sensors:
     can_id: 0x77e
     can_data_offset: 3
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 6
 
   - name: "TMPS voltage channel"
     can_id: 0x77e
     can_data_offset: 4
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 6
 
   - name: "ECUMaster GPS Lattiude"
     can_id: 0x400
     can_data_offset: 0
     can_data_width: 4
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.000000
     id: 7
 
@@ -97,8 +97,8 @@ sensors:
     can_id: 0x400
     can_data_offset: 4
     can_data_width: 4
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.000000
     id: 7
 
@@ -106,8 +106,8 @@ sensors:
     can_id: 0x401
     can_data_offset: 0
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.036000
     id: 7
 
@@ -115,48 +115,48 @@ sensors:
     can_id: 0x401
     can_data_offset: 2
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMasters Sat Count"
     can_id: 0x401
     can_data_offset: 5
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMasters GPS Status"
     can_id: 0x401
     can_data_offset: 7
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMaster GPS Heading Motion"
     can_id: 0x402
     can_data_offset: 0
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMaster GPS Vehicle Motion"
     can_id: 0x402
     can_data_offset: 2
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMaster GPS X Acceleration"
     can_id: 0x403
     can_data_offset: 2
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.010000
     id: 7
 
@@ -164,8 +164,8 @@ sensors:
     can_id: 0x403
     can_data_offset: 4
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.010000
     id: 7
 
@@ -173,8 +173,8 @@ sensors:
     can_id: 0x403
     can_data_offset: 6
     can_data_width: 2
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     scale: 0.010000
     id: 7
 
@@ -182,8 +182,8 @@ sensors:
     can_id: 0x404
     can_data_offset: 0
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     offset: 2000.000000
     id: 7
 
@@ -191,48 +191,48 @@ sensors:
     can_id: 0x404
     can_data_offset: 1
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMasters UTC Day"
     can_id: 0x404
     can_data_offset: 2
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMasters UTC Hour"
     can_id: 0x404
     can_data_offset: 3
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMasters UTC Minute"
     can_id: 0x404
     can_data_offset: 4
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
   - name: "ECUMasters UTC Second"
     can_id: 0x404
     can_data_offset: 5
     can_data_width: 1
-    x_index: 2
-    y_index: 1
+    column_index: 2
+    row_index: 1
     id: 7
 
 
 panels:
   - type: radial_temperature
-    x_index: 0
-    y_index: 0
-    z_index: 0
+    column_index: 0
+    row_index: 0
+    layer_index: 0
     border: 1
     id: 1
     label: "Water"
@@ -244,9 +244,9 @@ panels:
     units: "°F"
 
   - type: radial_temperature
-    x_index: 0
-    y_index: 0
-    z_index: 1
+    column_index: 0
+    row_index: 0
+    layer_index: 1
     border: 1
     id: 1
     label: "Water"
@@ -258,9 +258,9 @@ panels:
     units: "°C"
 
   - type: radial_temperature
-    x_index: 1
-    y_index: 0
-    z_index: 1
+    column_index: 1
+    row_index: 0
+    layer_index: 1
     border: 1
     id: 2
     label: "Intake"
@@ -272,9 +272,9 @@ panels:
     units: "°C"
 
   - type: radial_temperature
-    x_index: 1
-    y_index: 0
-    z_index: 0
+    column_index: 1
+    row_index: 0
+    layer_index: 0
     border: 1
     id: 2
     label: "Intake"
@@ -286,9 +286,9 @@ panels:
     units: "°F"
 
   - type: linear_temperature
-    x_index: 2
-    y_index: 0
-    z_index: 0
+    column_index: 2
+    row_index: 0
+    layer_index: 0
     border: 1
     id: 3
     label: "Oil"
@@ -300,9 +300,9 @@ panels:
     units: "°F"
 
   - type: linear_temperature
-    x_index: 2
-    y_index: 0
-    z_index: 1
+    column_index: 2
+    row_index: 0
+    layer_index: 1
     border: 1
     id: 3
     label: "Oil"
@@ -314,9 +314,9 @@ panels:
     units: "°C"
 
   - type: radial_temperature
-    x_index: 2
-    y_index: 0
-    z_index: 2
+    column_index: 2
+    row_index: 0
+    layer_index: 2
     border: 1
     id: 3
     label: "Oil"
@@ -328,9 +328,9 @@ panels:
     units: "°F"
 
   - type: radial_pressure
-    x_index: 0
-    y_index: 1
-    z_index: 0
+    column_index: 0
+    row_index: 1
+    layer_index: 0
     border: 1
     id: 4
     label: "Oil"
@@ -342,9 +342,9 @@ panels:
     units: "bar"
 
   - type: radial_pressure
-    x_index: 0
-    y_index: 1
-    z_index: 1
+    column_index: 0
+    row_index: 1
+    layer_index: 1
     border: 1
     id: 4
     label: "Oil"
@@ -356,9 +356,9 @@ panels:
     units: "psi"
 
   - type: radial_pressure
-    x_index: 1
-    y_index: 1
-    z_index: 0
+    column_index: 1
+    row_index: 1
+    layer_index: 0
     border: 1
     id: 5
     label: "MAP"
@@ -370,9 +370,9 @@ panels:
     units: "bar"
 
   - type: radial_pressure
-    x_index: 1
-    y_index: 1
-    z_index: 1
+    column_index: 1
+    row_index: 1
+    layer_index: 1
     border: 1
     id: 5
     label: "MAP"
@@ -384,9 +384,9 @@ panels:
     units: "kPa"
 
   - type: radial_pressure
-    x_index: 1
-    y_index: 1
-    z_index: 2
+    column_index: 1
+    row_index: 1
+    layer_index: 2
     border: 1
     id: 5
     label: "MAP"
@@ -398,25 +398,25 @@ panels:
     units: "bar"
 
   - type: tpms
-    x_index: 2
-    y_index: 1
-    z_index: 0
+    column_index: 2
+    row_index: 1
+    layer_index: 0
     border: 1
     timeout: 1500
     id: 6
 
   - type: tpms
-    x_index: 2
-    y_index: 1
-    z_index: 1
+    column_index: 2
+    row_index: 1
+    layer_index: 1
     border: 1
     timeout: 1500
     id: 6
 
   - type: gps
-    x_index: 2
-    y_index: 1
-    z_index: 2
+    column_index: 2
+    row_index: 1
+    layer_index: 2
     border: 1
     timeout: 1500
     id: 7
