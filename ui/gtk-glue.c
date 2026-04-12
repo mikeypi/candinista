@@ -11,9 +11,8 @@ gtk_update_gauge_panel_value (gpointer user_data) {
     GtkDrawingArea *area;
     Panel *p;
   } *ctx = user_data;
-  
-  gtk_widget_queue_draw (GTK_WIDGET (ctx -> area));
 
+  gtk_widget_queue_draw (GTK_WIDGET (ctx -> area));
   return G_SOURCE_CONTINUE;
 }
 
@@ -25,7 +24,6 @@ gtk_draw_gauge_panel_cb (GtkDrawingArea* area,
                   gpointer        user_data)
 {
   Panel* p = user_data;
-
   g_return_if_fail (p != NULL);
   g_return_if_fail (p -> draw != NULL);
 
