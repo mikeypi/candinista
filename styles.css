@@ -2,6 +2,7 @@ menubutton {
     border: 2px solid black;
     border-radius: 0px;
     font-size: 14px;
+    color: red;
     background-color: #3b3b3b;
     background-image: none;
     box-shadow: none;
@@ -15,6 +16,7 @@ button {
     border: 5px solid black;
     border-radius: 0px;
     font-size: 14px;
+    color: red;    
     background-color: #3b3b3b;
     background-image: none;
     box-shadow: none;
@@ -28,6 +30,7 @@ box {
     font-size: 14px;
     color: #ffa600;
     background-color: #3b3b3b;
+        color: red;
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 10px; 
@@ -38,6 +41,7 @@ entry {
     border: 1px #3b3b3b;
     border-radius: 0px;
     font-size: 14px;
+    color: red;
     color: #ffa600;
     background-color: #3b3b3b;
     padding: 10px 10px;
@@ -50,6 +54,7 @@ entry {
 label {
     border-radius: 0px;
     font-size: 14px;
+    color: red;
     color: #ffa600;
     background-color: #3b3b3b;
     padding: 5px 5px;
@@ -62,6 +67,7 @@ label {
 grid {
     border: none;
     background-color: #1b1b1b;
+        color: red;
 }
 
 .innergrid {
