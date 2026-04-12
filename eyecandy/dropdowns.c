@@ -72,7 +72,7 @@ callback_for_panel_type_dropdown (GObject *obj, GParamSpec *pspec, gpointer user
 }
 
 void
-callback_for_xyz_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data)
+callback_for_xylayer_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data)
 {
   (void) pspec;
   int* p = (int*) user_data;
@@ -82,23 +82,23 @@ callback_for_xyz_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_
 }
 
 void
-callback_for_y_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data)
+callback_for_row_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data)
 {
   (void) pspec;
   Panel* p = (Panel*) user_data;
   GtkDropDown *dd = GTK_DROP_DOWN (obj);
   guint index = gtk_drop_down_get_selected (dd);
-  p -> y_index = index;
+  p -> row_index = index;
 }
 
 void
-callback_for_z_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data)
+callback_for_layer_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data)
 {
   (void) pspec;
   Panel* p = (Panel*) user_data;
   GtkDropDown *dd = GTK_DROP_DOWN (obj);
   guint index = gtk_drop_down_get_selected (dd);
-  p -> z_index = index;
+  p -> layer_index = index;
 }
   
 GtkWidget*
@@ -140,7 +140,7 @@ widget_for_panel_type_dropdown (const Panel *p) {
 }
 
 GtkWidget*
-widget_for_xyz_index_dropdown (Panel* p, const int range, const int index) {
+widget_for_xylayer_index_dropdown (Panel* p, const int range, const int index) {
   GtkWidget* selector;
   
   switch (range) {

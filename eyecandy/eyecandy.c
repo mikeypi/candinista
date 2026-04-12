@@ -45,8 +45,8 @@ int raw_output = 0;
 
 static GtkWidget*
 make_legend (const Sensor *s) {
-  int x_index = sensor_get_x_index (s);
-  int y_index = sensor_get_y_index (s);
+  int column_index = sensor_get_column_index (s);
+  int row_index = sensor_get_row_index (s);
 
   GtkGrid* grid = GTK_GRID (gtk_grid_new ());
   gtk_widget_set_margin_top (GTK_WIDGET (grid), 10);
@@ -58,7 +58,7 @@ make_legend (const Sensor *s) {
   
   for (int i = 0; i < cfg -> x_dimension; i++) {
       for (int j = 0; j < cfg -> y_dimension; j++) {
-	if ((x_index == i) && (y_index == j)) {
+	if ((column_index == i) && (row_index == j)) {
 	  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("X")), i, j + 1, 1, 1);
 	} else {
 	  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("O")), i, j + 1, 1, 1);
@@ -140,14 +140,14 @@ make_page_for_candinista_parameters (const Sensor *s) {
   
   row = 1; column = 0;
 
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("x_index")), column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("y_index")), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("column_index")), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("row_index")), column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("id")), column, row++, 1, 1);
 
   row = 1; column = 1;
 
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s -> x_index))), column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s -> y_index))), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s -> column_index))), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s -> row_index))), column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s -> id))), column, row++, 1, 1);
     
   return (GTK_WIDGET (grid));
@@ -236,12 +236,12 @@ make_page_for_panel (const Panel *p) {
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> low_warn))), 1, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("high_warn")), 0, row, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> high_warn))), 1, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("x_index")), 0, row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> x_index))), 1, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("y_index")), 0, row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> y_index))), 1, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("z_index")), 0, row, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> z_index))), 1, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("column_index")), 0, row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> column_index))), 1, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("row_index")), 0, row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> row_index))), 1, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("layer_index")), 0, row, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> layer_index))), 1, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("border")), 0, row, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(p -> border))), 1, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("foreground_color")), 0, row, 1, 1);
@@ -264,8 +264,8 @@ static GtkWidget*
 make_page_for_panel_info (const Sensor *s) {
   Panel* p;
 
-  int x_index = sensor_get_x_index (s);
-  int y_index = sensor_get_y_index (s);
+  int column_index = sensor_get_column_index (s);
+  int row_index = sensor_get_row_index (s);
   int sensor_id = sensor_get_id (s);
   
   GtkGrid* grid = GTK_GRID (gtk_grid_new ());
@@ -273,7 +273,7 @@ make_page_for_panel_info (const Sensor *s) {
   gtk_widget_set_margin_end (GTK_WIDGET (grid), 10);
 
   for (int i = 0; i < cfg -> z_dimension; i++) {
-    if (NULL != (p = cfg_get_panel (cfg, x_index, y_index, i))) {
+    if (NULL != (p = cfg_get_panel (cfg, column_index, row_index, i))) {
       if ((NULL != p) && (panel_get_id (p) == sensor_id)) {
 	gtk_grid_attach (grid, GTK_WIDGET (make_page_for_panel(p)), i, 0, 1, 1);
       }

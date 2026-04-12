@@ -105,7 +105,7 @@ widget_for_panel_group_dropdown (int i, int j)
   int count = 0;
   for (int k = 0; k < cfg->panel_count; k++) {
     Panel *p = cfg->panels[k];
-    if (panel_get_x_index (p) == i && panel_get_y_index (p) == j) count++;
+    if (panel_get_column_index (p) == i && panel_get_row_index (p) == j) count++;
   }
 
   char label[80];
@@ -115,7 +115,7 @@ widget_for_panel_group_dropdown (int i, int j)
 
   for (int k = 0; k < cfg->panel_count; k++) {
     Panel *p = cfg->panels[k];
-    if (panel_get_x_index (p) == i && panel_get_y_index (p) == j) {
+    if (panel_get_column_index (p) == i && panel_get_row_index (p) == j) {
       GtkWidget *btn = gtk_button_new_with_label (p->name);
       g_signal_connect (btn, "clicked", G_CALLBACK (callback_for_panel_button), p);
       gtk_box_append (GTK_BOX (box), btn);
@@ -130,7 +130,7 @@ widget_for_sensor_group_dropdown (int i, int j)
   int count = 0;
   for (int k = 0; k < cfg->sensor_count; k++) {
     Sensor *s = cfg->sensors[k];
-    if (sensor_get_x_index (s) == i && sensor_get_y_index (s) == j) count++;
+    if (sensor_get_column_index (s) == i && sensor_get_row_index (s) == j) count++;
   }
 
   char label[80];
@@ -140,7 +140,7 @@ widget_for_sensor_group_dropdown (int i, int j)
 
   for (int k = 0; k < cfg->sensor_count; k++) {
     Sensor *s = cfg->sensors[k];
-    if (sensor_get_x_index (s) == i && sensor_get_y_index (s) == j) {
+    if (sensor_get_column_index (s) == i && sensor_get_row_index (s) == j) {
       GtkWidget *btn = gtk_button_new_with_label (s->name);
       g_signal_connect (btn, "clicked", G_CALLBACK (callback_for_sensor_button), s);
       gtk_box_append (GTK_BOX (box), btn);

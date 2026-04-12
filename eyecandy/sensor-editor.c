@@ -138,8 +138,8 @@ widget_for_sensor (Sensor *s)
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("offset")),   column, row++, 1, 1);
 
   row = 0; column += 2;
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("x_index")), column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("y_index")), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("column_index")), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("row_index")), column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("id")),      column, row++, 1, 1);
 
   row = 0; column = 1;
@@ -153,8 +153,8 @@ widget_for_sensor (Sensor *s)
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_double ((gpointer) &(s->offset))),   column, row++, 1, 1);
 
   row = 0; column += 2;
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s->x_index))), column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s->y_index))), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s->column_index))), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s->row_index))), column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int ((gpointer) &(s->id))),      column, row++, 1, 1);
 
   return GTK_WIDGET (scroller);
@@ -164,8 +164,8 @@ widget_for_sensor (Sensor *s)
  * Store builder
  * ------------------------------------------------------------- */
 
-static int         sensor_get_x (const void *s) { return sensor_get_x_index ((Sensor *) s); }
-static int         sensor_get_y (const void *s) { return sensor_get_y_index ((Sensor *) s); }
+static int         sensor_get_x (const void *s) { return sensor_get_column_index ((Sensor *) s); }
+static int         sensor_get_y (const void *s) { return sensor_get_row_index ((Sensor *) s); }
 static const char *sensor_get_n (const void *s) { return sensor_get_name    ((Sensor *) s); }
 
 GListStore *

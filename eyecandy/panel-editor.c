@@ -109,9 +109,9 @@ widget_for_panel (Panel *p)
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("panel type")),      column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("low_warn")),         column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("high_warn")),        column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("x_index")),          column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("y_index")),          column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("z_index")),          column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("column_index")),          column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("row_index")),          column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("layer_index")),          column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("border")),           column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("foreground_color")), column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_label_for_string ("background_color")), column, row++, 1, 1);
@@ -124,9 +124,9 @@ widget_for_panel (Panel *p)
   gtk_grid_attach (grid, GTK_WIDGET (widget_for_panel_type_dropdown (p)),                               column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int   ((gpointer) &(p->low_warn))),                  column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_int   ((gpointer) &(p->high_warn))),                 column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (widget_for_xyz_index_dropdown (p, cfg->x_dimension, p->x_index)), column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (widget_for_xyz_index_dropdown (p, cfg->y_dimension, p->y_index)), column, row++, 1, 1);
-  gtk_grid_attach (grid, GTK_WIDGET (widget_for_xyz_index_dropdown (p, cfg->z_dimension, p->z_index)), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (widget_for_xylayer_index_dropdown (p, cfg->x_dimension, p->column_index)), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (widget_for_xylayer_index_dropdown (p, cfg->y_dimension, p->row_index)), column, row++, 1, 1);
+  gtk_grid_attach (grid, GTK_WIDGET (widget_for_xylayer_index_dropdown (p, cfg->z_dimension, p->layer_index)), column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (widget_for_yesno_dropdown (p, p->border)),                        column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_hex   ((gpointer) &(p->foreground_color))),          column, row++, 1, 1);
   gtk_grid_attach (grid, GTK_WIDGET (new_entry_for_hex   ((gpointer) &(p->background_color))),          column, row++, 1, 1);
@@ -142,8 +142,8 @@ widget_for_panel (Panel *p)
  * Store builder
  * ------------------------------------------------------------- */
 
-static int         panel_get_x (const void *p) { return panel_get_x_index ((Panel *) p); }
-static int         panel_get_y (const void *p) { return panel_get_y_index ((Panel *) p); }
+static int         panel_get_x (const void *p) { return panel_get_column_index ((Panel *) p); }
+static int         panel_get_y (const void *p) { return panel_get_row_index ((Panel *) p); }
 static const char *panel_get_n (const void *p) { return ((Panel *) p)->name;             }
 
 GListStore *

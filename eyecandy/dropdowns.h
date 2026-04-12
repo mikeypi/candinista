@@ -30,8 +30,8 @@
 extern void callback_for_unit_type_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
 extern void callback_for_yesno_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
 extern void callback_for_panel_type_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
-extern void callback_for_xyz_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
+extern void callback_for_xylayer_index_dropdown (GObject *obj, GParamSpec *pspec, gpointer user_data);
 extern GtkWidget* widget_for_panel_type_dropdown (const Panel *p);
-extern GtkWidget* widget_for_xyz_index_dropdown (Panel* p, const int range, const int index);
+extern GtkWidget* widget_for_xylayer_index_dropdown (Panel* p, const int range, const int index);
 extern GtkWidget* widget_for_yesno_dropdown (Panel* p, const int state);
 extern GtkWidget* widget_for_unit_type_dropdown (Panel* p, const int state);
