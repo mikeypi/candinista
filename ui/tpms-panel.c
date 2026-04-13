@@ -152,10 +152,12 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
   }
 }
 
-void print_tpms_panel (FILE* fp, const Panel* g)
-{
-  (void) fp;
-  (void) g;
+void print_tpms_panel(FILE *fp, const Panel *g) {
+    TPMSPanel* tp = (TPMSPanel*) g;
+    fprintf(fp, "    pressure_units: \"%s\"\n",
+            str_from_unit_enum(tp -> pressure_units));
+    fprintf(fp, "    temperature_units: \"%s\"\n",
+            str_from_unit_enum(tp -> temperature_units));
 }
 
 static const struct PanelVTable linear_vtable = {

@@ -12,8 +12,8 @@ typedef struct {
   size_t n_values;
   double scale;
   double offset;
-  int column_index;
   int row_index;
+  int column_index;
   int id;
 } SensorParameters;
 
@@ -25,22 +25,14 @@ struct Sensor {
   double* x_values;
   double* y_values;
   int n_values;
-  int column_index;
   int row_index;
+  int column_index;
   double offset;
   double scale;
   int id;
 };
 
 typedef struct Sensor Sensor;
-
-#if 0
-typedef struct {
-  int can_id;
-  Sensor* first;
-  Sensor* last;
-} can_group;
-#endif
 
 static inline const char *sensor_get_name (const Sensor *s)                         { return s -> name; }
 static inline int sensor_get_can_id (const Sensor *s)                               { return s -> can_id; }

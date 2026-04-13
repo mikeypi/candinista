@@ -24,7 +24,7 @@ Sensor* sensor_create (SensorParameters* st) {
   return s;
 }
 
-void sensor_destroy (Sensor *s) {
+void sensor_destroy (Sensor* s) {
   fprintf (stderr, "freeing %s\n", s -> name);
   free (s -> name);
   free (s -> x_values);
@@ -32,7 +32,7 @@ void sensor_destroy (Sensor *s) {
   free (s);
 }
 
-static void print_double_array (FILE* fp, const char *label,
+static void print_double_array (FILE* fp, const char* label,
                                const double *v,
                                size_t count)
 {
@@ -63,10 +63,11 @@ void sensor_print (FILE* fp, const Sensor* s)
     fprintf (fp, "    row_index: %d\n", s -> row_index);
 
     if (!isnan (s -> offset) && (0 != s -> offset)) {
-      fprintf (fp, "    offset: %f\n", s -> offset);
+      fprintf (fp, "    offset: %g\n", s -> offset);
     }
+    
     if (!isnan (s -> scale) && (1.0 != s -> scale)) {
-      fprintf (fp, "    scale: %f\n", s -> scale);
+      fprintf (fp, "    scale: %g\n", s -> scale);
     }
 
     fprintf (fp, "    id: %d\n", s -> id);

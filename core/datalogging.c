@@ -41,7 +41,6 @@
 #include "units.h"
 #include "sensor.h"
 #include "panel.h"
-#include "d3-array.h"
 #include "candinista.h"
 #include "yaml-loader.h"
 #include "yaml-printer.h"

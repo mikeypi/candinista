@@ -33,8 +33,8 @@ typedef struct {
   unit_type temperature_units; 
   char label[80];
   int border;
-  int column_index;
   int row_index;
+  int column_index;
   int layer_index;
   int timeout;
   int id;
@@ -58,8 +58,8 @@ struct Panel {
   void (*print) (FILE* fp, const Panel* g);
   char name[80];
   panel_type type;
-  int column_index;
   int row_index;
+  int column_index;
   int layer_index;
   unsigned char border;
   double low_warn;
