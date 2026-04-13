@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <gtk/gtk.h>
 
-#include "d3-array.h"
 #include "units.h"
 #include "sensor.h"
 #include "panel.h"
@@ -13,7 +12,7 @@
     
 void sensor_print_config (FILE* fp, Configuration* cfg) {
   for (int i = 0; i < cfg -> sensor_count; i++) {
-    sensor_print (fp, cfg -> sensors[i]);
+    sensor_print (fp, &cfg -> sensors[i]);
     fprintf (fp, "\n");
   }
 }
@@ -26,7 +25,7 @@ void configuration_print (FILE* fp, const Configuration* d) {
 
   fprintf (fp, "sensors:\n");
   for (int i = 0; i < d -> sensor_count; i++) {
-    sensor_print (fp, d -> sensors[i]);
+    sensor_print (fp, &d -> sensors[i]);
     fprintf (fp, "\n");
   }
 

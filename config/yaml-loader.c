@@ -13,7 +13,6 @@
 #include <glib.h>
 
 #include "units.h"
-#include "d3-array.h"
 #include "cairo-misc.h"
 #include "sensor.h"
 #include "panel.h"
@@ -532,11 +531,8 @@ Configuration* configuration_load_yaml (const char *path)
                 interpolation_array_sort (st.x_values, st.y_values, st.n_values);
                 Sensor *s = sensor_create (&st);
 
-                if (st.column_index > d -> x_dimension) d -> x_dimension = st.column_index;
-                if (st.row_index > d -> y_dimension) d -> y_dimension = st.row_index;
-
                 d -> sensors = realloc (d -> sensors, sizeof *d -> sensors * (d -> sensor_count + 1));
-                d -> sensors[d -> sensor_count++] = s;
+                d -> sensors[d -> sensor_count++] = *s;
 
                 memset (&st, 0, sizeof st);
                 st.scale = st.offset = NAN;
@@ -573,10 +569,6 @@ Configuration* configuration_load_yaml (const char *path)
                 }
 
                 if (g) {
-                    if (gt.column_index > d -> x_dimension) d -> x_dimension = gt.column_index;
-                    if (gt.row_index > d -> y_dimension) d -> y_dimension = gt.row_index;
-                    if (gt.layer_index > d -> z_dimension) d -> z_dimension = gt.layer_index;
-
                     d -> panels = realloc (d -> panels, sizeof *d -> panels * (d -> panel_count + 1));
                     d -> panels[d -> panel_count++] = g;
                 }
@@ -638,8 +630,8 @@ comp_panels (const void* elem1, const void* elem2)
 static int
 comp_sensors (const void* elem1, const void* elem2) 
 {
-    const Sensor* s1 = *(const Sensor**) elem1;
-    const Sensor *s2 = *(const Sensor **)elem2;
+    const Sensor* s1 = (const Sensor*) elem1;
+    const Sensor* s2 = (const Sensor*) elem2;
 
     if (s1 -> row_index > s2 -> row_index) {
         return 1;
@@ -654,6 +646,22 @@ comp_sensors (const void* elem1, const void* elem2)
     }
   
     if (s1 -> column_index < s2 -> column_index) {
+        return -1;
+    }
+  
+    if (s1 -> can_id > s2 -> can_id) {
+        return 1;
+    }
+  
+    if (s1 -> can_id < s2 -> can_id) {
+        return -1;
+    }
+  
+    if (s1 -> can_data_offset > s2 -> can_data_offset) {
+        return 1;
+    }
+  
+    if (s1 -> can_data_offset < s2 -> can_data_offset) {
         return -1;
     }
   
@@ -672,13 +680,15 @@ panel_group *linked_panel_group(const int i, const int j, Configuration *cfg) {
     panel_group *pg = cfg -> panel_groups;
     
     while (pg < (cfg -> panel_groups + cfg -> panel_group_count)) {
-      if ((i == panel_get_row_index(pg -> first)) && (j == panel_get_column_index(pg -> first))) {
+      if ((i == panel_get_row_index(*pg -> first)) &&
+          (j == panel_get_column_index(*pg -> first))) {
           return (pg);
       }
 
       pg++;
     }
 
+    fprintf (stderr, "unable to locate linked_panel_group\n");
     return (NULL);
 }
 
@@ -698,7 +708,7 @@ void cfg_build_tables (Configuration* cfg) {
 
         cfg -> panel_groups[cfg -> panel_group_count].first
             = cfg -> panel_groups[cfg -> panel_group_count].last
-            = cfg -> panel_groups[cfg -> panel_group_count].current = *p;
+            = cfg -> panel_groups[cfg -> panel_group_count].current = p;
 
         int ii;
         int jj;
@@ -710,7 +720,7 @@ void cfg_build_tables (Configuration* cfg) {
             jj = panel_get_column_index (*p);
 
             if ((i == ii) && (j == jj)) {
-                cfg -> panel_groups[cfg -> panel_group_count].last = *p;
+                cfg -> panel_groups[cfg -> panel_group_count].last++;
                 p++;
             } else {
                 p = p - 1;
@@ -721,34 +731,23 @@ void cfg_build_tables (Configuration* cfg) {
         p++;
         cfg -> panel_group_count++;
     }
-
-    for (i = 0; i < cfg -> panel_group_count; i++) {
-      fprintf(stderr,
-              "panel group %d, first %lx, last %lx, current %lx delta %td\n", i,
-              (unsigned long)cfg -> panel_groups[i].first,
-              (unsigned long)cfg -> panel_groups[i].last,
-              (unsigned long)cfg -> panel_groups[i].current,
-              (unsigned long)cfg -> panel_groups[i].last - (unsigned long) cfg -> panel_groups[i].first);
-    }
     
     // Could realloc here.
 
-    qsort (cfg -> sensors, cfg -> sensor_count, sizeof (Panel*), comp_sensors);
+    qsort (cfg -> sensors, cfg -> sensor_count, sizeof (Sensor), comp_sensors);
     cfg -> sensor_groups = (sensor_group *)calloc(cfg -> sensor_count, sizeof(sensor_group));
     cfg -> sensor_group_count = 0;
 
-    Sensor **s = cfg -> sensors;
+    Sensor *s = cfg -> sensors;
     
     while (s < cfg -> sensors + cfg -> sensor_count) {
-        i = sensor_get_row_index (*s);
-        j = sensor_get_column_index(*s);
-
-        fprintf (stderr, "adding sensor group for %d %d\n", i, j);
-
-        cfg -> sensor_groups[cfg -> sensor_group_count].can_id = (*s) -> can_id; 
+        i = sensor_get_row_index (s);
+        j = sensor_get_column_index(s);
+        
+        cfg -> sensor_groups[cfg -> sensor_group_count].can_id = s -> can_id; 
         cfg -> sensor_groups[cfg -> sensor_group_count].linked_panel_group = linked_panel_group (i, j, cfg);
         cfg -> sensor_groups[cfg -> sensor_group_count].first
-            = cfg -> sensor_groups[cfg -> sensor_group_count].last = *s;
+            = cfg -> sensor_groups[cfg -> sensor_group_count].last = s;
 
         int ii;
         int jj;
@@ -756,11 +755,11 @@ void cfg_build_tables (Configuration* cfg) {
         s = s + 1;
 
         while (s < cfg -> sensors + cfg -> sensor_count) {
-            ii = sensor_get_row_index (*s);
-            jj = sensor_get_column_index (*s);
+            ii = sensor_get_row_index (s);
+            jj = sensor_get_column_index (s);
 
-            if ((i == ii) && (j == jj)) {
-                cfg -> sensor_groups[cfg -> sensor_group_count].last = *s;
+            if ((i == ii) && (j == jj) && (s -> can_id == cfg -> sensor_groups[cfg -> sensor_group_count].can_id)) {
+                cfg -> sensor_groups[cfg -> sensor_group_count].last++;
                 s++;
             } else {
                 s = s - 1;
@@ -772,33 +771,28 @@ void cfg_build_tables (Configuration* cfg) {
         cfg -> sensor_group_count++;
     }
 
-    for (i = 0; i < cfg -> sensor_group_count; i++) {
-      fprintf(stderr, "sensor %d, first %lx, last %lx, delta %ld\n", i,
-              (unsigned long)cfg -> sensor_groups[i].first,
-              (unsigned long)cfg -> sensor_groups[i].last,
-              (unsigned long)cfg -> panel_groups[i].last -  (unsigned long)cfg -> panel_groups[i].first);
+#ifdef SENSOR_DEBUG
+    sensor_group *sg = cfg -> sensor_groups;
+    while (sg < cfg -> sensor_groups + cfg -> sensor_group_count) {
+      s = sg -> first;
+      fprintf(stderr, "sensor group: %ld, can_id: %x\n",
+              ((unsigned long) sg - (unsigned long) cfg -> sensor_groups) / sizeof (sensor_group), sg -> can_id);
+      while (s <= sg -> last) {
+        fprintf(stderr, "\tsensor: %ld, name: %s, can_id: %x, row_index: %d, column_index: %d\n",
+                ((unsigned long) s - (unsigned long) sg -> first) / sizeof (Sensor), s -> name, s -> can_id, s -> row_index, s -> column_index);
+
+        fprintf(stderr, "\toffset: %d, width: %d, id: %d\n", s -> can_data_offset, s -> can_data_width, s -> id);
+
+        s++;
+      }
+      sg++;
     }
-    fprintf (stderr, "size of sensor %d\n", sizeof (Sensor));
-
-}
-
-#if 0
-long cfg_get_active_z  (Configuration* cfg, int i, int j) {
-    uintptr_t* ip = get_item_in_d3_array (cfg -> active_layer_index, i, j, 0);
-    return ((long) ip);
-}
-
-void cfg_set_active_z (Configuration* cfg, int column_index, int row_index, long value) {
-    set_item_in_d3_array (cfg -> active_layer_index, (uintptr_t*)value, column_index, row_index, 0);
-}
 #endif
+}
 
 void cfg_free (Configuration *d) {
     for (int i = 0; i < d -> panel_count; i++)
         panel_destroy (d -> panels[i]);
-    for (int i = 0; i < d -> sensor_count; i++)
-        sensor_destroy (d -> sensors[i]);
     free (d -> panels);
     free (d -> sensors);
-    free (d -> active_layer_index);
 }

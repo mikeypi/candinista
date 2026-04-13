@@ -18,7 +18,6 @@ add_library(candinsta_shared STATIC
     # Config / serialization
     ${CMAKE_CURRENT_SOURCE_DIR}/config/yaml-loader.c
     ${CMAKE_CURRENT_SOURCE_DIR}/config/yaml-printer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/config/d3-array.c
 
     # UI / Cairo panel renderers
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/cairo-misc.c

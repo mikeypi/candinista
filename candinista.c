@@ -51,7 +51,6 @@
 
 #include <sys/time.h>
 
-#include "d3-array.h"
 #include "candinista.h"
 #include "units.h"
 #include "sensor.h"
@@ -74,7 +73,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     (void) condition;
     (void) data;
   
-    int i = 0;
+//    int i = 0;
     double temp;
     struct can_frame frame;
     gsize bytes_read; 
@@ -101,14 +100,14 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
 
     while (sg < (cfg -> sensor_groups + cfg -> sensor_group_count)) {
         if (((unsigned int) sg -> can_id  & CAN_SFF_MASK)  != (frame.can_id & CAN_SFF_MASK)) {
-            i++;
+            sg++;
             continue;
         }
 
-        /* reaching here means that a sensor grpup with matching CAN_ID has been
+        /* reaching here means that a sensor group with matching CAN_ID has been
          * located. */
 
-        Panel *p = sg -> linked_panel_group -> current;
+        Panel **p = sg -> linked_panel_group -> current;
         /* All sensor data from a matching sensor group goes to the same panel.
          * Sensors are sorted by row, column so this assumption is safe.
          */
@@ -116,8 +115,8 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
         Sensor* s = sg -> first;
 
         /* not sure this pointer math works */
-        while (s < sg -> last) {
-            if (sensor_get_id (s) != panel_get_id (p)) {
+        while (s <= sg -> last) {
+            if (sensor_get_id (s) != panel_get_id (*p)) {
                 s++;
                 /*
                  * The idea here is that a single row column location can have more than one pairing between
@@ -125,7 +124,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
                  */
                 continue; 
             }
-
+            
             /*
              * retrieve the individual data values from the can frame. This handles up to 4 bytes. 
              * would need to be expanded for larger data sizes
@@ -181,34 +180,36 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
             }
 
             /* not sure this pointer math works */
-            panel_set_value (p, temp, s - sg -> first, frame.can_id);
+            panel_set_value (*p, temp, s - sg -> first, frame.can_id);
       
-            i++;
+            s++;
         }
 
         /* not sure this pointer math works */
         if ((0 != data_logging) && (0 != (s - sg -> first))) {
             log_data (&frame);
         }
+
+        sg++;
     }
 
     return TRUE;
 }
 
-panel_group *
+static panel_group *
 get_panel_group_for_row_col(int row_index, int column_index) {
     panel_group *pg;
     for (pg = cfg -> panel_groups;
          pg < cfg -> panel_groups + cfg -> panel_group_count; pg++) {
-      if ((pg -> current -> row_index == row_index) &&
-          (pg -> current -> column_index == column_index)) {
+        Panel* p = *pg -> current;
+      if ((p -> row_index == row_index) &&
+          (p -> column_index == column_index)) {
         return (pg);
       }
     }
 
     return (NULL);
 }
-
 
 /*
  * clicking a panel is supposed to cycle through all of the panels that have the same x, and
@@ -223,8 +224,8 @@ on_pressed(GtkGestureClick* gesture,
 {
     (void) gesture;
     (void) n_press;
-//    (void) x;
-//    (void) y;
+    (void) x;
+    (void) y;
   
     typedef struct {
         GtkDrawingArea* drawing_area;
@@ -239,49 +240,28 @@ on_pressed(GtkGestureClick* gesture,
 
     panel_group* pg = get_panel_group_for_row_col(row_index, column_index);
 
-    unsigned long aa = (unsigned long)pg -> first;
-    unsigned long bb = (unsigned long)pg -> last;
-    unsigned long cc = (unsigned long)ctx -> cg - aa;
-    unsigned long dd = bb - aa;
-    unsigned long ee = (cc + 1) % dd;
-    
-    ptrdiff_t delta = (ctx -> cg - pg -> first) & 0xff;
-    ptrdiff_t span = pg -> last - pg -> first;
-    unsigned long active_layer = (delta + 1) % span;
-    pg -> current = pg -> first + active_layer;
-
-//    fprintf (stderr, "sizeof panel %ld\n", sizeof (Panel));
-//    fprintf (stderr, "first = %p, last = %p\n", (void*) pg -> first, (void*) pg -> last);
-//    fprintf (stderr, "delta %td, span %td, new active_layer %td\n", delta, span, active_layer);
-//    fprintf(stderr, "pg = %p, first = %p, last = %p\n", (void *)pg,
-//            (void *)pg->first, (void *)pg->last);
-    unsigned long a = (unsigned long)pg -> first;
-    unsigned long b = (unsigned long)pg -> last;
-    
-    fprintf(stderr, "first = %ld last = %ld delta = %td\n",
-            a, b, b - a);
-#if 0
-    Panel* p = NULL;
-  
-    for (int i = 1; i < cfg -> z_dimension; i++) {
-        int j = (active_z + i) % cfg -> z_dimension;
-        if (NULL != (p = cfg_get_panel (cfg, column_index, row_index, j))) {
-            cfg_set_active_z (cfg, column_index, row_index, j);
-            break;
-        }
+    if (pg -> first >= pg -> last) {
+      return;
     }
-#endif
+    
+    if (pg -> current >= pg -> last) {
+      pg -> current = pg -> first;
+    } else {
+      pg -> current++;
+    }
 
     if (NULL != pg -> current) {
-        ctx -> cg = pg -> current;
-        gtk_drawing_area_set_draw_func(
-            ctx -> drawing_area, gtk_draw_gauge_panel_cb, pg -> current, NULL);
+        ctx -> cg = *pg -> current;
+        gtk_drawing_area_set_draw_func(ctx -> drawing_area, gtk_draw_panel_cb,
+                                       *pg -> current, NULL);
+
+        gtk_widget_queue_draw(GTK_WIDGET(ctx -> drawing_area));
         
-        int timeout = panel_get_timeout (pg -> current);
+        int timeout = panel_get_timeout (*pg -> current);
         g_source_remove (ctx -> timeout_id);
         ctx -> timeout_id =
             g_timeout_add((0 == timeout) ? DEFAULT_TIMEOUT : timeout,
-                          gtk_update_gauge_panel_value, ctx);
+                          gtk_update_panel_value, ctx);
     }
 }
 
@@ -324,7 +304,7 @@ activate (GtkApplication* app,
     gtk_window_set_application (GTK_WINDOW (window), app);
 
     if (0 == remote_display) {
-        gtk_window_fullscreen (GTK_WINDOW(window));
+//        gtk_window_fullscreen (GTK_WINDOW(window));
     }
 
     GtkGrid *grid = GTK_GRID(gtk_grid_new());
@@ -343,7 +323,7 @@ activate (GtkApplication* app,
         gtk_widget_set_hexpand (GTK_WIDGET(drawing_area), TRUE);
         gtk_widget_set_vexpand (GTK_WIDGET(drawing_area), TRUE);
 
-        p = pg -> current;
+        p = *pg -> current;
             
         assert (NULL != p);
 	
@@ -359,21 +339,22 @@ activate (GtkApplication* app,
         ctx -> cg = p;
         ctx -> timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT,
                                                 (timeout == 0) ? 600 : timeout,
-                                                gtk_update_gauge_panel_value,
+                                                gtk_update_panel_value,
                                                 ctx,
                                                 NULL);
 
         g_signal_connect (drawing_area, "destroy",
                           G_CALLBACK (on_drawing_area_destroy), ctx);
 
-        gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_gauge_panel_cb, p, NULL);
+        gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_panel_cb, p, NULL);
       
         GtkGesture* click = gtk_gesture_click_new();
         g_signal_connect (click, "pressed",
                           G_CALLBACK (on_pressed), ctx);
 
         gtk_widget_add_controller (GTK_WIDGET (drawing_area), GTK_EVENT_CONTROLLER (click));
-        gtk_grid_attach(grid, GTK_WIDGET(drawing_area), p -> column_index, p -> row_index, 1, 1);
+        gtk_grid_attach(grid, GTK_WIDGET(drawing_area), p -> column_index,
+                        p -> row_index, 1, 1);
     }
 
     gtk_window_present(GTK_WINDOW(window));
@@ -393,7 +374,6 @@ can_setup () {
         return NULL;
     }
 
-    can_socket_name = "vcan0";
     strcpy (ifr.ifr_name, can_socket_name);
     ioctl (s, SIOCGIFINDEX, &ifr);
 	

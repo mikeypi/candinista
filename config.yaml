@@ -90,7 +90,7 @@ sensors:
     can_data_width: 4
     column_index: 2
     row_index: 1
-    scale: 0.000000
+    scale: 0.0000001
     id: 7
 
   - name: "ECUMaster GPS Longitude"
@@ -99,7 +99,7 @@ sensors:
     can_data_width: 4
     column_index: 2
     row_index: 1
-    scale: 0.000000
+    scale: 0.0000001
     id: 7
 
   - name: "ECUMaster GPS Speed"
@@ -402,6 +402,8 @@ panels:
     row_index: 1
     layer_index: 0
     border: 1
+    temperature_units: "°F"
+    pressure_units: "psi"
     timeout: 1500
     id: 6
 
@@ -410,6 +412,8 @@ panels:
     row_index: 1
     layer_index: 1
     border: 1
+    temperature_units: "°C"
+    pressure_units: "kPa"
     timeout: 1500
     id: 6
 
