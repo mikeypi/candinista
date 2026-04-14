@@ -54,7 +54,6 @@ target_include_directories(candinsta_shared
         ${CMAKE_CURRENT_SOURCE_DIR}/config
         ${CMAKE_CURRENT_SOURCE_DIR}/core
         ${CMAKE_CURRENT_SOURCE_DIR}/ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy
 )
 
 # libm only on Unix-like platforms
@@ -76,32 +75,6 @@ target_compile_options(candinista
 )
 
 target_link_libraries(candinista
-    PRIVATE
-        candinsta_shared
-        PkgConfig::GTK
-        PkgConfig::YAML
-)
-
-# -----------------------------
-# eyecandy executable
-# -----------------------------
-add_executable(eyecandy
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/editor-window.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/panel-editor.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/sensor-editor.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/tree-picker.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/dropdowns.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/eyecandy/panel-routines.c
-)
-
-target_compile_options(eyecandy
-    PRIVATE
-        $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra>
-        $<$<C_COMPILER_ID:MSVC>:/W4>
-)
-
-target_link_libraries(eyecandy
     PRIVATE
         candinsta_shared
         PkgConfig::GTK
