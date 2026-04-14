@@ -78,7 +78,7 @@ Panel* panel_init_base (PanelParameters* p, Panel* lg) {
   lg -> border = p -> border;
   lg -> timeout = p -> timeout;
 
-  sprintf (lg -> name, "%s-%d-%d-%d-%d\n",
+  sprintf (lg -> name, "%s-%d-%d-%d-%d",
 	   string_from_panel_type_enum (lg -> type),
 	   lg -> column_index,
 	   lg -> row_index,

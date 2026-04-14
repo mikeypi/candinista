@@ -770,24 +770,6 @@ void cfg_build_tables (Configuration* cfg) {
         s++;
         cfg -> sensor_group_count++;
     }
-
-#ifdef SENSOR_DEBUG
-    sensor_group *sg = cfg -> sensor_groups;
-    while (sg < cfg -> sensor_groups + cfg -> sensor_group_count) {
-      s = sg -> first;
-      fprintf(stderr, "sensor group: %ld, can_id: %x\n",
-              ((unsigned long) sg - (unsigned long) cfg -> sensor_groups) / sizeof (sensor_group), sg -> can_id);
-      while (s <= sg -> last) {
-        fprintf(stderr, "\tsensor: %ld, name: %s, can_id: %x, row_index: %d, column_index: %d\n",
-                ((unsigned long) s - (unsigned long) sg -> first) / sizeof (Sensor), s -> name, s -> can_id, s -> row_index, s -> column_index);
-
-        fprintf(stderr, "\toffset: %d, width: %d, id: %d\n", s -> can_data_offset, s -> can_data_width, s -> id);
-
-        s++;
-      }
-      sg++;
-    }
-#endif
 }
 
 void cfg_free (Configuration *d) {

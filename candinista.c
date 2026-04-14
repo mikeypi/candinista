@@ -304,7 +304,7 @@ activate (GtkApplication* app,
     gtk_window_set_application (GTK_WINDOW (window), app);
 
     if (0 == remote_display) {
-//        gtk_window_fullscreen (GTK_WINDOW(window));
+        gtk_window_fullscreen (GTK_WINDOW(window));
     }
 
     GtkGrid *grid = GTK_GRID(gtk_grid_new());
@@ -405,7 +405,7 @@ main (int argc, char** argv) {
   
     cfg_build_tables (cfg);
 
-    while (-1 != (option = getopt (argc, argv, "dpr"))) {
+    while (-1 != (option = getopt (argc, argv, "dgpr"))) {
         switch (option) {
         case 'd':
             data_logging = 1;
@@ -413,6 +413,11 @@ main (int argc, char** argv) {
       
         case 'p':
             configuration_print (stdout, cfg);
+            exit (0);
+            break;
+
+        case 'g':
+            group_print (stdout, cfg);
             exit (0);
             break;
 
