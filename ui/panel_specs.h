@@ -1,6 +1,13 @@
 #ifndef PANEL_SPECS_H
 #define PANEL_SPECS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <gtk/gtk.h>
+#include "units.h"
+#include "panel.h"
+
 typedef struct
 {
   double arc_start_angle;

@@ -1,6 +1,9 @@
 #ifndef YAMLLOADER_H
 #define YAMLLOADER_H
 
+#include "sensor.h"
+#include "panel.h"
+
 typedef struct {
     Panel** first;
     Panel** last;

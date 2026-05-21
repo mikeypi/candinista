@@ -1,6 +1,10 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+
 /* Only used to create sensors */
 typedef struct {
   char name[80];

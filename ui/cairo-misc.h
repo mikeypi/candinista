@@ -1,6 +1,12 @@
 #ifndef CAIROMISC_H
 #define CAIROMISC_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <gtk/gtk.h>
+#include "units.h"
+
 typedef enum warning_level {NO_WARN, LOW_WARN, HIGH_WARN} warning_level;
 
 #define DEFAULT_OUTPUT_FORMAT "%.0f"

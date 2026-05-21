@@ -73,7 +73,6 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     (void) condition;
     (void) data;
   
-//    int i = 0;
     double temp;
     struct can_frame frame;
     gsize bytes_read; 

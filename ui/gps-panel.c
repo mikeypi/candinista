@@ -1,6 +1,7 @@
 #define XOFFSET 0
 #define YOFFSET 40
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -77,9 +78,26 @@ void draw_gps_panel (GtkDrawingArea* area,
   show_text_right_justified (cr, xx, yy, abuf, 5);
 
   yy += delta_y;
-  sprintf (abuf, "%02i-%02i-%d  %02i:%02i:%02i", rp -> utc_day, rp -> utc_month, rp -> utc_year,
-	   rp -> utc_hour, rp -> utc_minute, rp -> utc_second);
-  
+
+  struct tm gps = {
+    .tm_year = rp -> utc_year - 1900,   /* raw byte 26 + 100 = 126 = years since 1900 */
+    .tm_mon  = rp -> utc_month - 1,    /* 0-based: April=3 */
+    .tm_mday = rp -> utc_day,
+    .tm_hour = rp -> utc_hour,
+    .tm_min  = rp -> utc_minute,
+    .tm_sec  = rp -> utc_second,
+};
+time_t t = timegm (&gps);
+struct tm *local = localtime (&t);
+
+sprintf (abuf, "%02d-%02d-%04d  %02d:%02d:%02d",
+         local -> tm_mday,
+         local -> tm_mon + 1,           /* back to 1-based for display */
+         local -> tm_year + 1900,       /* full 4-digit year */
+         local -> tm_hour,
+         local -> tm_min,
+         local -> tm_sec);
+
   show_text_left_justified (cr, xx + 260, yy + 20, abuf);
   yy += delta_y;
 

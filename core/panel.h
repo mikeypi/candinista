@@ -1,6 +1,12 @@
 #ifndef PANEL_H
 #define PANEL_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <gtk/gtk.h>
+#include "units.h"
+
 #define DEFAULT_TIMEOUT 600
 
 #define XRED_RGB    0xff0000
