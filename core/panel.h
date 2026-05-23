@@ -21,7 +21,7 @@
 #define DEFAULT_BACKGROUND_RGB XBLACK_RGB
 
 typedef enum panel_type {RADIAL_PRESSURE_PANEL, RADIAL_TEMPERATURE_PANEL, LINEAR_PRESSURE_PANEL,
-			 LINEAR_TEMPERATURE_PANEL, INFO_PANEL, TPMS_PANEL, GPS_PANEL, UNKNOWN_PANEL} panel_type;
+    LINEAR_TEMPERATURE_PANEL, INFO_PANEL, TPMS_PANEL, GPS_PANEL, TEXT_PANEL, UNKNOWN_PANEL} panel_type;
 
 char* string_from_panel_type_enum (const panel_type t);
 
@@ -83,7 +83,8 @@ Panel* create_linear_gauge_panel (PanelParameters* p);
 Panel* create_radial_gauge_panel (PanelParameters* p);
 Panel* create_info_panel (PanelParameters* p);
 Panel* create_tpms_panel (PanelParameters* p);
-Panel* create_gps_panel (PanelParameters* p);
+Panel *create_gps_panel(PanelParameters *p);
+Panel* create_text_panel (PanelParameters* p);
 Panel* panel_init_base (PanelParameters* p, Panel* lg);
 
 /* base functions (work for all panel types) */

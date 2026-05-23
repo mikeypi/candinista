@@ -42,6 +42,9 @@ void group_print(FILE *fp, Configuration *cfg) {
       Sensor* s = sg -> first;
       fprintf(fp, "sensor group: %ld, can_id: %x\n",
               ((unsigned long) sg - (unsigned long) cfg -> sensor_groups) / sizeof (sensor_group), sg -> can_id);
+
+      fprintf (stderr, "linked panel group %p\n", sg -> linked_panel_group);
+
       while (s <= sg -> last) {
         fprintf(fp,
                 "\tsensor: %ld, name: %s, can_id: %x, row_index: %d, "

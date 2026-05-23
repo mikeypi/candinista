@@ -10,6 +10,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK  REQUIRED IMPORTED_TARGET gtk4)
 pkg_check_modules(YAML REQUIRED IMPORTED_TARGET yaml-0.1)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # -----------------------------
 # Shared library
@@ -25,6 +26,7 @@ add_library(candinsta_shared STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/info-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/linear-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/gps-panel.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/text-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/radial-panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/tpms-panel.c
 

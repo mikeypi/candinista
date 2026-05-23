@@ -257,6 +257,18 @@ panels:
     output_format: "%.0f"
     units: "°C"
 
+  - type: text
+    column_index: 0
+    row_index: 0
+    layer_index: 2
+    border: 1
+    id: 1
+    label: "Water"
+    low_warn : -27.0
+    high_warn: 105.0
+    output_format: "%.0f"
+    units: "°C"
+
   - type: radial_temperature
     column_index: 1
     row_index: 0

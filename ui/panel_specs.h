@@ -69,6 +69,19 @@ typedef struct {
 /* concrete type */
 typedef struct {
   Panel base;
+  double value;
+  double low_warn;
+  double high_warn;
+  int high_warn_color;
+  int low_warn_color;
+  unit_type units;
+  char label[64];
+  char* output_format;  
+} TextPanel;
+
+/* concrete type */
+typedef struct {
+  Panel base;
 } InfoPanel;
 
 /* concrete type */
