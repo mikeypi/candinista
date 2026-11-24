@@ -7,6 +7,8 @@
 #include "units.h"
 #include "sensor.h"
 
+data_register data_registers[DATA_REGISTER_COUNT];
+
 Sensor* sensor_create (SensorParameters* st) {
   Sensor *s = calloc (1, sizeof *s);
   s -> name  = strdup (st -> name);

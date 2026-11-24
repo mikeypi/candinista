@@ -28,7 +28,7 @@ void draw_text_panel (GtkDrawingArea* area,
 
   assert (NULL != rp);
 
-  double value = convert_units (rp -> value, rp -> units);
+  double value = convert_units (rp -> value, rp -> base.units);
   int foreground_color = get_fg_color ((Panel*)rp, value);
   int background_color = rp -> base.background_color;
   
@@ -56,13 +56,13 @@ void draw_text_panel (GtkDrawingArea* area,
   set_rgba (cr, foreground_color, 1.0);
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
-  sprintf (buffer, "%s", str_from_unit_enum (rp -> units));
+  sprintf (buffer, "%s", str_from_unit_enum (rp -> base.units));
   show_text_left_justified (cr, 238 + XOFFSET + 40, 65 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Label
-  if ('\0' != rp -> label[0]) {
-    sprintf (buffer, "%s", rp -> label);
+  if ('\0' != rp -> base.label[0]) {
+    sprintf (buffer, "%s", rp -> base.label);
     show_text_unjustified (cr, 20 + XOFFSET, 10 + YOFFSET, buffer);
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
   }
@@ -77,7 +77,7 @@ void draw_text_panel (GtkDrawingArea* area,
 			  );
 
   cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE + 20);
-  sprintf (buffer, rp -> output_format, value);
+  sprintf (buffer, rp -> base.output_format, value);
     
   if (3 < strlen (buffer)) {
     show_text_right_justified (cr, width / 2.0 - 20, 180 + YOFFSET, buffer, 4);
@@ -97,11 +97,11 @@ void draw_text_panel (GtkDrawingArea* area,
 void print_text_panel (FILE* fp, const Panel* g) {
   TextPanel* rp = (TextPanel*) g;
 
-  fprintf (fp, "    label: \"%s\"\n", rp -> label);
+  fprintf (fp, "    label: \"%s\"\n", rp -> base.label);
   fprintf (fp, "    low_warn : %.1f\n", rp -> base.low_warn);
   fprintf (fp, "    high_warn: %.1f\n", rp -> base.high_warn);
-  fprintf (fp, "    output_format: \"%s\"\n", rp -> output_format);
-  fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> units));
+  fprintf (fp, "    output_format: \"%s\"\n", rp -> base.output_format);
+  fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> base.units));
 
 }
 
@@ -114,27 +114,20 @@ static void set_value (Panel* g, double value, int sensor_count, int can_id) {
 }
 
 static const struct PanelVTable text_vtable = {
-  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_text_panel,
-  .print = (void (*) (FILE*, const Panel*)) print_text_panel,
+  .draw = draw_text_panel,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
+  .print = (void (*) (FILE*, const Panel*)) print_text_panel,
 };
 
-Panel* create_text_panel (PanelParameters* p) {
+Panel* create_text_panel (Panel* p) {
   TextPanel *lg = g_new0 (typeof (*lg), 1);
   
   if (p -> min > p -> max) {
     fprintf (stderr, "error: min greater than max for text panel\n");
   }
 
-  lg = (TextPanel*) panel_init_base (p, (Panel*) lg);
-  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_text_panel;
+  panel_init_base (p, (Panel*) lg);
   lg -> base.vtable = &text_vtable;
-  
-  lg -> output_format = DEFAULT_OUTPUT_FORMAT;
-  lg -> low_warn_color = p -> low_warn_color;
-  lg -> high_warn_color = p -> high_warn_color;
-  lg -> units = p -> units;
-  strcpy (lg -> label, p -> label);
   
   return (Panel*) lg;
 }

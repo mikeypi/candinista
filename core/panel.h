@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <gtk/gtk.h>
 #include "units.h"
+#include "sensor.h"
 
 #define DEFAULT_TIMEOUT 600
 
@@ -28,64 +29,60 @@ char* string_from_panel_type_enum (const panel_type t);
 typedef struct Panel Panel;
 
 /* Only used to create panels */
-typedef struct {
-  char name[80];
-  double min;
-  double max;
-  double low_warn;
-  double high_warn;
-  unit_type units;
-  unit_type pressure_units;
-  unit_type temperature_units; 
-  char label[80];
-  int border;
-  int row_index;
-  int column_index;
-  int layer_index;
-  int timeout;
-  int id;
-  int foreground_color;
-  int background_color;
-  int high_warn_color;
-  int low_warn_color;
-  char output_format[80];
-  panel_type type;
-} PanelParameters;
 
 struct PanelVTable {
-  void (*draw) (void *, cairo_t*, int, int, void*);
-  void (*set_value) (Panel* g, double value, int sensor_count, int can_id);
+  GtkDrawingAreaDrawFunc draw;
+  void (*set_value) (Panel *g, double value, int sensor_count, int can_id);
   void (*print) (FILE* fp, const Panel* g);
 };
 
-struct Panel {
-  const struct PanelVTable *vtable;
-  void (*draw)(void* area, cairo_t* cr, int height, int width, void* p);
-  void (*print) (FILE* fp, const Panel* g);
-  char name[80];
-  panel_type type;
-  int row_index;
-  int column_index;
-  int layer_index;
-  unsigned char border;
-  double low_warn;
-  double high_warn;
-  int foreground_color;
-  int background_color;
-  int high_warn_color;
-  int low_warn_color;
-  int timeout;
-  int id;
-};
+typedef struct Panel {
+    const struct PanelVTable *vtable;  
+    void (*draw)(void* area, cairo_t* cr, int height, int width, void* p); 
+    void (*print)(FILE* fp, const Panel* g); 
+
+    char name[80];
+    panel_type type;
+    int row_index;
+    int column_index;
+    int layer_index;
+    int border;                       
+
+    double min;                       
+    double max;                       
+    double low_warn;
+    double high_warn;
+
+    unit_type units;                  
+    unit_type pressure_units;         
+    unit_type temperature_units;      
+    unit_type speed_units;
+    unit_type altitude_units;
+
+    char label[80];                   
+
+    int foreground_color;
+    int background_color;
+    int high_warn_color;
+    int low_warn_color;
+
+    int timeout;
+    int id;
+
+    char output_format[80];           
+
+    int data_register_ids[DATA_REGISTER_COUNT];
+    int data_register_id_counter;
+} Panel;
 
 /* lifecycle */
-Panel* create_linear_gauge_panel (PanelParameters* p);
-Panel* create_radial_gauge_panel (PanelParameters* p);
-Panel* create_info_panel (PanelParameters* p);
-Panel* create_tpms_panel (PanelParameters* p);
-Panel *create_gps_panel(PanelParameters *p);
-Panel* create_text_panel (PanelParameters* p);
-Panel* panel_init_base (PanelParameters* p, Panel* lg);
+Panel* create_linear_gauge_panel (Panel* p);
+Panel* create_radial_gauge_panel (Panel* p);
+Panel* create_info_panel (Panel* p);
+Panel* create_tpms_panel (Panel* p);
+Panel* create_gps_panel(Panel *p);
+Panel* create_text_panel (Panel* p);
+void panel_init_base (Panel* p, Panel* lg);
 
 /* base functions (work for all panel types) */
 static inline int panel_get_column_index (const Panel* g)            { return (g -> column_index); }
@@ -101,5 +98,5 @@ int get_fg_color (const Panel* g, const double value);
 /* virtual functions */
 void   panel_set_value (Panel* g, double value, int sensor_count, int can_id);
 void   panel_print (FILE* fp, const Panel* g);
-void   panel_draw (Panel* g, void* cairo_ctx);
+//void   panel_draw (Panel* g, void* cairo_ctx);
 #endif

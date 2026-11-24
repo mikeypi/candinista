@@ -97,17 +97,16 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
 }
 
 static const struct PanelVTable info_vtable = {
-  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_info_panel,
+  .draw = draw_info_panel,
+  .set_value = set_value,
   .print = (void (*) (FILE*, const Panel*)) print_info_panel,
-  .set_value = (void (*) (Panel*, double, int, int)) set_value,
 };
 
-Panel* create_info_panel (PanelParameters* p) {
+Panel* create_info_panel (Panel* p) {
 
   InfoPanel *lg = calloc (1, sizeof *lg);
   
-  lg = (InfoPanel*) panel_init_base (p, (Panel*) lg);
-  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_info_panel;
+  panel_init_base (p, (Panel*) lg);
   lg -> base.vtable = &info_vtable;
   
   return (Panel*) lg;

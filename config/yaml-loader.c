@@ -36,6 +36,7 @@
 static const char *
 node_str (yaml_document_t *doc, yaml_node_t *n)
 {
+    (void) doc;
     if (!n || n -> type != YAML_SCALAR_NODE) return "";
     return (const char *)n -> data.scalar.value;
 }
@@ -148,6 +149,7 @@ parse_sensor (yaml_document_t *doc, yaml_node_t *map, SensorParameters *st)
         else if (0 == strcmp(k, "scale"))           { st -> scale           = atof(v); }
         else if (0 == strcmp(k, "offset"))          { st -> offset          = atof(v); }
         else if (0 == strcmp(k, "id"))              { st -> id              = atoi(v); }
+        else if (0 == strcmp(k, "register"))        { st -> data_register_id = atoi(v); }
         else if (0 == strcmp(k, "x_values")) {
             read_double_sequence(doc, vn, &st -> x_values, &st -> n_values);
         }
@@ -167,13 +169,17 @@ parse_sensor (yaml_document_t *doc, yaml_node_t *map, SensorParameters *st)
 /* ------------------------------------------------------------------ */
 
 static int
-parse_panel (yaml_document_t *doc, yaml_node_t *map, PanelParameters *gt)
+parse_panel (yaml_document_t *doc, yaml_node_t *map, Panel *gt)
 {
     memset(gt, 0, sizeof *gt);
-    gt -> background_color = gt -> foreground_color =
-    gt -> high_warn_color  = gt -> low_warn_color   = 1;
+
     gt -> type = UNKNOWN_PANEL;
     gt -> output_format[0] = '\0';
+    
+    gt -> background_color =  DEFAULT_BACKGROUND_RGB;
+    gt -> foreground_color = DEFAULT_FOREGROUND_RGB;
+    gt -> high_warn_color = DEFAULT_HIGH_WARN_RGB;
+    gt -> low_warn_color = DEFAULT_LOW_WARN_RGB;
 
     if (!map || map -> type != YAML_MAPPING_NODE) return 0;
 
@@ -288,7 +294,7 @@ configuration_load_yaml (const char *path)
              item++)
         {
             yaml_node_t   *entry = yaml_document_get_node(&document, *item);
-            PanelParameters gt;
+            Panel gt;
 
             if (!parse_panel(&document, entry, &gt)) continue;
             if (gt.type == UNKNOWN_PANEL)             continue;
@@ -342,7 +348,7 @@ comp_sensors (const void *elem1, const void *elem2)
     const Sensor *s1 = (const Sensor *)elem1;
     const Sensor *s2 = (const Sensor *)elem2;
 
-    if (s1 -> row_index       != s2 -> row_index)       return s1 -> row_index       > s2 -> row_index       ? 1 : -1;
+    if (s1 -> row_index       != s2 -> row_index)        return s1 -> row_index       > s2 -> row_index       ? 1 : -1;
     if (s1 -> column_index    != s2 -> column_index)     return s1 -> column_index    > s2 -> column_index    ? 1 : -1;
     if (s1 -> can_id          != s2 -> can_id)           return s1 -> can_id          > s2 -> can_id          ? 1 : -1;
     if (s1 -> can_data_offset != s2 -> can_data_offset)  return s1 -> can_data_offset > s2 -> can_data_offset ? 1 : -1;

@@ -98,7 +98,7 @@ can_data_ready_task (GIOChannel* input_channel, GIOCondition condition, gpointer
     sensor_group* sg = cfg -> sensor_groups;
 
     while (sg < (cfg -> sensor_groups + cfg -> sensor_group_count)) {
-        if (((unsigned int) sg -> can_id  & CAN_SFF_MASK)  != (frame.can_id & CAN_SFF_MASK)) {
+        if (((unsigned int) sg -> can_id  & CAN_SFF_MASK) != (frame.can_id & CAN_SFF_MASK)) {
             sg++;
             continue;
         }
@@ -251,7 +251,8 @@ on_pressed(GtkGestureClick* gesture,
 
     if (NULL != pg -> current) {
         ctx -> cg = *pg -> current;
-        gtk_drawing_area_set_draw_func(ctx -> drawing_area, gtk_draw_panel_cb,
+
+        gtk_drawing_area_set_draw_func(ctx -> drawing_area, (*pg -> current) -> vtable -> draw,
                                        *pg -> current, NULL);
 
         gtk_widget_queue_draw(GTK_WIDGET(ctx -> drawing_area));
@@ -345,7 +346,7 @@ activate (GtkApplication* app,
         g_signal_connect (drawing_area, "destroy",
                           G_CALLBACK (on_drawing_area_destroy), ctx);
 
-        gtk_drawing_area_set_draw_func (drawing_area, gtk_draw_panel_cb, p, NULL);
+        gtk_drawing_area_set_draw_func (drawing_area, p -> vtable -> draw, p, NULL);
       
         GtkGesture* click = gtk_gesture_click_new();
         g_signal_connect (click, "pressed",

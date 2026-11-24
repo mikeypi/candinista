@@ -6,7 +6,7 @@
 #include "panel.h"
 
 /* vtable functions (implemented in the various panel files) */
-void panel_draw (Panel* g, void* cr)                                   { g -> vtable -> draw (g, cr, 0, 0, NULL); }
+//void panel_draw (Panel* g, void* cr)                                   { g -> vtable -> draw (g, cr, 0, 0, NULL); }
 void panel_set_value (Panel* g, double value, int offset, int can_id)  { g -> vtable -> set_value (g, value, offset, can_id); }
 
 char*
@@ -60,32 +60,12 @@ void panel_print (FILE* fp, const Panel* g) {
   g -> vtable -> print (fp, g);
 }      
 
-Panel* panel_init_base (PanelParameters* p, Panel* lg) {
-  lg -> column_index = p -> column_index;
-  lg -> row_index = p -> row_index;
-  lg -> layer_index = p -> layer_index;
-  lg -> id = p -> id;
+void panel_init_base (Panel* p, Panel* lg) {
 
-  lg -> low_warn = p -> low_warn;
-  lg -> high_warn = p -> high_warn;
-  
-  lg -> background_color = (1 == p -> background_color) ? DEFAULT_BACKGROUND_RGB : p -> background_color;
-  lg -> foreground_color = (1 == p -> foreground_color) ? DEFAULT_FOREGROUND_RGB : p -> foreground_color;
-  lg -> high_warn_color = (1 == p -> high_warn_color) ? DEFAULT_HIGH_WARN_RGB : p -> high_warn_color;
-  lg -> low_warn_color = (1 == p -> low_warn_color) ? DEFAULT_LOW_WARN_RGB : p -> low_warn_color;
-  
-  lg -> type = p -> type;
-  lg -> border = p -> border;
-  lg -> timeout = p -> timeout;
+  memcpy (lg, p, sizeof (Panel));
 
-  sprintf (lg -> name, "%s-%d-%d-%d-%d",
-	   string_from_panel_type_enum (lg -> type),
-	   lg -> column_index,
-	   lg -> row_index,
-	   lg -> layer_index,
-	   lg -> id);
-
-  return (lg);
+  sprintf(lg -> name, "%s-%d-%d-%d-%d", string_from_panel_type_enum(lg -> type),
+          lg -> column_index, lg -> row_index, lg -> layer_index, lg -> id);
 }
 
 int

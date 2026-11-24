@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define MAX_CAN_FIELDS 8
-#define MAX_LABEL_LENGTH 40
-  
 /* data logging stuff */
 
 extern int data_logging;

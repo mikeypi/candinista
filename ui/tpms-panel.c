@@ -66,8 +66,8 @@ void draw_tpms_sub_panel (cairo_t* cr,
   yy = (top) ? y + 35 : y + 100;
   xx = (right) ? x + 95 :  x + 45 + ((ax - 1) * 18);
 
-  sprintf (abuf, "%s", str_from_unit_enum (rp -> pressure_units));
-  sprintf (bbuf, "%s", str_from_unit_enum (rp -> temperature_units));
+  sprintf (abuf, "%s", str_from_unit_enum (rp -> base.pressure_units));
+  sprintf (bbuf, "%s", str_from_unit_enum (rp -> base.temperature_units));
   
   if (right) {
     show_text_right_justified (cr, 34 + xx, yy, abuf, 3); 
@@ -145,8 +145,8 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
     rp -> multiplexor = (int) value;
     rp -> multiplexor %= 4;
     break;
-  case 1: rp -> pressure[rp -> multiplexor] = convert_units (value, rp -> pressure_units); break;
-  case 2: rp -> temperature[rp -> multiplexor] = convert_units (value, rp -> temperature_units); break;
+  case 1: rp -> pressure[rp -> multiplexor] = convert_units (value, rp -> base.pressure_units); break;
+  case 2: rp -> temperature[rp -> multiplexor] = convert_units (value, rp -> base.temperature_units); break;
   case 3: rp -> voltage[rp -> multiplexor] = value; break;
   case 4: rp -> sign[rp -> multiplexor] = value; break;
   }
@@ -155,27 +155,22 @@ static void set_value (Panel* g, double value, int sensor_offset, int can_id) {
 void print_tpms_panel(FILE *fp, const Panel *g) {
     TPMSPanel* tp = (TPMSPanel*) g;
     fprintf(fp, "    pressure_units: \"%s\"\n",
-            str_from_unit_enum(tp -> pressure_units));
+            str_from_unit_enum(tp -> base.pressure_units));
     fprintf(fp, "    temperature_units: \"%s\"\n",
-            str_from_unit_enum(tp -> temperature_units));
+            str_from_unit_enum(tp -> base.temperature_units));
 }
 
 static const struct PanelVTable linear_vtable = {
-  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_tpms_panel,
-  .print = (void (*) (FILE* fp, const Panel*)) print_tpms_panel,
+  .draw = draw_tpms_panel,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
+  .print = (void (*) (FILE* fp, const Panel*)) print_tpms_panel,
 };
 
-Panel* create_tpms_panel (PanelParameters* p) {
+Panel* create_tpms_panel (Panel* p) {
   TPMSPanel *lg = g_new0 (typeof (*lg), 1);
 
-  lg = (TPMSPanel*) panel_init_base (p, (Panel*) lg);
-  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_tpms_panel;
+  panel_init_base (p, (Panel*) lg);
   lg -> base.vtable = &linear_vtable;
-
-  lg -> output_format = "%.0f";
-  lg -> pressure_units = p -> pressure_units;
-  lg -> temperature_units = p -> temperature_units;
 
   return (Panel*) lg;
 }

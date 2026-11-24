@@ -266,16 +266,15 @@ void print_gps_panel (FILE* fp, const Panel* g)
 }
 
 static const struct PanelVTable gps_vtable = {
-  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_gps_panel,
-  .print = (void (*) (FILE* fp, const Panel*)) print_gps_panel,
+  .draw = draw_gps_panel,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
+  .print = (void (*) (FILE* fp, const Panel*)) print_gps_panel,
 };
 
-Panel* create_gps_panel (PanelParameters* p) {
+Panel* create_gps_panel (Panel* p) {
   GPSPanel *lg = g_new0 (typeof (*lg), 1);
   
-  lg = (GPSPanel*) panel_init_base (p, (Panel*) lg);
-  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_gps_panel;
+  panel_init_base (p, (Panel*) lg);
   lg -> base.vtable = &gps_vtable;
 
   return (Panel*) lg;

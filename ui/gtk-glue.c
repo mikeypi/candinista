@@ -17,16 +17,3 @@ gtk_update_panel_value (gpointer user_data) {
     return G_SOURCE_CONTINUE;
 }
 
-void
-gtk_draw_panel_cb (GtkDrawingArea* area,
-                   cairo_t*        cr,
-                   int             width,
-                   int             height,
-                   gpointer        user_data)
-{
-    Panel* p = user_data;
-//  fprintf (stderr, "--> %s\n", p -> name);
-    g_return_if_fail (p != NULL);
-    g_return_if_fail(p -> draw != NULL);
-    p -> draw (area, cr, width, height, p);
-}

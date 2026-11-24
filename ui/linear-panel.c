@@ -29,7 +29,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 
   assert (NULL != rp);
 
-  double value = convert_units (rp -> value, rp -> units);
+  double value = convert_units (rp -> value, rp -> base.units);
   int foreground_color = get_fg_color ((Panel*)rp, value);
   int background_color = rp -> base.background_color;
   
@@ -80,13 +80,13 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
   set_rgba (cr, foreground_color, 1.0);
 
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE - 4);
-  sprintf (buffer, "%s", str_from_unit_enum (rp -> units));
+  sprintf (buffer, "%s", str_from_unit_enum (rp -> base.units));
   show_text_left_justified (cr, 238 + XOFFSET + 40, 85 + YOFFSET, buffer);
   cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
 
   // Print Label
-  if ('\0' != rp -> label[0]) {
-    sprintf (buffer, "%s", rp -> label);
+  if ('\0' != rp -> base.label[0]) {
+    sprintf (buffer, "%s", rp -> base.label);
     show_text_unjustified (cr, 70 + XOFFSET, 210 + YOFFSET, buffer);
     cairo_set_font_size (cr, DEFAULT_LABEL_FONT_SIZE);
   }
@@ -100,7 +100,7 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 			  );
 
   cairo_set_font_size (cr, DEFAULT_VALUE_FONT_SIZE);
-  sprintf (buffer, rp -> output_format, value);
+  sprintf (buffer, rp -> base.output_format, value);
     
   if (3 < strlen (buffer)) {
     show_text_right_justified (cr, width / 2.0, 160 + YOFFSET, buffer, 4);
@@ -120,13 +120,13 @@ void draw_linear_gauge_panel (GtkDrawingArea* area,
 void print_linear_panel (FILE* fp, const Panel* g) {
   LinearPanel* rp = (LinearPanel*) g;
 
-  fprintf (fp, "    label: \"%s\"\n", rp -> label);
-  fprintf (fp, "    min_value: %.3f\n", rp -> min);
-  fprintf (fp, "    max_value: %.3f\n", rp -> max);
+  fprintf (fp, "    label: \"%s\"\n", rp -> base.label);
+  fprintf (fp, "    min_value: %.3f\n", rp -> base.min);
+  fprintf (fp, "    max_value: %.3f\n", rp -> base.max);
   fprintf (fp, "    low_warn : %.1f\n", rp -> base.low_warn);
   fprintf (fp, "    high_warn: %.1f\n", rp -> base.high_warn);
-  fprintf (fp, "    output_format: \"%s\"\n", rp -> output_format);
-  fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> units));
+  fprintf (fp, "    output_format: \"%s\"\n", rp -> base.output_format);
+  fprintf (fp, "    units: \"%s\"\n", str_from_unit_enum (rp -> base.units));
 
 }
 
@@ -139,15 +139,15 @@ static void set_value (Panel* g, double value, int sensor_count, int can_id) {
 }
 
 static const struct PanelVTable linear_vtable = {
-  .draw = (void (*)(void *, cairo_t*, int, int, void*)) draw_linear_gauge_panel,
-  .print = (void (*) (FILE*, const Panel*)) print_linear_panel,
+  .draw = draw_linear_gauge_panel,
   .set_value = (void (*) (Panel*, double, int, int)) set_value,
+  .print = (void (*) (FILE*, const Panel*)) print_linear_panel,
 };
 
-Panel* create_linear_gauge_panel (PanelParameters* p) {
+Panel* create_linear_gauge_panel (Panel* p) {
   LinearPanel *lg = g_new0 (typeof (*lg), 1);
   
-  if ((0 == p-> max) && (0 == p -> min)) {
+  if ((0 == p -> max) && (0 == p -> min)) {
     fprintf (stderr, "error: max and min not specified for linear gauge\n");
   }
 
@@ -155,17 +155,12 @@ Panel* create_linear_gauge_panel (PanelParameters* p) {
     fprintf (stderr, "error: min greater than max for linear gauge\n");
   }
 
-  lg = (LinearPanel*) panel_init_base (p, (Panel*) lg);
-  lg -> base.draw = (void (*)(void*, cairo_t*, int, int, void*))draw_linear_gauge_panel;
+  panel_init_base (p, (Panel*) lg);
   lg -> base.vtable = &linear_vtable;
   
-  lg -> output_format = DEFAULT_OUTPUT_FORMAT;
-  lg -> max = p -> max;
-  lg -> min = p -> min;
-  lg -> low_warn_color = p -> low_warn_color;
-  lg -> high_warn_color = p -> high_warn_color;
-  lg -> units = p -> units;
-  strcpy (lg -> label, p -> label);
+//  lg -> output_format = DEFAULT_OUTPUT_FORMAT;
+
+//  strcpy (lg -> label, p -> label);
   
   lg -> bargraph_origin_x = DEFAULT_BARGRAPH_ORIGIN_X;
   lg -> bargraph_origin_y = DEFAULT_BARGRAPH_ORIGIN_Y;

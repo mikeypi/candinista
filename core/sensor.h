@@ -5,6 +5,13 @@
 #include <stdlib.h>
 #include <stddef.h>
 
+#define DATA_REGISTER_COUNT 128
+
+typedef struct {
+  double value;
+  int dirty;
+} data_register;
+
 /* Only used to create sensors */
 typedef struct {
   char name[80];
@@ -19,6 +26,7 @@ typedef struct {
   int row_index;
   int column_index;
   int id;
+  int data_register_id;
 } SensorParameters;
 
 struct Sensor {
@@ -34,6 +42,7 @@ struct Sensor {
   double offset;
   double scale;
   int id;
+  int data_register_id;
 };
 
 typedef struct Sensor Sensor;
